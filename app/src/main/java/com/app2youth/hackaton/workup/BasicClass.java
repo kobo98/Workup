@@ -36,7 +36,7 @@ public class BasicClass extends ActionBarActivity
 
     protected int positionInMenu;
 
-    public static String startingPath;
+    public static String startingPath;//bulbul
 
     public void saveInt(String name,int num){
         SharedPreferences mPreferences = getSharedPreferences("WorkUp",MODE_PRIVATE);
