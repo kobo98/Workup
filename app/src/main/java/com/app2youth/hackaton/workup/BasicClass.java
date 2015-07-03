@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -36,8 +38,7 @@ public class BasicClass extends ActionBarActivity
 
     protected int positionInMenu;
 
-    public static String startingPath;//bulbul
-
+    public static String startingPath;
     public void saveInt(String name,int num){
         SharedPreferences mPreferences = getSharedPreferences("WorkUp",MODE_PRIVATE);
         SharedPreferences.Editor editor= mPreferences.edit();
@@ -150,6 +151,17 @@ public class BasicClass extends ActionBarActivity
                 }
             }
         });
+    }
+
+    public void loading_dialog(){
+        ProgressDialog progressDialog= ProgressDialog.show(this,"טוען נתונים","טוען נתונים",true);
+        /*
+            thread = bla bla
+            bla
+            bla
+            bla
+         */
+        progressDialog.dismiss();
     }
 
     @Override
