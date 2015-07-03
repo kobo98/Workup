@@ -45,9 +45,9 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 
 
 	public void register(View v){
-		String phone = ((EditText) findViewById(R.id.phone)).getText().toString();
-		String fname = ((EditText) findViewById(R.id.fname)).getText().toString();
-		String lname = ((EditText) findViewById(R.id.lname)).getText().toString();
+		final String phone = ((EditText) findViewById(R.id.phone)).getText().toString();
+		final String fname = ((EditText) findViewById(R.id.fname)).getText().toString();
+		final String lname = ((EditText) findViewById(R.id.lname)).getText().toString();
 
 		if (phone.equals("")){
 			Toast t = Toast.makeText(getApplicationContext(), "Please enter phone", Toast.LENGTH_LONG);
@@ -72,13 +72,13 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 
 		Thread smsReceive = new Thread(){
 			public void run(){
-				int count=0;
-				while(!IncomingSms.received && count<22){
-					count++;
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+						int count=0;
+						while(!IncomingSms.received && count<22){
+							count++;
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
 					}
 					Thread.yield();
 				}
@@ -87,38 +87,42 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 					finish();
 				}
 
+				else {
+					try {
+						saveString("phone", phone);
+
+						//Teacher
+						if (BasicClass.registeringTeacher){
+							saveString("species", "t");
+							BasicClass.teacher=true;
+							if (!Controller.teacherExists(phone)){
+								Controller.addTeacher(fname,lname,phone);
+							}
+
+							Intent i=new Intent(getBaseContext(),TeacherMainActivity.class);
+							startActivity(i);
+						}
+
+						//Student
+						else{
+							saveString("species", "s");
+							BasicClass.teacher=false;
+							if (!Controller.studentExists(phone)){
+								Controller.addStudent(fname,lname,phone);
+							}
+
+							Intent i=new Intent(getBaseContext(),StudentAllTasksActivity.class);
+							startActivity(i);
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+
 			}
 		};
 		smsReceive.start();
-		try {
-			saveString("phone", phone);
 
-			//Teacher
-			if (BasicClass.registeringTeacher){
-				saveString("species", "t");
-				BasicClass.teacher=true;
-				if (!Controller.teacherExists(phone)){
-					Controller.addTeacher(fname,lname,phone);
-				}
-
-				Intent i=new Intent(getBaseContext(),TeacherMainActivity.class);
-				startActivity(i);
-			}
-
-			//Student
-			else{
-				saveString("species", "s");
-				BasicClass.teacher=false;
-				if (!Controller.studentExists(phone)){
-					Controller.addStudent(fname,lname,phone);
-				}
-
-				Intent i=new Intent(getBaseContext(),StudentAllTasksActivity.class);
-				startActivity(i);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 
