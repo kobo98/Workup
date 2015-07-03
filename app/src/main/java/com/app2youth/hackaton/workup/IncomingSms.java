@@ -37,7 +37,7 @@ public class IncomingSms extends BroadcastReceiver {
                     String message = currentMessage.getDisplayMessageBody();
 
                     Log.i("SmsReceiver", "senderNum: " + senderNum + "; message: " + message);
-                    if (message.equals(""+SplashActivity.code)) {
+                    if (message.equals(""+RegistrationDetailsActivity.code)) {
                         received = true;
 
                         // Show Alert

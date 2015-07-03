@@ -47,7 +47,6 @@ public class SplashActivity extends ActionBarActivity {
     //static String fname;
     //public static boolean teacher;
 
-    static int code;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +62,8 @@ public class SplashActivity extends ActionBarActivity {
                     SQL.start();
                     long timeLost = System.currentTimeMillis()-start;
                     */
-                    sleep(2000);
+	                SQL.start();
+                    //sleep(2000);
 
                     // After 5 seconds redirect to another intent
                     Intent i=new Intent(getBaseContext(),RegistrationActivity.class);
