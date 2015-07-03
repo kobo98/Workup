@@ -43,7 +43,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-
+	static int code;
 	public void register(View v){
 		final String phone = ((EditText) findViewById(R.id.phone)).getText().toString();
 		final String fname = ((EditText) findViewById(R.id.fname)).getText().toString();
@@ -66,19 +66,19 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 		}
 
 
-		int code = 10000+(int)(Math.random()*89999);
+		code = 10000+(int)(Math.random()*89999);
 		SmsManager sm = SmsManager.getDefault();
 		sm.sendTextMessage(phone, null, ""+code, null, null);
 
 		Thread smsReceive = new Thread(){
 			public void run(){
-						int count=0;
-						while(!IncomingSms.received && count<22){
-							count++;
-							try {
-								Thread.sleep(500);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
+				int count=0;
+				while(!IncomingSms.received && count<100){
+					count++;
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 					Thread.yield();
 				}
@@ -93,6 +93,13 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 
 						//Teacher
 						if (BasicClass.registeringTeacher){
+							if (Controller.studentExists(phone)) {
+								Toast t = Toast.makeText(getApplicationContext(), "You are already registered as student!", Toast.LENGTH_LONG);
+								t.show();
+								finish();
+								return;
+							}
+
 							saveString("species", "t");
 							BasicClass.teacher=true;
 							if (!Controller.teacherExists(phone)){
@@ -105,6 +112,12 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 
 						//Student
 						else{
+							if (Controller.teacherExists(phone)) {
+								Toast t = Toast.makeText(getApplicationContext(), "You are already registered as teacher!", Toast.LENGTH_LONG);
+								t.show();
+								finish();
+								return;
+							}
 							saveString("species", "s");
 							BasicClass.teacher=false;
 							if (!Controller.studentExists(phone)){
@@ -125,13 +138,6 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 
 	}
 
-
-	public boolean smsReceived(int code){
-
-
-
-		return false;
-	}
 
 	public void saveString(String name,String str){
 		SharedPreferences mPreferences = getSharedPreferences("WorkUp",MODE_PRIVATE);
