@@ -1,23 +1,21 @@
 package com.app2youth.hackaton.workup;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBar;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import SQL.SQL;
-import Server.Controller;
 
 
 public class LessonsTableActivityStudent extends BasicClass
@@ -56,82 +54,79 @@ public class LessonsTableActivityStudent extends BasicClass
     @Override
     public void onStart(){
         super.onStart();
-        this.gv = (GridView) findViewById(R.id.gridView1);
-        String[] str = new String[7+7*9];
-        str[0]="Day 1";str[1]="Day 2";str[2]="Day 3";str[3]="Day 4";str[4]="Day 5";str[5]="Day 6";str[6]="Day 7";
-        for (int i=1; i<9; i++){
-            for (int j=0; j<7; j++){
-                str[i*7+j] = "---";
-            }
-        }
 
-
-        String classIDs = null;
-        try {
-
-            int[] indices = new int[]{1,1,1,1,1,1,1};
-
-            classIDs = BasicClass.teacher? Controller.getListOfClassesForTeacher(BasicClass.phone):Controller.getListOfClassesForStudent(BasicClass.phone);
-
-            classIDs = classIDs.replace(";", ",");
-            if (classIDs.length()==0)
-                classIDs="-1";
-            ResultSet rs = SQL.statement.executeQuery("SELECT teachGroup,day,startTime FROM classes WHERE classID IN ("+classIDs+");");
-            while(rs.next()){
-                int groupID = rs.getInt(1);
-                int day = rs.getInt(2);
-                String time = rs.getString(3);
-
-                ResultSet groupRS = SQL.spareStatement.executeQuery("SELECT name FROM groups WHERE groupID = "+groupID+";");
-                String groupName="";
-                while(groupRS.next())
-                    groupName=groupRS.getString(1);
-
-                str[day-1+indices[day-1]*7] = groupName+", "+time;
-                indices[day-1]++;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-
-        adapter_nur = new GridViewAdapter(this, str);
-
-
-        //Binding ImageAdapter to the GridView
-        gv.setAdapter(adapter_nur);
-        //End of Binding ImageAdapter to the GridView
-        //---------------------------------CLICK LISTENER FOR GRIDVIEW-----------
-        // ----------------------
-        this.gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-            }
-        });
-        //---------------------------------CLICK LISTENER FOR GRIDVIEW---------------------------------
+	    final LessonsTableActivityStudent activity = this;
+	    Thread getLessonTable = new Thread(){
+		    public void run(){
+			    loadTableAndUpdate(activity);
+		    }
+	    };
+	    getLessonTable.start();
     }
 
-    ///////////////////////////////////
-    /*public void addHour(View v){
-        String subject= ((EditText) findViewById(R.id.editText)).getText().toString();
-        String day= ((EditText) findViewById(R.id.editText2)).getText().toString();
-        int hour= Integer.parseInt(((EditText) findViewById(R.id.editText3)).getText().toString());
 
-        if (Manager.type==0)
-            Manager.system.addLesson(day,hour,subject);
-        else {
-            Date date = new Date();
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            int year=cal.get(Calendar.YEAR);
-            int month=cal.get(Calendar.MONTH)+1;
-            int dayplus=cal.get(Calendar.DAY_OF_MONTH)+3;
+	public void loadTableAndUpdate(LessonsTableActivityStudent activity){
+		this.gv = (GridView) findViewById(R.id.gridView1);
+		String[] str = new String[7+7*9];
+		str[0]="Day 1";str[1]="Day 2";str[2]="Day 3";str[3]="Day 4";str[4]="Day 5";str[5]="Day 6";str[6]="Day 7";
+		for (int i=1; i<9; i++){
+			for (int j=0; j<7; j++){
+				str[i*7+j] = "---";
+			}
+		}
 
-            ((TeacherSystem) Manager.system).uploadTask(new Task(subject, subject, subject, dayplus, month, year, Day.getDayNumber(day), hour));
-        }
-    }*/
+
+		String classIDs = null;
+		try {
+
+			int[] indices = new int[]{1,1,1,1,1,1,1};
+
+			classIDs = BasicClass.teacher? Controller.getListOfClassesForTeacher(BasicClass.phone):Controller.getListOfClassesForStudent(BasicClass.phone);
+
+			classIDs = classIDs.replace(";", ",");
+			if (classIDs.length()==0)
+				classIDs="-1";
+			ResultSet rs = SQL.statement.executeQuery("SELECT teachGroup,day,startTime FROM classes WHERE classID IN ("+classIDs+");");
+			while(rs.next()){
+				int groupID = rs.getInt(1);
+				int day = rs.getInt(2);
+				String time = rs.getString(3);
+
+				ResultSet groupRS = SQL.spareStatement.executeQuery("SELECT name FROM groups WHERE groupID = "+groupID+";");
+				String groupName="";
+				while(groupRS.next())
+					groupName=groupRS.getString(1);
+
+				str[day-1+indices[day-1]*7] = groupName+", "+time;
+				indices[day-1]++;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+
+
+		adapter_nur = new GridViewAdapter(this, str);
+
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				gv.setAdapter(adapter_nur);
+			}
+		});
+
+		//End of Binding ImageAdapter to the GridView
+		//---------------------------------CLICK LISTENER FOR GRIDVIEW-----------
+		// ----------------------
+		this.gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View v,
+			                        int position, long id) {
+			}
+		});
+		//---------------------------------CLICK LISTENER FOR GRIDVIEW---------------------------------
+	}
+
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {

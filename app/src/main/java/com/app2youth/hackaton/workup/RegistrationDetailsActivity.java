@@ -2,8 +2,8 @@ package com.app2youth.hackaton.workup;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.telephony.gsm.SmsManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,8 +12,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.sql.SQLException;
-
-import Server.Controller;
 
 
 public class RegistrationDetailsActivity extends ActionBarActivity {
@@ -45,6 +43,15 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 
 	static int code;
 	public void register(View v){
+		Thread register = new Thread(){
+			public void run(){
+				doRegister();
+			}
+		};
+		register.start();
+	}
+
+	public void doRegister(){
 		final String phone = ((EditText) findViewById(R.id.phone)).getText().toString();
 		final String fname = ((EditText) findViewById(R.id.fname)).getText().toString();
 		final String lname = ((EditText) findViewById(R.id.lname)).getText().toString();
@@ -73,7 +80,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 		Thread smsReceive = new Thread(){
 			public void run(){
 				int count=0;
-				while(!IncomingSms.received && count<100){
+				while(!IncomingSms.received && count<600){
 					count++;
 					try {
 						Thread.sleep(100);
@@ -102,6 +109,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 
 							saveString("species", "t");
 							BasicClass.teacher=true;
+							BasicClass.phone=phone;
 							if (!Controller.teacherExists(phone)){
 								Controller.addTeacher(fname,lname,phone);
 							}
@@ -120,9 +128,10 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 							}
 							saveString("species", "s");
 							BasicClass.teacher=false;
+							BasicClass.phone=phone;
 							if (!Controller.studentExists(phone)){
 								Controller.addStudent(fname,lname,phone);
-							}
+								}
 
 							Intent i=new Intent(getBaseContext(),StudentAllTasksActivity.class);
 							startActivity(i);
@@ -135,9 +144,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 			}
 		};
 		smsReceive.start();
-
 	}
-
 
 	public void saveString(String name,String str){
 		SharedPreferences mPreferences = getSharedPreferences("WorkUp",MODE_PRIVATE);

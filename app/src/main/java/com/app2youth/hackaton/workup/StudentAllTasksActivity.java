@@ -5,10 +5,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.support.v7.app.ActionBar;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,9 +26,6 @@ import com.fortysevendeg.swipelistview.SwipeListView;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import SQL.SQL;
-import Server.Controller;
 
 
 public class StudentAllTasksActivity extends BasicClass
@@ -56,31 +53,6 @@ public class StudentAllTasksActivity extends BasicClass
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer,(DrawerLayout) findViewById(R.id.drawer_layout),positionInMenu,this);
 
-
-
-/////////////////////////////////////////
-        /*if (Manager.system==null){
-            String startingPath = new File(((Context)this).getExternalFilesDir(null), "").getAbsolutePath();
-            BasicClass.startingPath=startingPath;
-            if (Manager.mainActivityInitialized()){
-                System.out.println("didnt find files");
-                openOrientationActivity(new View(this));
-            }
-            else
-                System.out.println("find files");
-        }*/
-
-
-        /*Random rnd= new Random();
-        switch(rnd.nextInt(2)){
-            case 0:
-                openLogInActivity(new View(this));
-                break;
-            case 1:
-                openAllClass
-        }*/
-        //openAddTaskActivity(new View(this));
-
     }
 
 
@@ -89,222 +61,14 @@ public class StudentAllTasksActivity extends BasicClass
     public void onStart(){
         super.onStart();
 
-        String[][] dataToListView = null;
+	    final StudentAllTasksActivity activity = this;
 
-        String taskIDs = null;
-        try {
-
-            taskIDs = Controller.getTasksFromStudent(BasicClass.phone);
-
-            taskIDs = taskIDs.replace(";", ",");
-            if (taskIDs.length()>0)
-                taskIDs = taskIDs.substring(0, taskIDs.length()-1);
-            else
-                taskIDs="-1";
-            dataToListView = new String[taskIDs.split(",").length][4];
-            savedTaskIDs = new int[taskIDs.split(",").length];
-
-            if (taskIDs.equals("-1")) {
-                savedTaskIDs = new int[]{};
-                dataToListView = new String[0][4];
-            }
-
-            ResultSet rs = SQL.statement.executeQuery("SELECT title, teachGroup, filingDate, taskID FROM tasks WHERE taskID IN ("+taskIDs+");");
-
-            int index=0;
-            while(rs.next()){
-                String title  = rs.getString(1);
-                int groupID = rs.getInt(2);
-                String date = rs.getString(3);
-                int taskID = rs.getInt(4);
-
-                ResultSet groupRS = SQL.spareStatement.executeQuery("SELECT name FROM groups WHERE groupID = "+groupID+";");
-                String groupName="";
-                while(groupRS.next())
-                    groupName=groupRS.getString(1);
-
-                dataToListView[index] = new String[]{title,groupName,date,"0x00ff00"};
-                savedTaskIDs[index] = taskID;
-                index++;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-
-        String[] arrayOfNames = new String[dataToListView.length];
-        for(int i=0;i<dataToListView.length;i++){
-            arrayOfNames[i]=dataToListView[i][0];
-        }
-        final HWArrayAdapter adapter= new HWArrayAdapter(this,dataToListView,arrayOfNames);
-        swipeListView = (SwipeListView) findViewById(R.id.example_lv_list);
-
-        swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
-            @Override
-            public void onOpened(int position, boolean toRight) {
-                if(toRight){
-                    requestRating();
-                    try {
-                        ResultSet rs = SQL.statement.executeQuery("SELECT tasks FROM students WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
-                        String tasks=null;
-                        while(rs.next())
-                            tasks=rs.getString(1);
-
-                        if (tasks!=null && !tasks.equals("")){
-                            String[] list = tasks.split(";");
-
-                            String updatedTasks = "";
-                            for (int i=0; i<list.length; i++){
-                                Log.d("PAST TASKS: ",list[i]);
-                                if (!list[i].equals(""+savedTaskIDs[position])){
-                                    updatedTasks+=list[i]+";";
-                                }
-                            }
-                            Log.d("UPDATING TO ",updatedTasks+"  -  position: "+savedTaskIDs[position]);
-                            SQL.statement.execute("UPDATE students SET tasks = '"+updatedTasks+"' WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
-
-                            onStart();
-                        }
-
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                    //Delete task here
-
-                }else{
-                    //openAskForHelpActivity(new View(swipeListView.getContext()));
-                    showCommentDialog(position);
-                    Log.d("Main","Ask for help");
-                }
-            }
-
-            @Override
-            public void onClosed(int position, boolean fromRight) {
-            }
-
-            @Override
-            public void onListChanged() {
-            }
-
-            @Override
-            public void onMove(int position, float x) {
-            }
-
-            @Override
-            public void onStartOpen(int position, int action, boolean right) {
-                if(right) {
-                    (swipeListView.getChildAt(position).findViewById(R.id.back)).setBackgroundColor(Color.GREEN);
-                }else{
-                    (swipeListView.getChildAt(position).findViewById(R.id.back)).setBackgroundColor(Color.YELLOW);
-                }
-                swipeListView.invalidate();
-                Log.d("swipe", String.format("onStartOpen %d - action %d - "+right, position, action));
-            }
-
-            @Override
-            public void onStartClose(int position, boolean right) {
-                Log.d("swipe", String.format("onStartClose %d", position));
-            }
-
-            @Override
-            public void onClickFrontView(int position) {
-                Log.d("swipe", String.format("onClickFrontView %d", position));
-
-                showCommentDialog(position);
-            }
-
-
-            public void showCommentDialog(final int position){
-
-                final int pos = position;
-                try {
-
-                    ResultSet rstask = SQL.statement.executeQuery("SELECT description FROM tasks WHERE taskID = "+savedTaskIDs[position]+";");
-                    String description = null;
-                    while(rstask.next())
-                        description = rstask.getString(1);
-
-
-                    String commentIDs = Controller.getCommentsFromTask(savedTaskIDs[position]);
-
-                    commentIDs = commentIDs.replace(";", ",");
-                    if (commentIDs.length()>0)
-                        commentIDs = commentIDs.substring(0, commentIDs.length()-1);
-                    else
-                        commentIDs = ""+ -1;
-                    ResultSet rs = SQL.statement.executeQuery("SELECT comment, isStudent, commentor FROM comments WHERE commentID IN ("+commentIDs+");");//THIS IS A MISTAKE! SHOULD BE taskID
-
-
-
-
-
-                    final AlertDialog.Builder alert = new AlertDialog.Builder(StudentAllTasksActivity.this);
-                    alert.setTitle("Comments on Task");
-                    alert.setMessage("Task: "+description);
-
-
-                    LinearLayout layout = new LinearLayout(StudentAllTasksActivity.this);
-                    layout.setOrientation(LinearLayout.VERTICAL);
-
-                    while(rs.next()){
-                        String comment  = rs.getString(1);
-                        boolean isStudent = rs.getBoolean(2);
-                        int commentor = rs.getInt(3);
-                        /*
-                        ResultSet groupRS = SQL.spareStatement.executeQuery("SELECT name FROM groups WHERE groupID = "+groupID+";");
-                        String groupName="";
-                        while(groupRS.next())
-                            groupName=groupRS.getString(1);
-                        */
-
-                        final TextView commentToDisplay = new TextView(StudentAllTasksActivity.this);
-                        commentToDisplay.setText("\n"+comment);
-                        layout.addView(commentToDisplay);
-                    }
-
-
-
-                    final EditText yourComment = new EditText(StudentAllTasksActivity.this);
-                    yourComment.setHint("Comment");
-                    layout.addView(yourComment);
-
-                    alert.setView(layout);
-
-
-
-                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-
-                            String comment = yourComment.getText().toString();
-
-                            try {
-                                Controller.addComment(comment,savedTaskIDs[pos],true, Controller.getStudentIDByPhone(BasicClass.phone));
-                            } catch (SQLException e1) {
-                                e1.printStackTrace();
-                            }
-                        }
-                    });
-                    alert.show();
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-                @Override
-            public void onClickBackView(int position) {
-                Log.d("swipe", String.format("onClickBackView %d", position));
-            }
-
-        });
-
-        swipeListView.setAdapter(adapter);
-
-        reload();
-
+	    Thread getTasks = new Thread(){
+		    public void run(){
+			    loadTasksAndUpdate(activity);
+		    }
+	    };
+	    getTasks.start();
         /*String[][] dataToListView;
         if (Manager.system!=null){
             ArrayList<Task> tasks = ((StudentSystem)Manager.system).getSortedTasks();
@@ -330,6 +94,243 @@ public class StudentAllTasksActivity extends BasicClass
 
         pushNotification("Hello","You have entered the best students app ever", GraphActivity.class,SchoolBagActivity.class, 0);*/
     }
+
+
+	public void loadTasksAndUpdate(StudentAllTasksActivity activity){
+		String[][] dataToListView = null;
+
+		String taskIDs = null;
+		try {
+			Log.d("phone", phone);
+			taskIDs = Controller.getTasksFromStudent(BasicClass.phone);
+
+			taskIDs = taskIDs.replace(";", ",");
+			if (taskIDs.length()>0)
+				taskIDs = taskIDs.substring(0, taskIDs.length()-1);
+			else
+				taskIDs="-1";
+			dataToListView = new String[taskIDs.split(",").length][4];
+			savedTaskIDs = new int[taskIDs.split(",").length];
+
+			if (taskIDs.equals("-1")) {
+				savedTaskIDs = new int[]{};
+				dataToListView = new String[0][4];
+			}
+
+			ResultSet rs = SQL.statement.executeQuery("SELECT title, teachGroup, filingDate, taskID FROM tasks WHERE taskID IN ("+taskIDs+");");
+
+			int index=0;
+			while(rs.next()){
+				String title  = rs.getString(1);
+				int groupID = rs.getInt(2);
+				String date = rs.getString(3);
+				int taskID = rs.getInt(4);
+
+				ResultSet groupRS = SQL.spareStatement.executeQuery("SELECT name FROM groups WHERE groupID = "+groupID+";");
+				String groupName="";
+				while(groupRS.next())
+					groupName=groupRS.getString(1);
+
+				dataToListView[index] = new String[]{title,groupName,date,"0x00ff00"};
+				savedTaskIDs[index] = taskID;
+				index++;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+
+
+		String[] arrayOfNames = new String[dataToListView.length];
+		for(int i=0;i<dataToListView.length;i++){
+			arrayOfNames[i]=dataToListView[i][0];
+		}
+		final HWArrayAdapter adapter= new HWArrayAdapter(activity,dataToListView,arrayOfNames);
+		swipeListView = (SwipeListView) findViewById(R.id.example_lv_list);
+
+		swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
+			@Override
+			public void onOpened(final int position, boolean toRight) {
+				if(toRight){
+					requestRating();
+					try {
+						ResultSet rs = SQL.statement.executeQuery("SELECT tasks FROM students WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
+						String tasks=null;
+						while(rs.next())
+							tasks=rs.getString(1);
+
+						if (tasks!=null && !tasks.equals("")){
+							String[] list = tasks.split(";");
+
+							String updatedTasks = "";
+							for (int i=0; i<list.length; i++){
+								Log.d("PAST TASKS: ",list[i]);
+								if (!list[i].equals(""+savedTaskIDs[position])){
+									updatedTasks+=list[i]+";";
+								}
+							}
+							Log.d("UPDATING TO ",updatedTasks+"  -  position: "+savedTaskIDs[position]);
+							SQL.statement.execute("UPDATE students SET tasks = '"+updatedTasks+"' WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
+
+							onStart();
+						}
+
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					//Delete task here
+
+				}else{
+					//openAskForHelpActivity(new View(swipeListView.getContext()));
+					Thread helper = new Thread() {
+						public void run() {
+							showCommentDialog(position);
+						}
+					};
+					helper.start();
+					Log.d("Main","Ask for help");
+				}
+			}
+
+			@Override
+			public void onClosed(int position, boolean fromRight) {
+			}
+
+			@Override
+			public void onListChanged() {
+			}
+
+			@Override
+			public void onMove(int position, float x) {
+			}
+
+			@Override
+			public void onStartOpen(int position, int action, boolean right) {
+				if(right) {
+					(swipeListView.getChildAt(position).findViewById(R.id.back)).setBackgroundColor(Color.GREEN);
+				}else{
+					(swipeListView.getChildAt(position).findViewById(R.id.back)).setBackgroundColor(Color.YELLOW);
+				}
+				swipeListView.invalidate();
+				Log.d("swipe", String.format("onStartOpen %d - action %d - "+right, position, action));
+			}
+
+			@Override
+			public void onStartClose(int position, boolean right) {
+				Log.d("swipe", String.format("onStartClose %d", position));
+			}
+
+			@Override
+			public void onClickFrontView(final int position) {
+				Log.d("swipe", String.format("onClickFrontView %d", position));
+				Thread helper = new Thread() {
+					public void run() {
+						showCommentDialog(position);
+					}
+				};
+				helper.start();
+			}
+
+
+			public void showCommentDialog(final int position){
+
+				final int pos = position;
+				try {
+
+					ResultSet rstask = SQL.statement.executeQuery("SELECT description FROM tasks WHERE taskID = "+savedTaskIDs[position]+";");
+					String description = null;
+					while(rstask.next())
+						description = rstask.getString(1);
+
+
+					String commentIDs = Controller.getCommentsFromTask(savedTaskIDs[position]);
+
+					commentIDs = commentIDs.replace(";", ",");
+					if (commentIDs.length()>0)
+						commentIDs = commentIDs.substring(0, commentIDs.length()-1);
+					else
+						commentIDs = ""+ -1;
+					final ResultSet rs = SQL.statement.executeQuery("SELECT comment, isStudent, commentor FROM comments WHERE commentID IN ("+commentIDs+");");//THIS IS A MISTAKE! SHOULD BE taskID
+
+					final String descriptionCopy = description;
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							final AlertDialog.Builder alert = new AlertDialog.Builder(StudentAllTasksActivity.this);
+							alert.setTitle("Comments on Task");
+							alert.setMessage("Task: "+descriptionCopy);
+
+
+							LinearLayout layout = new LinearLayout(StudentAllTasksActivity.this);
+							layout.setOrientation(LinearLayout.VERTICAL);
+
+							try {
+								while(rs.next()){
+									String comment  = rs.getString(1);
+									boolean isStudent = rs.getBoolean(2);
+									int commentor = rs.getInt(3);
+
+									final TextView commentToDisplay = new TextView(StudentAllTasksActivity.this);
+									commentToDisplay.setText("\n"+comment);
+									layout.addView(commentToDisplay);
+								}
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+
+
+							final EditText yourComment = new EditText(StudentAllTasksActivity.this);
+							yourComment.setHint("Comment");
+							layout.addView(yourComment);
+
+							alert.setView(layout);
+
+
+
+							alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int whichButton) {
+
+									final String comment = yourComment.getText().toString();
+
+									Thread helper = new Thread() {
+										public void run() {
+											try {
+												Controller.addComment(comment, savedTaskIDs[pos], true, Controller.getStudentIDByPhone(BasicClass.phone));
+											} catch (SQLException e) {
+												e.printStackTrace();
+											}
+										}
+									};
+									helper.start();
+								}
+							});
+							alert.show();
+						}
+					});
+
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+
+			@Override
+			public void onClickBackView(int position) {
+				Log.d("swipe", String.format("onClickBackView %d", position));
+			}
+
+		});
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				swipeListView.setAdapter(adapter);
+
+				reload();
+			}
+		});
+	}
 
     private void reload() {
         SettingsManager settings = SettingsManager.getInstance();

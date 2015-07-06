@@ -2,32 +2,29 @@ package com.app2youth.hackaton.workup;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.support.v7.app.ActionBar;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-
-import Server.Controller;
 
 
 public class AddTaskActivity extends BasicClass
@@ -70,115 +67,138 @@ public class AddTaskActivity extends BasicClass
 
         edittext.setText(sdf.format(myCalendar.getTime()));
     }
+
     @Override
     public void onStart(){
         super.onStart();
 
-        final Spinner dropdown = (Spinner)findViewById(R.id.group);
-        String[] list = null;
-        try {
-            list = Controller.getGroupNamesForTeacher(BasicClass.phone);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        String[] items = new String[list.length+1];
-        items[0]="Select group";
-        for (int i=0; i<list.length; i++){
-            items[i+1]=list[i];
-        }
-        dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                selectedSpinner=dropdown.getSelectedItem().toString();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-
-            }
-        });
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
-        dropdown.setAdapter(adapter);
-
-
-
-
-        final EditText taskName = (EditText) findViewById(R.id.taskName);
-        taskName.setHint("Enter task title");
-        final EditText description = (EditText) findViewById(R.id.teacherId);
-        description.setHint("Enter description");
-
-        final EditText date = (EditText) findViewById(R.id.doDate);
-        date.setHint("Enter date");
-        final Calendar myCalendar = Calendar.getInstance();
-
-        final DatePickerDialog.OnDateSetListener thisdate = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel(date, myCalendar);
-            }
-
-        };
-
-        date.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                new DatePickerDialog(AddTaskActivity.this, thisdate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
-
-
-
-
-        ImageView submit = (ImageView) findViewById(R.id.addTask);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                Log.d("Add Task: ", selectedSpinner + ", " + taskName.getText().toString()+", "+description.getText().toString()+", "+date.getText().toString());
-                if (selectedSpinner.equals("Select group")){
-                    Toast t = Toast.makeText(getApplicationContext(), "Please select group", Toast.LENGTH_LONG);
-                    t.show();
-                }
-                else if (taskName.getText().toString().equals("")){
-                    Toast t = Toast.makeText(getApplicationContext(), "Please enter task name", Toast.LENGTH_LONG);
-                    t.show();
-                }
-                else if (date.getText().toString().equals("")){
-                    Toast t = Toast.makeText(getApplicationContext(), "Please enter filing date", Toast.LENGTH_LONG);
-                    t.show();
-                }
-                else{
-                    try {
-                        Controller.addTask(
-                                Controller.getGroupIDByNameAndPhone(selectedSpinner, BasicClass.phone),
-                                taskName.getText().toString(),
-                                description.getText().toString(),
-                                date.getText().toString()
-                                );
-
-                        taskName.setText("");
-                        description.setText("");
-                        date.setText("");
-                        Toast t = Toast.makeText(getApplicationContext(), "Task added!", Toast.LENGTH_LONG);
-                        t.show();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        });
+	    final AddTaskActivity activity = this;
+	    Thread loadGroups = new Thread(){
+		    public void run(){
+			    loadGroupsAndUpdate(activity);
+		    }
+	    };
+	    loadGroups.start();
     }
+
+	public void loadGroupsAndUpdate(AddTaskActivity activity){
+		final Spinner dropdown = (Spinner)findViewById(R.id.group);
+		String[] list = null;
+		try {
+			list = Controller.getGroupNamesForTeacher(BasicClass.phone);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		String[] items = new String[list.length+1];
+		items[0]="Select group";
+		for (int i=0; i<list.length; i++){
+			items[i+1]=list[i];
+		}
+		dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				selectedSpinner=dropdown.getSelectedItem().toString();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+
+			}
+		});
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
+
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				dropdown.setAdapter(adapter);
+				final EditText taskName = (EditText) findViewById(R.id.taskName);
+				taskName.setHint("Enter task title");
+				final EditText description = (EditText) findViewById(R.id.teacherId);
+				description.setHint("Enter description");
+
+				final EditText date = (EditText) findViewById(R.id.doDate);
+				date.setHint("Enter date");
+				final Calendar myCalendar = Calendar.getInstance();
+
+				final DatePickerDialog.OnDateSetListener thisdate = new DatePickerDialog.OnDateSetListener() {
+
+					@Override
+					public void onDateSet(DatePicker view, int year, int monthOfYear,
+					                      int dayOfMonth) {
+						// TODO Auto-generated method stub
+						myCalendar.set(Calendar.YEAR, year);
+						myCalendar.set(Calendar.MONTH, monthOfYear);
+						myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+						updateLabel(date, myCalendar);
+					}
+
+				};
+
+				date.setOnClickListener(new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						new DatePickerDialog(AddTaskActivity.this, thisdate, myCalendar
+								.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+								myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+					}
+				});
+
+
+
+
+				ImageView submit = (ImageView) findViewById(R.id.addTask);
+				submit.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						Log.d("Add Task: ", selectedSpinner + ", " + taskName.getText().toString()+", "+description.getText().toString()+", "+date.getText().toString());
+						if (selectedSpinner.equals("Select group")){
+							Toast t = Toast.makeText(getApplicationContext(), "Please select group", Toast.LENGTH_LONG);
+							t.show();
+						}
+						else if (taskName.getText().toString().equals("")){
+							Toast t = Toast.makeText(getApplicationContext(), "Please enter task name", Toast.LENGTH_LONG);
+							t.show();
+						}
+						else if (date.getText().toString().equals("")){
+							Toast t = Toast.makeText(getApplicationContext(), "Please enter filing date", Toast.LENGTH_LONG);
+							t.show();
+						}
+						else{
+							Thread helper = new Thread() {
+								public void run() {
+									try {
+										Controller.addTask(
+												Controller.getGroupIDByNameAndPhone(selectedSpinner, BasicClass.phone),
+												taskName.getText().toString(),
+												description.getText().toString(),
+												date.getText().toString()
+										);
+									} catch (SQLException e) {
+										e.printStackTrace();
+									}
+								}
+							};
+							helper.start();
+
+
+							taskName.setText("");
+							description.setText("");
+							date.setText("");
+							Toast t = Toast.makeText(getApplicationContext(), "Task added!", Toast.LENGTH_LONG);
+							t.show();
+						}
+
+					}
+				});
+			}
+		});
+
+
+
+
+	}
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {

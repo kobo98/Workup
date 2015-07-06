@@ -1,12 +1,7 @@
-package Server;
+package com.app2youth.hackaton.workup;
 
-import android.util.Log;
-
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import SQL.SQL;
 
 public class Controller {
 	
@@ -333,16 +328,5 @@ public class Controller {
 
         return names;
     }
-	public static void main(String ars[]) throws SQLException{
-		SQL.start();
-		
-		long startTime = System.currentTimeMillis();
-		
-		System.out.println(studentExists("0000001"));
-		long classesTime = System.currentTimeMillis();
-		System.out.println(classesTime-startTime);
-		
-		SQL.close();
-	}
 	
 }

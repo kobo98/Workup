@@ -1,4 +1,4 @@
-package SQL;
+package com.app2youth.hackaton.workup;
 
 import android.os.StrictMode;
 

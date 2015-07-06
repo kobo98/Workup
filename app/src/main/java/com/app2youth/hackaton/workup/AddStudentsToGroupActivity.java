@@ -3,17 +3,17 @@ package com.app2youth.hackaton.workup;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v7.app.ActionBar;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -25,8 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
-
-import Server.Controller;
 
 
 public class AddStudentsToGroupActivity extends BasicClass
@@ -69,155 +67,182 @@ public class AddStudentsToGroupActivity extends BasicClass
         super.onStart();
         Log.d("Msg","3");
 
-
-        final Spinner dropdown = (Spinner)findViewById(R.id.spinner);
-        String[] list = null;
-        try {
-            list = Controller.getGroupNamesForTeacher(BasicClass.phone);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        String[] items = new String[list.length+1];
-        items[0]="Select group";
-        for (int i=0; i<list.length; i++){
-            items[i+1]=list[i];
-        }
-        dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                selectedSpinner=dropdown.getSelectedItem().toString();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-
-            }
-        });
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
-        dropdown.setAdapter(adapter);
-
-
-        final EditText addPhone = (EditText) findViewById(R.id.add_phone);
-        addPhone.setHint("Enter phone");
-
-
-
-        final TextView phoneList = (TextView) findViewById(R.id.phone_list);
-        phoneList.setText("");
-
-
-        Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                if (!addPhone.getText().toString().equals(""))
-                try {
-                    final String phone = addPhone.getText().toString();
-
-
-                    if (Controller.studentExists(phone)){
-                        if (phoneList.getText().toString().length()>0)
-                            phoneList.setText(phoneList.getText().toString()+", "+phone);
-                        else
-                            phoneList.setText(phone);
-                        addPhone.setText("");
-                    }
-                    else {
-
-
-                        final AlertDialog.Builder alert = new AlertDialog.Builder(AddStudentsToGroupActivity.this);
-                        alert.setTitle("Add student with number "+phone);
-
-                        LinearLayout layout = new LinearLayout(AddStudentsToGroupActivity.this);
-                        layout.setOrientation(LinearLayout.VERTICAL);
-
-                        final EditText name = new EditText(AddStudentsToGroupActivity.this);
-                        name.setHint("Enter name");
-                        layout.addView(name);
-
-                        final EditText fname = new EditText(AddStudentsToGroupActivity.this);
-                        fname.setHint("Enter last name");
-                        layout.addView(fname);
-
-                        alert.setView(layout);
-                        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                try {
-                                    Controller.addStudent(name.getText().toString(), name.getText().toString(), phone);
-
-                                    if (phoneList.getText().toString().length()>0)
-                                        phoneList.setText(phoneList.getText().toString()+", "+phone);
-                                    else
-                                        phoneList.setText(phone);
-                                    addPhone.setText("");
-
-                                    Toast t = Toast.makeText(getApplicationContext(), "Student added to database", Toast.LENGTH_LONG);
-                                    t.show();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                        alert.show();
-
-                        /*
-                        Toast t = Toast.makeText(getApplicationContext(), "phone not recognised", Toast.LENGTH_LONG);
-                        t.show();
-                        */
-                    }
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-        ImageView submit = (ImageView) findViewById(R.id.add_group_button);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                String phonesString = phoneList.getText().toString();
-                Log.d("Add students to group: ",selectedSpinner+", "+phonesString);
-                if (selectedSpinner.equals("Select group")){
-                    Toast t = Toast.makeText(getApplicationContext(), "Please select group", Toast.LENGTH_LONG);
-                    t.show();
-                }
-                else if (phonesString.length()==0){
-                    Toast t = Toast.makeText(getApplicationContext(), "Please enter at least one phone number", Toast.LENGTH_LONG);
-                    t.show();
-                }
-                else{
-                    try {
-                        if (phonesString.length()!=0){
-                            String[] phones = phoneList.getText().toString().split(", ");
-
-                            for (String phone:phones){
-                                Controller.addStudentToGroup(
-                                        Controller.getStudentIDByPhone(phone),
-                                        Controller.getGroupIDByNameAndPhone(selectedSpinner,BasicClass.phone)
-                                );
-                            }
-
-                            addPhone.setText("");
-                            phoneList.setText("");
-
-                            Toast t = Toast.makeText(getApplicationContext(), "Students added", Toast.LENGTH_LONG);
-                            t.show();
-                        }
-
-
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        });
-
+	    final AddStudentsToGroupActivity activity = this;
+	    Thread loadGroups = new Thread(){
+		    public void run(){
+			    loadGroupsAndUpdate(activity);
+		    }
+	    };
+	    loadGroups.start();
 
     }
+
+	public void loadGroupsAndUpdate(AddStudentsToGroupActivity activity){
+		final Spinner dropdown = (Spinner)findViewById(R.id.spinner);
+		String[] list = null;
+		try {
+			list = Controller.getGroupNamesForTeacher(BasicClass.phone);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		String[] items = new String[list.length+1];
+		items[0]="Select group";
+		for (int i=0; i<list.length; i++){
+			items[i+1]=list[i];
+		}
+		dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				selectedSpinner=dropdown.getSelectedItem().toString();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+
+			}
+		});
+
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				dropdown.setAdapter(adapter);
+				final EditText addPhone = (EditText) findViewById(R.id.add_phone);
+				addPhone.setHint("Enter phone");
+
+				final TextView phoneList = (TextView) findViewById(R.id.phone_list);
+				phoneList.setText("");
+
+				Button button = (Button) findViewById(R.id.button);
+				button.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						if (!addPhone.getText().toString().equals("")) {
+							final String phone = addPhone.getText().toString();
+
+							Thread helper = new Thread() {
+								public void run() {
+									try {
+										if (Controller.studentExists(phone)) {
+											runOnUiThread(new Runnable() {
+												@Override
+												public void run() {
+													if (phoneList.getText().toString().length() > 0)
+														phoneList.setText(phoneList.getText().toString() + ", " + phone);
+													else
+														phoneList.setText(phone);
+													addPhone.setText("");
+												}
+											});
+
+										} else {
+
+											runOnUiThread(new Runnable() {
+												@Override
+												public void run() {
+													final AlertDialog.Builder alert = new AlertDialog.Builder(AddStudentsToGroupActivity.this);
+													alert.setTitle("Add student with number " + phone);
+
+													LinearLayout layout = new LinearLayout(AddStudentsToGroupActivity.this);
+													layout.setOrientation(LinearLayout.VERTICAL);
+
+													final EditText name = new EditText(AddStudentsToGroupActivity.this);
+													name.setHint("Enter name");
+													layout.addView(name);
+
+													final EditText fname = new EditText(AddStudentsToGroupActivity.this);
+													fname.setHint("Enter last name");
+													layout.addView(fname);
+
+													alert.setView(layout);
+													alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+														public void onClick(DialogInterface dialog, int whichButton) {
+															Thread helper = new Thread() {
+																public void run() {
+																	try {
+																		Controller.addStudent(name.getText().toString(), name.getText().toString(), phone);
+																	} catch (SQLException e) {
+																		e.printStackTrace();
+																	}
+																}
+															};
+															helper.start();
+
+															if (phoneList.getText().toString().length() > 0)
+																phoneList.setText(phoneList.getText().toString() + ", " + phone);
+															else
+																phoneList.setText(phone);
+															addPhone.setText("");
+
+															Toast t = Toast.makeText(getApplicationContext(), "Student added to database", Toast.LENGTH_LONG);
+															t.show();
+														}
+													});
+													alert.show();
+
+												}
+											});
+
+										}
+									} catch (SQLException e) {
+										e.printStackTrace();
+									}
+								}
+							};
+							helper.start();
+						}
+					}
+				});
+
+				ImageView submit = (ImageView) findViewById(R.id.add_group_button);
+				submit.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						String phonesString = phoneList.getText().toString();
+						Log.d("Add students to group: ",selectedSpinner+", "+phonesString);
+						if (selectedSpinner.equals("Select group")){
+							Toast t = Toast.makeText(getApplicationContext(), "Please select group", Toast.LENGTH_LONG);
+							t.show();
+						}
+						else if (phonesString.length()==0){
+							Toast t = Toast.makeText(getApplicationContext(), "Please enter at least one phone number", Toast.LENGTH_LONG);
+							t.show();
+						}
+						else{
+							if (phonesString.length()!=0){
+								String[] phones = phoneList.getText().toString().split(", ");
+
+								for (final String phone:phones){
+									Thread helper = new Thread() {
+										public void run() {
+											try {
+												Controller.addStudentToGroup(
+														Controller.getStudentIDByPhone(phone),
+														Controller.getGroupIDByNameAndPhone(selectedSpinner, BasicClass.phone)
+												);
+											} catch (SQLException e) {
+												e.printStackTrace();
+											}
+										}
+									};
+
+								}
+
+								addPhone.setText("");
+								phoneList.setText("");
+
+								Toast t = Toast.makeText(getApplicationContext(), "Students added", Toast.LENGTH_LONG);
+								t.show();
+							}
+						}
+
+					}
+				});
+
+			}
+		});
+
+	}
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -230,7 +255,7 @@ public class AddStudentsToGroupActivity extends BasicClass
         if(position!=positionInMenu) {
             openActivityFromMenuTeacher(position + 1);
         }
-        Log.d("Msg","6");
+        Log.d("Msg", "6");
     }
 
     public void onSectionAttached(int number) {
