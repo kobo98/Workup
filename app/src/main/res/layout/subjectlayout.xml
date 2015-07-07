@@ -1,120 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:background="#ffffffff"
-    android:id="@+id/layout_of_subject">
+	android:id="@+id/layout_of_subject"
+	android:layout_width="match_parent"
+	android:layout_height="50dp"
+	android:background="#ffffffff">
 
-    <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:id="@+id/table_main">
+	<TableLayout
+		android:id="@+id/table_main"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+		android:layout_centerVertical="true">
 
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/subject"
-                android:textSize="22dp"
-                android:text="פיזיקה"
-                android:textColor="#ff11a7ff"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_gravity="bottom|right" />
-        </TableRow>
+		<TableRow>
 
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="דניאלה אבידן המלכה"
-                android:id="@+id/teacher"
-                android:layout_below="@+id/subject"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:textSize="12dp"
-                android:textColor="#ff11a7ff"
-                android:layout_gravity="bottom|right" />
+			<TextView
+				android:id="@+id/subject"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentEnd="true"
+				android:layout_alignParentRight="true"
+				android:layout_alignParentTop="true"
+				android:layout_gravity="bottom|right"
+				android:text="פיזיקה"
+				android:textColor="#ff11a7ff"
+				android:textSize="22dp" />
+		</TableRow>
 
-        </TableRow>
+		<TableRow>
 
-        </TableLayout>
+			<TextView
+				android:id="@+id/teacher"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentEnd="true"
+				android:layout_alignParentRight="true"
+				android:layout_below="@+id/subject"
+				android:layout_gravity="bottom|right"
+				android:text="דניאלה אבידן המלכה"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textColor="#ff11a7ff"
+				android:textSize="12dp" />
 
-    <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="false"
-        android:id="@+id/table1"
-        android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@+id/table_main">
+		</TableRow>
 
-        <TableRow android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+	</TableLayout>
 
-            <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="מחשבון"
-            android:id="@+id/add1"
-            android:textSize="15dp"
-            android:textColor="#ff11a7ff"
-            android:layout_gravity="bottom|right" />
+	<TableLayout
+		android:id="@+id/table1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="false"
+		android:layout_centerVertical="true"
+		android:layout_marginRight="10dp"
+		android:layout_toLeftOf="@+id/table_main">
 
-        </TableRow>
-        <TableRow android:layout_height="wrap_content"
-            android:layout_width="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="פרבולואיד תלת יריעתי"
-                android:id="@+id/add4"
-                android:textSize="15dp"
-                android:textColor="#ff11a7ff"
-                android:layout_gravity="bottom|right" />
-        </TableRow>
+		<TableRow
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
 
-    </TableLayout>
+			<TextView
+				android:id="@+id/add1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="bottom|right"
+				android:text="מחשבון"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textColor="#ff11a7ff"
+				android:textSize="15dp" />
 
-    <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="false"
-        android:layout_centerVertical="true"
-        android:id="@+id/table2"
-        android:layout_toLeftOf="@+id/table1"
-        android:layout_marginRight="10dp">
+		</TableRow>
 
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="ספר ניסויים 3"
-                android:id="@+id/add3"
-                android:textSize="15dp"
-                android:textColor="#ff11a7ff"
-                android:layout_gravity="bottom|right" />
-        </TableRow>
+		<TableRow
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
 
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="ספר בגרויות 1"
-                android:id="@+id/add2"
-                android:textSize="15dp"
-                android:textColor="#ff11a7ff"
-                android:layout_gravity="bottom|right" />
-        </TableRow>
+			<TextView
+				android:id="@+id/add4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="bottom|right"
+				android:text="פרבולואיד תלת יריעתי"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textColor="#ff11a7ff"
+				android:textSize="15dp" />
+		</TableRow>
 
-    </TableLayout>
+	</TableLayout>
+
+	<TableLayout
+		android:id="@+id/table2"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="false"
+		android:layout_centerVertical="true"
+		android:layout_marginRight="10dp"
+		android:layout_toLeftOf="@+id/table1">
+
+		<TableRow>
+
+			<TextView
+				android:id="@+id/add3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="bottom|right"
+				android:text="ספר ניסויים 3"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textColor="#ff11a7ff"
+				android:textSize="15dp" />
+		</TableRow>
+
+		<TableRow>
+
+			<TextView
+				android:id="@+id/add2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="bottom|right"
+				android:text="ספר בגרויות 1"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textColor="#ff11a7ff"
+				android:textSize="15dp" />
+		</TableRow>
+
+	</TableLayout>
 
 </RelativeLayout>

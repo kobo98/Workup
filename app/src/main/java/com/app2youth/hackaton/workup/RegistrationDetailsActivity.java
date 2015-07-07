@@ -1,8 +1,11 @@
 package com.app2youth.hackaton.workup;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.gsm.SmsManager;
 import android.view.Menu;
@@ -43,12 +46,15 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 
 	static int code;
 	public void register(View v){
+		doRegister();
+		/*
 		Thread register = new Thread(){
 			public void run(){
 				doRegister();
 			}
 		};
 		register.start();
+		*/
 	}
 
 	public void doRegister(){
@@ -72,11 +78,9 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 			return;
 		}
 
+		new RegisterUser().execute(phone, fname, lname);
 
-		code = 10000+(int)(Math.random()*89999);
-		SmsManager sm = SmsManager.getDefault();
-		sm.sendTextMessage(phone, null, ""+code, null, null);
-
+		/*
 		Thread smsReceive = new Thread(){
 			public void run(){
 				int count=0;
@@ -97,7 +101,6 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 				else {
 					try {
 						saveString("phone", phone);
-
 						//Teacher
 						if (BasicClass.registeringTeacher){
 							if (Controller.studentExists(phone)) {
@@ -144,7 +147,96 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 			}
 		};
 		smsReceive.start();
+		*/
 	}
+
+
+	private class RegisterUser extends AsyncTask<String, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(RegistrationDetailsActivity.this);
+
+		@Override
+		protected Void doInBackground(String... in){
+			code = 10000+(int)(Math.random()*89999);
+			SmsManager sm = SmsManager.getDefault();
+			sm.sendTextMessage(in[0], null, ""+code, null, null);
+
+			int count=0;
+			while(!IncomingSms.received && count<600){
+				count++;
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				Thread.yield();
+			}
+
+			if (!IncomingSms.received){
+				finish();
+			}
+			else {
+				try {
+					saveString("phone", in[0]);
+					//Teacher
+					if (BasicClass.registeringTeacher){
+						if (Controller.studentExists(in[0])) {
+							Toast t = Toast.makeText(getApplicationContext(), "You are already registered as student!", Toast.LENGTH_LONG);
+							t.show();
+							finish();
+							return null;
+						}
+
+						saveString("species", "t");
+						BasicClass.teacher=true;
+						BasicClass.phone=in[0];
+						if (!Controller.teacherExists(in[0])){
+							Controller.addTeacher(in[1],in[2],in[0]);
+						}
+
+						Intent i=new Intent(getBaseContext(),TeacherMainActivity.class);
+						startActivity(i);
+					}
+
+					//Student
+					else{
+						if (Controller.teacherExists(in[0])) {
+							Toast t = Toast.makeText(getApplicationContext(), "You are already registered as teacher!", Toast.LENGTH_LONG);
+							t.show();
+							finish();
+							return null;
+						}
+						saveString("species", "s");
+						BasicClass.teacher=false;
+						BasicClass.phone=in[0];
+						if (!Controller.studentExists(in[0])){
+							Controller.addStudent(in[1],in[2],in[0]);
+						}
+
+						Intent i=new Intent(getBaseContext(),StudentAllTasksActivity.class);
+						startActivity(i);
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+			pdLoading.setMessage("\tPlease wait...");
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(Void result) {
+			pdLoading.dismiss();
+
+		}
+	}
+
+
 
 	public void saveString(String name,String str){
 		SharedPreferences mPreferences = getSharedPreferences("WorkUp",MODE_PRIVATE);

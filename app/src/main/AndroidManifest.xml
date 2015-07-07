@@ -74,19 +74,23 @@
         </activity>
         <activity
             android:name=".LessonsTableActivityTeacher"
-            android:label="@string/title_activity_lessons_table_activity_teacher" >
+            android:label="@string/title_activity_lessons_table_activity_teacher"
+	        android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".AddGroupActivity"
-            android:label="@string/title_activity_add_group" >
+            android:label="@string/title_activity_add_group"
+	        android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".RegistrationActivity"
-            android:label="@string/title_activity_registration" >
+            android:label="@string/title_activity_registration"
+	        android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".RegistrationDetailsActivity"
-            android:label="@string/title_activity_registration_details" >
+            android:label="@string/title_activity_registration_details"
+	        android:screenOrientation="portrait" >
         </activity>
     </application>
 

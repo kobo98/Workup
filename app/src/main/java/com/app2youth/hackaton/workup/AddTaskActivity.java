@@ -2,6 +2,10 @@ package com.app2youth.hackaton.workup;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,14 +15,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
@@ -71,134 +79,154 @@ public class AddTaskActivity extends BasicClass
     @Override
     public void onStart(){
         super.onStart();
-
-	    final AddTaskActivity activity = this;
-	    Thread loadGroups = new Thread(){
-		    public void run(){
-			    loadGroupsAndUpdate(activity);
-		    }
-	    };
-	    loadGroups.start();
+	    start();
     }
 
-	public void loadGroupsAndUpdate(AddTaskActivity activity){
-		final Spinner dropdown = (Spinner)findViewById(R.id.group);
-		String[] list = null;
-		try {
-			list = Controller.getGroupNamesForTeacher(BasicClass.phone);
-		} catch (SQLException e) {
-			e.printStackTrace();
+	public void start(){
+		dropdown = (Spinner)findViewById(R.id.groupSpinner);
+		taskName = (EditText) findViewById(R.id.taskName);
+		taskDescription = (EditText) findViewById(R.id.taskDescription);
+		filingDate = (EditText) findViewById(R.id.filingDate);
+
+		myCalendar = Calendar.getInstance();
+		datePicker = new DatePickerDialog.OnDateSetListener() {
+			@Override
+			public void onDateSet(DatePicker view, int year, int monthOfYear,
+			                      int dayOfMonth) {
+				myCalendar.set(Calendar.YEAR, year);
+				myCalendar.set(Calendar.MONTH, monthOfYear);
+				myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+				updateLabel(filingDate, myCalendar);
+			}
+		};
+
+		new LoadGroups().execute((Void)null);
+	}
+
+	DatePickerDialog.OnDateSetListener datePicker;
+	Calendar myCalendar;
+	Spinner dropdown;
+	EditText taskName;
+	EditText taskDescription;
+	EditText filingDate;
+
+
+	private class LoadGroups extends AsyncTask<Void, Void, String[]> {
+		ProgressDialog pdLoading = new ProgressDialog(AddTaskActivity.this);
+
+		@Override
+		protected String[] doInBackground(Void... ints){
+			String[] list = null;
+			try {
+				list = Controller.getGroupNamesForTeacher(BasicClass.phone);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			String[] items = new String[list.length+1];
+			items[0]="Select group";
+			for (int i=0; i<list.length; i++){
+				items[i+1]=list[i];
+			}
+			dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+					selectedSpinner=dropdown.getSelectedItem().toString();
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+
+				}
+			});
+			return items;
 		}
-		String[] items = new String[list.length+1];
-		items[0]="Select group";
-		for (int i=0; i<list.length; i++){
-			items[i+1]=list[i];
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\tLoading groups...");
+			pdLoading.show();
 		}
-		dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-				selectedSpinner=dropdown.getSelectedItem().toString();
-			}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(String[] result) {
+			pdLoading.dismiss();
 
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-
-			}
-		});
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
-
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				dropdown.setAdapter(adapter);
-				final EditText taskName = (EditText) findViewById(R.id.taskName);
-				taskName.setHint("Enter task title");
-				final EditText description = (EditText) findViewById(R.id.teacherId);
-				description.setHint("Enter description");
-
-				final EditText date = (EditText) findViewById(R.id.doDate);
-				date.setHint("Enter date");
-				final Calendar myCalendar = Calendar.getInstance();
-
-				final DatePickerDialog.OnDateSetListener thisdate = new DatePickerDialog.OnDateSetListener() {
-
-					@Override
-					public void onDateSet(DatePicker view, int year, int monthOfYear,
-					                      int dayOfMonth) {
-						// TODO Auto-generated method stub
-						myCalendar.set(Calendar.YEAR, year);
-						myCalendar.set(Calendar.MONTH, monthOfYear);
-						myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-						updateLabel(date, myCalendar);
-					}
-
-				};
-
-				date.setOnClickListener(new View.OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						new DatePickerDialog(AddTaskActivity.this, thisdate, myCalendar
-								.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-								myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-					}
-				});
+			dropdown.setAdapter(new ArrayAdapter<String>(AddTaskActivity.this, android.R.layout.simple_spinner_item, result));
+		}
+	}
 
 
+	public void openDateDialog(View v){
+		InputMethodManager im = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		im.hideSoftInputFromWindow(filingDate.getWindowToken(), 0);
 
-
-				ImageView submit = (ImageView) findViewById(R.id.addTask);
-				submit.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View arg0) {
-						Log.d("Add Task: ", selectedSpinner + ", " + taskName.getText().toString()+", "+description.getText().toString()+", "+date.getText().toString());
-						if (selectedSpinner.equals("Select group")){
-							Toast t = Toast.makeText(getApplicationContext(), "Please select group", Toast.LENGTH_LONG);
-							t.show();
-						}
-						else if (taskName.getText().toString().equals("")){
-							Toast t = Toast.makeText(getApplicationContext(), "Please enter task name", Toast.LENGTH_LONG);
-							t.show();
-						}
-						else if (date.getText().toString().equals("")){
-							Toast t = Toast.makeText(getApplicationContext(), "Please enter filing date", Toast.LENGTH_LONG);
-							t.show();
-						}
-						else{
-							Thread helper = new Thread() {
-								public void run() {
-									try {
-										Controller.addTask(
-												Controller.getGroupIDByNameAndPhone(selectedSpinner, BasicClass.phone),
-												taskName.getText().toString(),
-												description.getText().toString(),
-												date.getText().toString()
-										);
-									} catch (SQLException e) {
-										e.printStackTrace();
-									}
-								}
-							};
-							helper.start();
-
-
-							taskName.setText("");
-							description.setText("");
-							date.setText("");
-							Toast t = Toast.makeText(getApplicationContext(), "Task added!", Toast.LENGTH_LONG);
-							t.show();
-						}
-
-					}
-				});
-			}
-		});
-
-
-
+		new DatePickerDialog(AddTaskActivity.this, datePicker, myCalendar
+				.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+				myCalendar.get(Calendar.DAY_OF_MONTH)).show();
 
 	}
+
+
+	public void createTask(View v){
+		Log.d("Add Task: ", selectedSpinner + ", " + taskName.getText().toString()+", "+taskDescription.getText().toString()+", "+filingDate.getText().toString());
+		if (selectedSpinner.equals("Select group")){
+			Toast t = Toast.makeText(getApplicationContext(), "Please select group", Toast.LENGTH_LONG);
+			t.show();
+		}
+		else if (taskName.getText().toString().equals("")){
+			Toast t = Toast.makeText(getApplicationContext(), "Please enter task name", Toast.LENGTH_LONG);
+			t.show();
+		}
+		else if (filingDate.getText().toString().equals("")){
+			Toast t = Toast.makeText(getApplicationContext(), "Please enter filing date", Toast.LENGTH_LONG);
+			t.show();
+		}
+		else{
+			new AddTask().execute((Void)null);
+		}
+	}
+
+
+	private class AddTask extends AsyncTask<Void, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(AddTaskActivity.this);
+
+		@Override
+		protected Void doInBackground(Void... ints){
+			try {
+				Controller.addTask(
+						Controller.getGroupIDByNameAndPhone(selectedSpinner, BasicClass.phone),
+						taskName.getText().toString(),
+						taskDescription.getText().toString(),
+						filingDate.getText().toString()
+				);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\tAdding task...");
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(Void result) {
+			pdLoading.dismiss();
+			taskName.setText("");
+			taskDescription.setText("");
+			filingDate.setText("");
+			Toast t = Toast.makeText(getApplicationContext(), "Task added!", Toast.LENGTH_LONG);
+			t.show();
+		}
+	}
+
+
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -210,9 +238,11 @@ public class AddTaskActivity extends BasicClass
         if(position!=positionInMenu) {
             openActivityFromMenuTeacher(position + 1);
         }
+
     }
 
     public void onSectionAttached(int number) {
+	    //start();
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
@@ -297,7 +327,8 @@ public class AddTaskActivity extends BasicClass
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((AddTaskActivity) activity).onSectionAttached(
+
+	        ((AddTaskActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }

@@ -3,8 +3,10 @@ package com.app2youth.hackaton.workup;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -60,40 +63,50 @@ public class StudentAllTasksActivity extends BasicClass
     @Override
     public void onStart(){
         super.onStart();
-
-	    final StudentAllTasksActivity activity = this;
-
-	    Thread getTasks = new Thread(){
-		    public void run(){
-			    loadTasksAndUpdate(activity);
-		    }
-	    };
-	    getTasks.start();
-        /*String[][] dataToListView;
-        if (Manager.system!=null){
-            ArrayList<Task> tasks = ((StudentSystem)Manager.system).getSortedTasks();
-
-            dataToListView = new String[tasks.size()][4];
-            for (int i=0; i<tasks.size(); i++){
-                dataToListView[i] = new String[]{ tasks.get(i).subject, tasks.get(i).getDescription(), ""+tasks.get(i).getDaysToFinish() , ""};
-            }
-        }
-
-        dataToListView = new String[0][4];
-
-        String[] arrayOfNames = new String[dataToListView.length];
-        for(int i=0;i<dataToListView.length;i++){
-            arrayOfNames[i]=dataToListView[i][0];
-        }
-
-        mDrawerListView = (ListView) findViewById(R.id.hwList);
-        mDrawerListView.setDivider(new ColorDrawable(0xff11a7ff));
-        mDrawerListView.setDividerHeight(1);
-        mDrawerListView.setAdapter(new HWArrayAdapter(this,dataToListView,arrayOfNames));
-
-
-        pushNotification("Hello","You have entered the best students app ever", GraphActivity.class,SchoolBagActivity.class, 0);*/
+	    start();
     }
+
+	ProgressDialog pdLoading;
+	public void start(){
+		//new LoadTasks().execute((Void)null);
+		pdLoading = new ProgressDialog(StudentAllTasksActivity.this);
+		pdLoading.setMessage("\tLoading tasks...");
+		pdLoading.show();
+
+		final StudentAllTasksActivity a = this;
+		Thread t = new Thread(){
+			public void run(){
+				loadTasksAndUpdate(a);
+			}
+		};
+		t.start();
+
+
+	}
+
+	private class LoadTasks extends AsyncTask<Void, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(StudentAllTasksActivity.this);
+
+		@Override
+		protected Void doInBackground(Void... ints){
+
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\tLoading tasks...");
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(Void result) {
+			pdLoading.dismiss();
+
+		}
+	}
 
 
 	public void loadTasksAndUpdate(StudentAllTasksActivity activity){
@@ -326,8 +339,8 @@ public class StudentAllTasksActivity extends BasicClass
 			@Override
 			public void run() {
 				swipeListView.setAdapter(adapter);
-
 				reload();
+				pdLoading.dismiss();
 			}
 		});
 	}
