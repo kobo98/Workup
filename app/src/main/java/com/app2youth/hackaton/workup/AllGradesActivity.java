@@ -50,7 +50,7 @@ public class AllGradesActivity extends BasicClass
     @Override
     public void onStart(){
         super.onStart();
-
+	    firstRun=false;
         String[][] dataToListView = {
                 {"פיזקה", "אברהם יונה", "20/5/2015", "0xff00ff00"},
                 {"מתמטיקה", "סבטלנה קונדרצקי", "20/5/2015", "0xff00ff00"},
@@ -84,6 +84,7 @@ public class AllGradesActivity extends BasicClass
         mDrawerListView.setAdapter(new BasicClass.HWArrayAdapter(this,dataToListView,arrayOfNames));
     }
 
+	boolean firstRun=true;
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -91,23 +92,19 @@ public class AllGradesActivity extends BasicClass
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
+	    /*
         if(position!=positionInMenu) {
             openActivityFromMenu(position + 1);
         }
+	    */
+	    if (!firstRun) {
+		    openActivityFromMenu(position + 1);
+		    firstRun=false;
+	    }
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-	        case 1:
-		        mTitle = getString(R.string.student_title_section1);
-		        break;
-	        case 2:
-		        mTitle = getString(R.string.student_title_section2);
-		        break;
-	        case 3:
-		        mTitle = getString(R.string.student_title_section3);
-		        break;
-        }
+	    mTitle = getString(R.string.student_title_section2);
     }
 
     public void restoreActionBar() {

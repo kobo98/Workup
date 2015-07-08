@@ -150,6 +150,9 @@ public class BasicClass extends ActionBarActivity
 			case 5:
 				openAddGroupActivity(new View(this));
 				break;
+			case 6:
+				openGraphActivity(new View(this));
+				break;
 
 		}
 	}

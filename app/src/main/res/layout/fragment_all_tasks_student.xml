@@ -24,7 +24,7 @@
 		swipe:swipeAnimationTime="700"
 		swipe:swipeBackView="@+id/back"
 		swipe:swipeCloseAllItemsWhenMoveList="true"
-		swipe:swipeFrontView="@+id/front"
+		swipe:swipeFrontView="@+id/left"
 		swipe:swipeMode="both"
 		swipe:swipeOffsetLeft="400dp"
 		swipe:swipeOffsetRight="400dp"

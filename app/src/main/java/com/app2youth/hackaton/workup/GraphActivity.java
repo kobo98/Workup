@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -23,7 +24,7 @@ public class GraphActivity extends BasicClass
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    private NavigationDrawerFragmentStudent mNavigationDrawerFragment;
+    private NavigationDrawerFragmentTeacher mNavigationDrawerFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -35,8 +36,7 @@ public class GraphActivity extends BasicClass
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragmentStudent)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment = (NavigationDrawerFragmentTeacher)getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
         positionInMenu=5;
         // Set up the drawer.
@@ -48,6 +48,8 @@ public class GraphActivity extends BasicClass
     @Override
     public void onStart() {
         super.onStart();
+	    firstRun=false;
+
         GraphView graph = (GraphView) findViewById(R.id.graph);
         LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
                 new DataPoint(0, 1),
@@ -56,9 +58,17 @@ public class GraphActivity extends BasicClass
                 new DataPoint(3, 2),
                 new DataPoint(4, 6)
         });
+
+	    StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+	    staticLabelsFormatter.setHorizontalLabels(new String[] {"zift", "beef", "kleaf"});
+	    staticLabelsFormatter.setVerticalLabels(new String[] {"ai", "zi", "bi"});
+
+	    graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+
         graph.addSeries(series);
     }
 
+	boolean firstRun=true;
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -66,23 +76,19 @@ public class GraphActivity extends BasicClass
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
-        if(position!=positionInMenu) {
-            openActivityFromMenu(position + 1);
+        /*
+	    if(position!=positionInMenu) {
+            openActivityFromMenuTeacher(position + 1);
         }
+        */
+	    if (!firstRun) {
+		    openActivityFromMenuTeacher(position + 1);
+		    firstRun=false;
+	    }
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-	        case 1:
-		        mTitle = getString(R.string.student_title_section1);
-		        break;
-	        case 2:
-		        mTitle = getString(R.string.student_title_section1);
-		        break;
-	        case 3:
-		        mTitle = getString(R.string.student_title_section1);
-		        break;
-        }
+	    mTitle = getString(R.string.teacher_title_section6);
     }
 
     public void restoreActionBar() {

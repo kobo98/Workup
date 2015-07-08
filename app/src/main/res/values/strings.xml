@@ -6,6 +6,7 @@
 	<string name="teacher_title_section3">Add students</string>
 	<string name="teacher_title_section4">Time table</string>
 	<string name="teacher_title_section5">New group</string>
+	<string name="teacher_title_section6">Statistics</string>
 
 	<string name="student_title_section1">Tasks</string>
 	<string name="student_title_section2">Grades</string>
@@ -17,6 +18,7 @@
 	<string name="teacher_menu_3">הוסף תלמידים לקבוצה</string>
 	<string name="teacher_menu_4">מערכת שעות</string>
 	<string name="teacher_menu_5">הוסף קבוצה חדשה</string>
+	<string name="teacher_menu_6">הערכת משימות</string>
 
 	<string name="student_menu_1">עבודות ומבחנים</string>
 	<string name="student_menu_2">גליון ציונים</string>

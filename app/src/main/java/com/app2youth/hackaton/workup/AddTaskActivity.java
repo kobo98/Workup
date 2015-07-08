@@ -79,6 +79,7 @@ public class AddTaskActivity extends BasicClass
     @Override
     public void onStart(){
         super.onStart();
+	    firstRun=false;
 	    start();
     }
 
@@ -227,7 +228,7 @@ public class AddTaskActivity extends BasicClass
 	}
 
 
-
+	boolean firstRun=true;
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -235,31 +236,19 @@ public class AddTaskActivity extends BasicClass
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
-        if(position!=positionInMenu) {
+        /*
+	    if(position!=positionInMenu) {
             openActivityFromMenuTeacher(position + 1);
         }
-
+        */
+	    if (!firstRun) {
+		    openActivityFromMenuTeacher(position + 1);
+		    firstRun=false;
+	    }
     }
 
     public void onSectionAttached(int number) {
-	    //start();
-        switch (number) {
-	        case 1:
-		        mTitle = getString(R.string.teacher_title_section1);
-		        break;
-	        case 2:
-		        mTitle = getString(R.string.teacher_title_section2);
-		        break;
-	        case 3:
-		        mTitle = getString(R.string.teacher_title_section3);
-		        break;
-	        case 4:
-		        mTitle = getString(R.string.teacher_title_section4);
-		        break;
-	        case 5:
-		        mTitle = getString(R.string.teacher_title_section5);
-		        break;
-        }
+	    mTitle = getString(R.string.teacher_title_section2);
     }
 
     public void restoreActionBar() {

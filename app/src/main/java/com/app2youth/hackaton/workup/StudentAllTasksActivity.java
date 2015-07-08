@@ -63,6 +63,7 @@ public class StudentAllTasksActivity extends BasicClass
     @Override
     public void onStart(){
         super.onStart();
+	    firstRun=false;
 	    checkForNewGroups();
 	    start();
     }
@@ -157,7 +158,7 @@ public class StudentAllTasksActivity extends BasicClass
 			@Override
 			public void onOpened(final int position, boolean toRight) {
 				if(toRight){
-					requestRating();
+					//requestRating();
 					Thread helper = new Thread() {
 						public void run() {
 					try {
@@ -463,6 +464,7 @@ public class StudentAllTasksActivity extends BasicClass
 		}
 	}
 
+	boolean firstRun=true;
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -470,23 +472,19 @@ public class StudentAllTasksActivity extends BasicClass
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
+	    /*
         if(position!=positionInMenu) {
             openActivityFromMenu(position + 1);
         }
+	    */
+	    if (!firstRun) {
+		    openActivityFromMenu(position + 1);
+		    firstRun=false;
+	    }
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-	        case 1:
-		        mTitle = getString(R.string.student_title_section1);
-		        break;
-	        case 2:
-		        mTitle = getString(R.string.student_title_section2);
-		        break;
-	        case 3:
-		        mTitle = getString(R.string.student_title_section3);
-		        break;
-        }
+	    mTitle = getString(R.string.student_title_section1);
     }
 
     public void restoreActionBar() {
