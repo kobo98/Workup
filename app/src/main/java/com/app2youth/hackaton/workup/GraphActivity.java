@@ -18,7 +18,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 
 public class GraphActivity extends BasicClass
-        implements NavigationDrawerFragmentStudent.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragmentTeacher.NavigationDrawerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -38,7 +38,7 @@ public class GraphActivity extends BasicClass
         mNavigationDrawerFragment = (NavigationDrawerFragmentStudent)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-        positionInMenu=1;
+        positionInMenu=5;
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -73,15 +73,15 @@ public class GraphActivity extends BasicClass
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
+	        case 1:
+		        mTitle = getString(R.string.student_title_section1);
+		        break;
+	        case 2:
+		        mTitle = getString(R.string.student_title_section1);
+		        break;
+	        case 3:
+		        mTitle = getString(R.string.student_title_section1);
+		        break;
         }
     }
 

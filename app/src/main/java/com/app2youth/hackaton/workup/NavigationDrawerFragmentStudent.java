@@ -103,10 +103,10 @@ public class NavigationDrawerFragmentStudent extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
-                        "עבודות ומבחנים",
-                        "גליון ציונים",
-                        "מערכת שעות"
-    }));
+		                getString(R.string.student_menu_1),
+		                getString(R.string.student_menu_2),
+		                getString(R.string.student_menu_3)
+                }));
     mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }

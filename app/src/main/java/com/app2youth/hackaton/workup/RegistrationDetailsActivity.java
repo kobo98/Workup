@@ -1,5 +1,6 @@
 package com.app2youth.hackaton.workup;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -210,6 +211,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 						BasicClass.phone=in[0];
 						if (!Controller.studentExists(in[0])){
 							Controller.addStudent(in[1],in[2],in[0]);
+							saveString("groups","");
 						}
 
 						Intent i=new Intent(getBaseContext(),StudentAllTasksActivity.class);

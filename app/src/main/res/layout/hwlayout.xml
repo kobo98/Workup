@@ -43,7 +43,7 @@
 			android:layout_marginBottom="5dp"
 			android:text="אברהם יונה"
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="#ff11a7ff"
+			android:textColor="#f011a7ff"
 			android:textSize="18dp" />
 
 		<TextView
@@ -67,7 +67,7 @@
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"
 			android:layout_alignParentTop="true"
-			android:background="#ff00ff00" />
+			android:background="#ff00ff0f" />
 
 		<ImageView
 			android:id="@+id/left_color"

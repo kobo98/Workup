@@ -103,11 +103,11 @@ public class NavigationDrawerFragmentTeacher extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
-                        "רשימת קבוצות",
-                        "הוסף מטלה",
-                        "הוסף תלמידים לקבוצה",
-                        "מערכת שעות",
-                        "הוסף קבוצה חדשה"
+		                getString(R.string.teacher_menu_1),
+		                getString(R.string.teacher_menu_2),
+		                getString(R.string.teacher_menu_3),
+		                getString(R.string.teacher_menu_4),
+		                getString(R.string.teacher_menu_5)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

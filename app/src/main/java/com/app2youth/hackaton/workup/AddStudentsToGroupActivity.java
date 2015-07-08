@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -187,10 +188,12 @@ public class AddStudentsToGroupActivity extends BasicClass
 
 				newStudentName = new EditText(AddStudentsToGroupActivity.this);
 				newStudentName.setHint("Enter name");
+				newStudentName.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
 				layout.addView(newStudentName);
 
 				newStudentFName = new EditText(AddStudentsToGroupActivity.this);
 				newStudentFName.setHint("Enter last name");
+				newStudentFName.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
 				layout.addView(newStudentFName);
 
 				alert.setView(layout);
@@ -332,21 +335,21 @@ public class AddStudentsToGroupActivity extends BasicClass
     public void onSectionAttached(int number) {
 	    //start();
         switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-            case 4:
-                mTitle="Section 4";
-                break;
-            case 5:
-                mTitle = "Section 5";
-                break;
+	        case 1:
+		        mTitle = getString(R.string.teacher_title_section1);
+		        break;
+	        case 2:
+		        mTitle = getString(R.string.teacher_title_section2);
+		        break;
+	        case 3:
+		        mTitle = getString(R.string.teacher_title_section3);
+		        break;
+	        case 4:
+		        mTitle = getString(R.string.teacher_title_section4);
+		        break;
+	        case 5:
+		        mTitle = getString(R.string.teacher_title_section5);
+		        break;
         }
     }
 

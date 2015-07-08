@@ -71,7 +71,13 @@ public class LessonsTableActivityStudent extends BasicClass
 		protected Void doInBackground(Void... ints){
 			LessonsTableActivityStudent.this.gv = (GridView) findViewById(R.id.gridView1);
 			String[] str = new String[7+7*9];
-			str[0]="Day 1";str[1]="Day 2";str[2]="Day 3";str[3]="Day 4";str[4]="Day 5";str[5]="Day 6";str[6]="Day 7";
+			str[0]=getString(R.string.day_1);
+			str[1]=getString(R.string.day_2);
+			str[2]=getString(R.string.day_3);
+			str[3]=getString(R.string.day_4);
+			str[4]=getString(R.string.day_5);
+			str[5]=getString(R.string.day_6);
+			str[6]=getString(R.string.day_7);
 			for (int i=1; i<9; i++){
 				for (int j=0; j<7; j++){
 					str[i*7+j] = "---";
@@ -147,15 +153,15 @@ public class LessonsTableActivityStudent extends BasicClass
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
+	        case 1:
+		        mTitle = getString(R.string.student_title_section1);
+		        break;
+	        case 2:
+		        mTitle = getString(R.string.student_title_section2);
+		        break;
+	        case 3:
+		        mTitle = getString(R.string.student_title_section3);
+		        break;
         }
     }
 

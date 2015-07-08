@@ -20,16 +20,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -61,11 +64,7 @@ public class TeacherMainActivity extends BasicClass
 
 
     }
-
-    public ListView mDrawerListView;
-
-
-
+	ListView lView;
     public int[] savedGroupIDs = null;
 
     @Override
@@ -75,62 +74,43 @@ public class TeacherMainActivity extends BasicClass
     }
 
 	public void start(){
-		new LoadData().execute((Void)null);
+		//new LoadData().execute((Void)null);
+		new LoadDataAdapter().execute((Void)null);
+
+		/*
+		ArrayList<String> list = new ArrayList<String>();
+		list.add("item1");
+		list.add("item2");
+
+		//instantiate custom adapter
+		GroupListAdapter adapter = new GroupListAdapter(list, this);
+
+		//handle listview and assign adapter
+		lView = (ListView)findViewById(R.id.list_of_groups);
+		lView.setAdapter(adapter);
+		*/
 	}
 
-
-	private class LoadData extends AsyncTask<Void, Void, Void> {
+	private class LoadDataAdapter extends AsyncTask<Void, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(TeacherMainActivity.this);
-		String[][] listViewData;
-		String[] names;
+		final ArrayList<String> data = new ArrayList<String>();
 
 		@Override
 		protected Void doInBackground(Void... ints){
-			String[][] dataToListView = null;
-
-			String groupIDs = null;
 			try {
+				String[] groupIDs = Controller.getGroupIDsForTeacher(phone);
+				savedGroupIDs = new int[groupIDs.length];
+				for (int i=0; i<groupIDs.length; i++){
+					savedGroupIDs[i] = Integer.parseInt(groupIDs[i]);
+					data.add(Controller.getGroupName(savedGroupIDs[i]));
 
-				ResultSet rsgr = SQL.statement.executeQuery("SELECT groups FROM teachers WHERE teacherID = "+Controller.getTeacherIDByPhone(BasicClass.phone)+";");
-				while(rsgr.next())
-					groupIDs=rsgr.getString(1);
-
-				groupIDs = groupIDs.replace(";", ",");
-				if (groupIDs.length()>0)
-					groupIDs = groupIDs.substring(0, groupIDs.length()-1);
-				else
-					groupIDs="-1";
-				dataToListView = new String[groupIDs.split(",").length][4];
-				savedGroupIDs = new int[groupIDs.split(",").length];
-
-				if (groupIDs.equals("-1")){
-					dataToListView = new String[0][4];
-					savedGroupIDs = new int[0];
-				}
-
-				ResultSet rs = SQL.statement.executeQuery("SELECT name, groupID FROM groups WHERE groupID IN ("+groupIDs+");");
-
-				int index=0;
-				while(rs.next()){
-					String name  = rs.getString(1);
-					int groupID = rs.getInt(2);
-
-					dataToListView[index] = new String[]{name,"","","0x00ff00"};
-					savedGroupIDs[index] = groupID;
-					index++;
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 
-			String[] arrayOfNames = new String[dataToListView.length];
-			for(int i=0;i<dataToListView.length;i++){
-				arrayOfNames[i]=dataToListView[i][0];
-			}
 
-			listViewData = dataToListView;
-			names = arrayOfNames;
 
 			return null;
 		}
@@ -147,93 +127,165 @@ public class TeacherMainActivity extends BasicClass
 		protected void onPostExecute(Void result) {
 			pdLoading.dismiss();
 
-			mDrawerListView = (ListView) findViewById(R.id.list_of_groups);
-			mDrawerListView.setDivider(new ColorDrawable(0xff11a7ff));
-			mDrawerListView.setDividerHeight(1);
-			mDrawerListView.setAdapter(new BasicClass.HWArrayAdapter(TeacherMainActivity.this,listViewData,names));
 
-			mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				public void onItemClick(AdapterView<?> parent, View v,int position, long id) {
-					Log.d("Pressed: ",""+position);
-					final int groupID = savedGroupIDs[position];
-					final AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
+			GroupListAdapter adapter = new GroupListAdapter(data, TeacherMainActivity.this);
 
-					alert.setTitle("Add class");
-					//alert.setMessage("Message");
+			//handle listview and assign adapter
+			lView = (ListView)findViewById(R.id.list_of_groups);
+			lView.setAdapter(adapter);
 
-					LinearLayout layout = new LinearLayout(TeacherMainActivity.this);
-					layout.setOrientation(LinearLayout.VERTICAL);
+		}
+	}
 
-					final RadioButton[] day = new RadioButton[7];
-					final RadioGroup rg = new RadioGroup(TeacherMainActivity.this);
-					rg.setOrientation(RadioGroup.VERTICAL);
 
-					for(int i=0; i<7; i++){
-						day[i]  = new RadioButton(TeacherMainActivity.this);
-						day[i].setId(i+1);
-						rg.addView(day[i]);
+	public void addClassButton(int position){
+		final int groupID = savedGroupIDs[position];
+		Log.d("Selected item", lView.getSelectedItemPosition()+"");
 
+		final AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
+
+		alert.setTitle("Add class");
+		//alert.setMessage("Message");
+
+		LinearLayout layout = new LinearLayout(TeacherMainActivity.this);
+		layout.setOrientation(LinearLayout.VERTICAL);
+
+		final RadioButton[] day = new RadioButton[7];
+		final RadioGroup rg = new RadioGroup(TeacherMainActivity.this);
+		rg.setOrientation(RadioGroup.VERTICAL);
+
+		for (int i = 0; i < 7; i++) {
+			day[i] = new RadioButton(TeacherMainActivity.this);
+			day[i].setId(i + 1);
+			rg.addView(day[i]);
+
+		}
+		day[0].setText("Sunday");
+		day[1].setText("Monday");
+		day[2].setText("Tuesday");
+		day[3].setText("Wednesday");
+		day[4].setText("Thursday");
+		day[5].setText("Friday");
+		day[6].setText("Saturday");
+
+		layout.addView(rg);
+
+		final EditText hour = new EditText(TeacherMainActivity.this);
+		hour.setInputType(InputType.TYPE_DATETIME_VARIATION_TIME);
+		hour.setHint("Hour");
+		hour.setFocusable(false);
+
+		hour.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Calendar mcurrentTime = Calendar.getInstance();
+				int currentHour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+				int currentMinute = mcurrentTime.get(Calendar.MINUTE);
+
+				TimePickerDialog mTimePicker;
+				mTimePicker = new TimePickerDialog(TeacherMainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+					@Override
+					public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+						hour.setText(selectedHour + ":" + selectedMinute);
 					}
-					day[0].setText("Sunday");
-					day[1].setText("Monday");
-					day[2].setText("Tuesday");
-					day[3].setText("Wednesday");
-					day[4].setText("Thursday");
-					day[5].setText("Friday");
-					day[6].setText("Saturday");
+				}, currentHour, currentMinute, true);
+				mTimePicker.setTitle("Select Time");
+				mTimePicker.show();
+			}
+		});
 
-					layout.addView(rg);
-
-					final EditText hour = new EditText(TeacherMainActivity.this);
-					hour.setInputType(InputType.TYPE_DATETIME_VARIATION_TIME);
-					hour.setHint("Hour");
-					hour.setFocusable(false);
-
-					hour.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							Calendar mcurrentTime = Calendar.getInstance();
-							int currentHour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-							int currentMinute = mcurrentTime.get(Calendar.MINUTE);
-
-							TimePickerDialog mTimePicker;
-							mTimePicker = new TimePickerDialog(TeacherMainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-								@Override
-								public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-									hour.setText( selectedHour + ":" + selectedMinute);
-								}
-							}, currentHour, currentMinute, true);
-							mTimePicker.setTitle("Select Time");
-							mTimePicker.show();
-						}
-					});
-
-					layout.addView(hour);
+		layout.addView(hour);
 
 
-					alert.setView(layout);
+		alert.setView(layout);
 
-					alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							final String classHour = hour.getText().toString();
-							final int day = rg.getCheckedRadioButtonId();
-							Log.d("ADD CLASS", day+", "+classHour);
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				final String classHour = hour.getText().toString();
+				final int day = rg.getCheckedRadioButtonId();
+				Log.d("ADD CLASS", day + ", " + classHour);
 
-							if (!classHour.equals("")){
-								new AddClass().execute(""+groupID, ""+day, classHour);
-							}
-							else{
+				if (!classHour.equals("")) {
+					new AddClass().execute("" + groupID, "" + day, classHour);
+				} else {
 
-								Toast t = Toast.makeText(getApplicationContext(), "Choose hour!", Toast.LENGTH_LONG);
-								t.show();
-							}
-
-						}
-					});
-					alert.show();
-
+					Toast t = Toast.makeText(getApplicationContext(), "Choose hour!", Toast.LENGTH_LONG);
+					t.show();
 				}
-			});
+
+			}
+		});
+
+		alert.setNegativeButton("Cancel", null);
+		alert.show();
+	}
+
+	public void deleteGroupButton(int position){
+		AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
+
+		alert.setTitle("Delete group?");
+		alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+
+
+				Toast t = Toast.makeText(getApplicationContext(), "You can't! HeHeHe!", Toast.LENGTH_LONG);
+				t.show();
+			}
+		});
+
+		alert.setNegativeButton("No", null);
+		alert.show();
+	}
+
+	public void presentGroup(int position){
+		group=savedGroupIDs[position];
+		new ShowGroupInfo().execute();
+	}
+	int group = -1;
+
+	private class ShowGroupInfo extends AsyncTask<Void, Void, String> {
+		ProgressDialog pdLoading = new ProgressDialog(TeacherMainActivity.this);
+
+		@Override
+		protected String doInBackground(Void... input){
+			String info = "";
+			try {
+				info+="Teacher: ";
+				info+=Controller.getTeacherName(Controller.getGroupTeacher(group));
+				info+="\r\n";
+				info+="\r\n";
+				info+="Students: ";
+
+				String[] studentIDs = Controller.getStudentsFromGroup(group);
+				for (String id:studentIDs)
+					info+=Controller.getStudentName(Integer.parseInt(id))+", ";
+
+				info = info.substring(0,info.length()-2);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			return info;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\tLoading group info...");
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(String result) {
+			pdLoading.dismiss();
+			AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
+
+			alert.setTitle("Group info");
+			alert.setMessage(result);
+
+			alert.show();
 
 		}
 	}
@@ -286,14 +338,20 @@ public class TeacherMainActivity extends BasicClass
 		//start();
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.teacher_title_section1);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.teacher_title_section2);
                 break;
             case 3:
-                mTitle = getString(R.string.title_section3);
+                mTitle = getString(R.string.teacher_title_section3);
                 break;
+	        case 4:
+		        mTitle = getString(R.string.teacher_title_section4);
+		        break;
+	        case 5:
+		        mTitle = getString(R.string.teacher_title_section5);
+		        break;
         }
     }
 

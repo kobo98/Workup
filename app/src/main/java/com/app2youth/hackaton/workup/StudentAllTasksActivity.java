@@ -63,6 +63,7 @@ public class StudentAllTasksActivity extends BasicClass
     @Override
     public void onStart(){
         super.onStart();
+	    checkForNewGroups();
 	    start();
     }
 
@@ -76,36 +77,18 @@ public class StudentAllTasksActivity extends BasicClass
 		final StudentAllTasksActivity a = this;
 		Thread t = new Thread(){
 			public void run(){
+				while(!finishedFirstCheck)
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				loadTasksAndUpdate(a);
 			}
 		};
 		t.start();
 
 
-	}
-
-	private class LoadTasks extends AsyncTask<Void, Void, Void> {
-		ProgressDialog pdLoading = new ProgressDialog(StudentAllTasksActivity.this);
-
-		@Override
-		protected Void doInBackground(Void... ints){
-
-			return null;
-		}
-		@Override
-		public void onPreExecute(){
-			super.onPreExecute();
-
-			pdLoading.setMessage("\tLoading tasks...");
-			pdLoading.show();
-		}
-		@Override
-		protected void onProgressUpdate(Void... progress) {}
-		@Override
-		protected void onPostExecute(Void result) {
-			pdLoading.dismiss();
-
-		}
 	}
 
 
@@ -160,13 +143,23 @@ public class StudentAllTasksActivity extends BasicClass
 			arrayOfNames[i]=dataToListView[i][0];
 		}
 		final HWArrayAdapter adapter= new HWArrayAdapter(activity,dataToListView,arrayOfNames);
+
 		swipeListView = (SwipeListView) findViewById(R.id.example_lv_list);
+
+		swipeListView.setFriction(100);
+		swipeListView.setSwipeMode(12);
+		//swipeListView.setRight(1);
+		//swipeListView.setScrollX();
+		swipeListView.setVelocityScale(0.01f);
+
 
 		swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
 			@Override
 			public void onOpened(final int position, boolean toRight) {
 				if(toRight){
 					requestRating();
+					Thread helper = new Thread() {
+						public void run() {
 					try {
 						ResultSet rs = SQL.statement.executeQuery("SELECT tasks FROM students WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
 						String tasks=null;
@@ -184,14 +177,21 @@ public class StudentAllTasksActivity extends BasicClass
 								}
 							}
 							Log.d("UPDATING TO ",updatedTasks+"  -  position: "+savedTaskIDs[position]);
-							SQL.statement.execute("UPDATE students SET tasks = '"+updatedTasks+"' WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
-
-							onStart();
+							//SQL.statement.execute("UPDATE students SET tasks = '"+updatedTasks+"' WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									onStart();
+								}
+							});
 						}
 
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
+
+						}
+					};
 					//Delete task here
 
 				}else{
@@ -204,22 +204,55 @@ public class StudentAllTasksActivity extends BasicClass
 					helper.start();
 					Log.d("Main","Ask for help");
 				}
-			}
 
+
+			}
+			/*
+			@Override
+			public void onScrollChanged(int a, int b, int c, int d){
+
+			}
+			*/
 			@Override
 			public void onClosed(int position, boolean fromRight) {
+				(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(  255, 255, 255 ));
+				(swipeListView.getChildAt(position).findViewById(R.id.symbol)).setBackgroundColor(Color.rgb(  255, 255, 255 ));
+				(swipeListView.getChildAt(position).findViewById(R.id.front)). setBackgroundColor(Color.rgb(  255, 255, 255 ));
 			}
 
 			@Override
 			public void onListChanged() {
 			}
 
+			int moves=0;
+
 			@Override
 			public void onMove(int position, float x) {
+				int d = (int)Math.abs(x/4);
+
+				moves++;
+				if (moves==20){
+					//Log.d("swipe", "x: "+x);
+					moves=0;
+					//(swipeListView.getChildAt(position).findViewById(R.id.front)).setX(0);
+				}
+
+				if (x>0){
+					(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(  255, 255-d, 255-d ));
+					(swipeListView.getChildAt(position).findViewById(R.id.symbol)).setBackgroundColor(Color.rgb(  255, 255-d, 255-d ));
+					(swipeListView.getChildAt(position).findViewById(R.id.front)). setBackgroundColor(Color.rgb(  255, 255-d, 255-d ));
+				}
+				else {
+					(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(  255-d, 255, 255-d ));
+					(swipeListView.getChildAt(position).findViewById(R.id.symbol)).setBackgroundColor(Color.rgb(  255-d, 255, 255-d ));
+					(swipeListView.getChildAt(position).findViewById(R.id.front)). setBackgroundColor(Color.rgb(  255-d, 255, 255-d ));
+				}
 			}
 
 			@Override
 			public void onStartOpen(int position, int action, boolean right) {
+				Log.d("swipe", String.format("onStartOpen %d", position));
+				/*
 				if(right) {
 					(swipeListView.getChildAt(position).findViewById(R.id.back)).setBackgroundColor(Color.GREEN);
 				}else{
@@ -227,11 +260,13 @@ public class StudentAllTasksActivity extends BasicClass
 				}
 				swipeListView.invalidate();
 				Log.d("swipe", String.format("onStartOpen %d - action %d - "+right, position, action));
+				*/
 			}
 
 			@Override
 			public void onStartClose(int position, boolean right) {
 				Log.d("swipe", String.format("onStartClose %d", position));
+
 			}
 
 			@Override
@@ -403,6 +438,31 @@ public class StudentAllTasksActivity extends BasicClass
         dialog.show();
     }
 
+
+	private class LoadTasks extends AsyncTask<Void, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(StudentAllTasksActivity.this);
+
+		@Override
+		protected Void doInBackground(Void... ints){
+
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\tLoading tasks...");
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(Void result) {
+			pdLoading.dismiss();
+
+		}
+	}
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -417,15 +477,15 @@ public class StudentAllTasksActivity extends BasicClass
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
+	        case 1:
+		        mTitle = getString(R.string.student_title_section1);
+		        break;
+	        case 2:
+		        mTitle = getString(R.string.student_title_section2);
+		        break;
+	        case 3:
+		        mTitle = getString(R.string.student_title_section3);
+		        break;
         }
     }
 

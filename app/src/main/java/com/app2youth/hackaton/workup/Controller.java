@@ -328,5 +328,134 @@ public class Controller {
 
         return names;
     }
-	
+
+	public static String[] getGroupNamesForStudent(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT groups FROM students WHERE studentID = " + id+ ";");
+		String groups=null;
+		while(rs.next())
+			groups=rs.getString(1);
+
+		if (groups==null || groups.length()==0)
+			return new String[0];
+
+		String[] ids = groups.split(";");
+		String[] names = new String[ids.length];
+		for(int i=0; i<ids.length; i++){
+			ResultSet rs2 = SQL.statement.executeQuery("SELECT name FROM groups WHERE groupID = " + ids[i] + ";");
+			String name="";
+			while(rs2.next())
+				name=rs2.getString(1);
+			names[i]=name;
+		}
+
+		return names;
+	}
+	public static String[] getGroupNamesForStudent(String phone) throws SQLException{
+		return getGroupNamesForStudent(getStudentIDByPhone(phone));
+	}
+
+	public static String[] getGroupIDsForStudent(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT groups FROM students WHERE studentID = " + id+ ";");
+		String groups=null;
+		while(rs.next())
+			groups=rs.getString(1);
+
+		if (groups==null || groups.length()==0)
+			return new String[0];
+
+		String[] ids = groups.split(";");
+
+		return ids;
+	}
+	public static String[] getGroupIDsForStudent(String phone) throws SQLException{
+		return getGroupIDsForStudent(getStudentIDByPhone(phone));
+	}
+
+
+	public static String[] getGroupIDsForTeacher(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT groups FROM teachers WHERE teacherID = " + id+ ";");
+		String groups=null;
+		while(rs.next())
+			groups=rs.getString(1);
+
+		if (groups==null || groups.length()==0)
+			return new String[0];
+
+		String[] ids = groups.split(";");
+
+		return ids;
+	}
+	public static String[] getGroupIDsForTeacher(String phone) throws SQLException{
+		return getGroupIDsForTeacher(getTeacherIDByPhone(phone));
+	}
+
+	public static String[] getStudentsFromGroup(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT students FROM groups WHERE groupID = " + id+ ";");
+		String groups=null;
+		while(rs.next())
+			groups=rs.getString(1);
+
+		if (groups==null || groups.length()==0)
+			return new String[0];
+
+		String[] ids = groups.split(";");
+
+		return ids;
+	}
+
+	public static void deleteStudentFromGroup(int studentID, int groupID) throws SQLException{
+		String[] groups = getGroupIDsForStudent(studentID);
+		String[] students = getStudentsFromGroup(groupID);
+
+		String groupsString="";
+		for(int i=0; i<groups.length; i++){
+			if (!groups[i].equals(""+groupID))
+				groupsString+=groups[i]+";";
+		}
+
+
+		String studentsString="";
+		for(int i=0; i<students.length; i++){
+			if (!students[i].equals(""+studentID))
+				studentsString+=students[i]+";";
+		}
+
+		SQL.statement.execute("UPDATE students SET groups = '"+groupsString+"' where studentID = "+studentID+";");
+		SQL.statement.execute("UPDATE groups SET students = '"+studentsString+"' where groupID = "+groupID+";");
+	}
+
+	public static String getGroupName(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT name FROM groups WHERE groupID = '"+id+"' LIMIT 1;");
+		String name="";
+		while(rs.next()){
+			name = rs.getString(1);
+		}
+		return name;
+	}
+
+	public static int getGroupTeacher(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT teacher FROM groups WHERE groupID = '"+id+"' LIMIT 1;");
+		int tid=-1;
+		while(rs.next()){
+			tid = rs.getInt(1);
+		}
+		return tid;
+	}
+
+	public static String getTeacherName(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT name FROM teachers WHERE teacherID = '"+id+"' LIMIT 1;");
+		String name="";
+		while(rs.next()){
+			name = rs.getString(1);
+		}
+		return name;
+	}
+	public static String getStudentName(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT name FROM students WHERE studentID = '"+id+"' LIMIT 1;");
+		String name="";
+		while(rs.next()){
+			name = rs.getString(1);
+		}
+		return name;
+	}
 }
