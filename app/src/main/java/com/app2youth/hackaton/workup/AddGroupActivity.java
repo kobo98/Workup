@@ -110,7 +110,7 @@ public class AddGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tAdding student...");
+			pdLoading.setMessage("\t"+getString(R.string.adding_student));
 			pdLoading.show();
 		}
 		@Override
@@ -129,30 +129,30 @@ public class AddGroupActivity extends BasicClass
 				final String phone = addPhone.getText().toString();
 
 				final AlertDialog.Builder alert = new AlertDialog.Builder(AddGroupActivity.this);
-				alert.setTitle("Add student with number "+phone);
+				alert.setTitle(getString(R.string.add_student_title)+phone);
 
 				LinearLayout layout = new LinearLayout(AddGroupActivity.this);
 				layout.setOrientation(LinearLayout.VERTICAL);
 
 				newStudentName = new EditText(AddGroupActivity.this);
-				newStudentName.setHint("Enter name");
+				newStudentName.setHint(getString(R.string.enter_student_name_for_registration));
 				newStudentName.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
 				layout.addView(newStudentName);
 
 				newStudentFName = new EditText(AddGroupActivity.this);
-				newStudentFName.setHint("Enter last name");
+				newStudentFName.setHint(getString(R.string.enter_student_last_name_for_registration));
 				newStudentFName.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
 				layout.addView(newStudentFName);
 
 				alert.setView(layout);
-				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				alert.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (newStudentName.getText().toString().equals("")){
-							Toast t = Toast.makeText(getApplicationContext(), "Please enter student's name", Toast.LENGTH_LONG);
+							Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_student_name_alert), Toast.LENGTH_LONG);
 							t.show();
 						}
 						else if (newStudentFName.getText().toString().equals("")){
-							Toast t = Toast.makeText(getApplicationContext(), "Please enter student's last name", Toast.LENGTH_LONG);
+							Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_student_last_name_alert), Toast.LENGTH_LONG);
 							t.show();
 						}
 						else
@@ -184,7 +184,7 @@ public class AddGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tRegistering student...");
+			pdLoading.setMessage("\t"+getString(R.string.signing_student_up));
 			pdLoading.show();
 		}
 		@Override
@@ -200,7 +200,7 @@ public class AddGroupActivity extends BasicClass
 			addPhone.setText("");
 
 
-			Toast t = Toast.makeText(getApplicationContext(), "Student added to database", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.signed_student_up), Toast.LENGTH_LONG);
 			t.show();
 		}
 	}
@@ -216,7 +216,7 @@ public class AddGroupActivity extends BasicClass
 
 		Log.d("Add Group: ", group + ", " + phonesString);
 		if (group.equals("")){
-			Toast t = Toast.makeText(getApplicationContext(), "Please enter group name", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_group_name_alert), Toast.LENGTH_LONG);
 			t.show();
 		}
 		else{
@@ -257,7 +257,7 @@ public class AddGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tAdding group...");
+			pdLoading.setMessage("\t"+getString(R.string.adding_group));
 			pdLoading.show();
 		}
 		@Override
@@ -269,7 +269,7 @@ public class AddGroupActivity extends BasicClass
 			groupName.setText("");
 			addPhone.setText("");
 			phoneList.setText("");
-			Toast t = Toast.makeText(getApplicationContext(), "Group added", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.added_group), Toast.LENGTH_LONG);
 			t.show();
 
 		}

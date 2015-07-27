@@ -1,7 +1,9 @@
 package com.app2youth.hackaton.workup;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,7 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import java.sql.SQLException;
 
 
 public class AllGradesActivity extends BasicClass
@@ -51,38 +57,59 @@ public class AllGradesActivity extends BasicClass
     public void onStart(){
         super.onStart();
 	    firstRun=false;
-        String[][] dataToListView = {
-                {"פיזקה", "אברהם יונה", "20/5/2015", "0xff00ff00"},
-                {"מתמטיקה", "סבטלנה קונדרצקי", "20/5/2015", "0xff00ff00"},
-                {"אנגלית", "מיסיס ברודי", "22/5/2015", "0xff00ff00"},
-                {"תנך", "אלקה", "23/5/2015", "0xffff0000"},
-                {"מכניקת מוצקים", "חיים אברמוביץ", "23/5/2015", "0xffff0000"},
-                {"הנדסת חומרים", "ערן ליפ", "27/5/2015", "0xff00ff00"},
-                {"מדר ח", "דניאלה אבידן המלכה", "27/5/2015", "0xff00ff00"},
-                {"הנדסת חומרים", "ערן ליפ", "27/5/2015", "0xff00ff00"},
-                {"מדר ח", "דניאלה אבידן המלכה", "27/5/2015", "0xff00ff00"},
-                {"חדוא 2מ", "יוסי כהן", "30/5/2015", "0xffff0000"},
-                {"הנדסת חומרים", "ערן ליפ", "30/5/2015", "0xff00ff00"},
-                {"חדוא 2מ", "יוסי כהן", "30/5/2015", "0xffff0000"},
-                {"הנדסת חומרים", "ערן ליפ", "30/5/2015", "0xff00ff00"},
-                {"אנליזה נומרית", "מוט ברשקוביץ", "1/6/2015", "0xff00ff00"},
-                {"פיזקה", "אברהם יונה", "20/5/2015", "0xff00ff00"},
-                {"מתמטיקה", "סבטלנה קונדרצקי", "20/5/2015", "0xff00ff00"},
-                {"אנגלית", "מיסיס ברודי", "22/5/2015", "0xff00ff00"},
-                {"תנך", "אלקה", "23/5/2015", "0xffff0000"},
-                {"מכניקת מוצקים", "חיים אברמוביץ", "23/5/2015", "0xffff0000"},
-                {"אנליזה נומרית", "מוט ברשקוביץ", "1/6/2015", "0xff00ff00"}
-        };
-        String[] arrayOfNames = new String[dataToListView.length];
-        for(int i=0;i<dataToListView.length;i++){
-            arrayOfNames[i]=dataToListView[i][0];
-        }
-
-        mDrawerListView = (ListView) findViewById(R.id.list_of_grades);
-        mDrawerListView.setDivider(new ColorDrawable(0xff11a7ff));
-        mDrawerListView.setDividerHeight(1);
-        mDrawerListView.setAdapter(new BasicClass.HWArrayAdapter(this,dataToListView,arrayOfNames));
+        new LoadGrades().execute((Void)null);
     }
+
+
+
+	String[][] dataToListView = null;
+	private class LoadGrades extends AsyncTask<Void, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(AllGradesActivity.this);
+
+		@Override
+		protected Void doInBackground(Void... ints){
+			String[] list = null;
+			try {
+				list = Controller.getGradesFromStudent(Controller.getStudentIDByPhone(phone));
+
+				dataToListView = new String[list.length][4];
+				for (int i=0; i<list.length; i++){
+					int id = Integer.parseInt(list[i]);
+					dataToListView[i] = new String[]{""+Controller.getGroupName(Controller.getGroupFromGrade(id)), Controller.getGradeDescription(id), ""+Controller.getGrade(id)};
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+
+
+
+
+
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\t"+getString(R.string.loading_groups));
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			pdLoading.dismiss();
+
+			mDrawerListView = (ListView) findViewById(R.id.list_of_grades);
+			mDrawerListView.setDivider(new ColorDrawable(0xff11a7ff));
+			mDrawerListView.setDividerHeight(1);
+			mDrawerListView.setAdapter(new BasicClass.HWArrayAdapter(AllGradesActivity.this,dataToListView));
+		}
+	}
+
+
 
 	boolean firstRun=true;
     @Override

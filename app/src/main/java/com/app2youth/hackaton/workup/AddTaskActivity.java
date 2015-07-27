@@ -65,7 +65,7 @@ public class AddTaskActivity extends BasicClass
                 (DrawerLayout) findViewById(R.id.drawer_layout),positionInMenu,this);
     }
 
-    static String selectedSpinner="Select group";
+
 
 
     private void updateLabel(EditText edittext, Calendar myCalendar) {
@@ -84,6 +84,8 @@ public class AddTaskActivity extends BasicClass
     }
 
 	public void start(){
+		selectedSpinner=getString(R.string.spinner_select_group);
+
 		dropdown = (Spinner)findViewById(R.id.groupSpinner);
 		taskName = (EditText) findViewById(R.id.taskName);
 		taskDescription = (EditText) findViewById(R.id.taskDescription);
@@ -104,6 +106,7 @@ public class AddTaskActivity extends BasicClass
 		new LoadGroups().execute((Void)null);
 	}
 
+	static String selectedSpinner=null;
 	DatePickerDialog.OnDateSetListener datePicker;
 	Calendar myCalendar;
 	Spinner dropdown;
@@ -124,7 +127,7 @@ public class AddTaskActivity extends BasicClass
 				e.printStackTrace();
 			}
 			String[] items = new String[list.length+1];
-			items[0]="Select group";
+			items[0]=getString(R.string.spinner_select_group);
 			for (int i=0; i<list.length; i++){
 				items[i+1]=list[i];
 			}
@@ -145,7 +148,7 @@ public class AddTaskActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tLoading groups...");
+			pdLoading.setMessage("\t"+getString(R.string.loading_groups));
 			pdLoading.show();
 		}
 		@Override
@@ -172,16 +175,16 @@ public class AddTaskActivity extends BasicClass
 
 	public void createTask(View v){
 		Log.d("Add Task: ", selectedSpinner + ", " + taskName.getText().toString()+", "+taskDescription.getText().toString()+", "+filingDate.getText().toString());
-		if (selectedSpinner.equals("Select group")){
-			Toast t = Toast.makeText(getApplicationContext(), "Please select group", Toast.LENGTH_LONG);
+		if (selectedSpinner.equals(getString(R.string.spinner_select_group))){
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.select_group_alert), Toast.LENGTH_LONG);
 			t.show();
 		}
 		else if (taskName.getText().toString().equals("")){
-			Toast t = Toast.makeText(getApplicationContext(), "Please enter task name", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_task_name_alert), Toast.LENGTH_LONG);
 			t.show();
 		}
 		else if (filingDate.getText().toString().equals("")){
-			Toast t = Toast.makeText(getApplicationContext(), "Please enter filing date", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_filing_date_alert), Toast.LENGTH_LONG);
 			t.show();
 		}
 		else{
@@ -211,7 +214,7 @@ public class AddTaskActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tAdding task...");
+			pdLoading.setMessage("\t"+getString(R.string.adding_task));
 			pdLoading.show();
 		}
 		@Override
@@ -222,7 +225,7 @@ public class AddTaskActivity extends BasicClass
 			taskName.setText("");
 			taskDescription.setText("");
 			filingDate.setText("");
-			Toast t = Toast.makeText(getApplicationContext(), "Task added!", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.added_task), Toast.LENGTH_LONG);
 			t.show();
 		}
 	}

@@ -124,7 +124,7 @@ public class LessonsTableActivityStudent extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tLoading timetable...");
+			pdLoading.setMessage("\t"+getString(R.string.loading_timetable));
 			pdLoading.show();
 		}
 		@Override

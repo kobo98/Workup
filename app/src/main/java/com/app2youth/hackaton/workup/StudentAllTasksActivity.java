@@ -5,13 +5,18 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
@@ -29,6 +36,7 @@ import com.fortysevendeg.swipelistview.SwipeListView;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 
 public class StudentAllTasksActivity extends BasicClass
@@ -72,7 +80,7 @@ public class StudentAllTasksActivity extends BasicClass
 	public void start(){
 		//new LoadTasks().execute((Void)null);
 		pdLoading = new ProgressDialog(StudentAllTasksActivity.this);
-		pdLoading.setMessage("\tLoading tasks...");
+		pdLoading.setMessage("\t"+getString(R.string.loading_tasks));
 		pdLoading.show();
 
 		final StudentAllTasksActivity a = this;
@@ -91,7 +99,60 @@ public class StudentAllTasksActivity extends BasicClass
 
 
 	}
+	static int openPosition=0;
 
+
+	public void sortTasks(String[][] tasks, int[] indices){
+		while (true){
+			boolean noSwaps=true;
+			for (int i=0; i<indices.length-1; i++){
+
+				if (!compare(tasks[i][2], tasks[i+1][2])){
+					String[] tempstr = tasks[i].clone();
+					tasks[i] = tasks[i+1].clone();
+					tasks[i+1] = tempstr;
+
+					int temp = indices[i];
+					indices[i]=indices[i+1];
+					indices[i+1]=temp;
+					noSwaps=false;
+				}
+
+			}
+			if (noSwaps)
+				break;
+		}
+	}
+
+	//if a is closer, returns true
+	public boolean compare(String a, String b){
+		String[] date1 = a.split("-");
+		int y1=Integer.parseInt(date1[0]);
+		int m1=Integer.parseInt(date1[1]);
+		int d1=Integer.parseInt(date1[2]);
+
+		String[] date2 = b.split("-");
+		int y2=Integer.parseInt(date2[0]);
+		int m2=Integer.parseInt(date2[1]);
+		int d2=Integer.parseInt(date2[2]);
+
+		if (y1>y2)
+			return false;
+		else if (y1<y2)
+			return true;
+		else{
+			if (m1>m2)
+				return false;
+			else if (m1<m2)
+				return true;
+			else{
+				if (d1>d2)
+					return false;
+				else
+					return true;
+			}
+		}
+	}
 
 	public void loadTasksAndUpdate(StudentAllTasksActivity activity){
 		String[][] dataToListView = null;
@@ -138,12 +199,9 @@ public class StudentAllTasksActivity extends BasicClass
 		}
 
 
+		sortTasks(dataToListView, savedTaskIDs);
 
-		String[] arrayOfNames = new String[dataToListView.length];
-		for(int i=0;i<dataToListView.length;i++){
-			arrayOfNames[i]=dataToListView[i][0];
-		}
-		final HWArrayAdapter adapter= new HWArrayAdapter(activity,dataToListView,arrayOfNames);
+		final HWArrayAdapter adapter= new HWArrayAdapter(activity,dataToListView);
 
 		swipeListView = (SwipeListView) findViewById(R.id.example_lv_list);
 
@@ -155,9 +213,12 @@ public class StudentAllTasksActivity extends BasicClass
 
 
 		swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
+
 			@Override
 			public void onOpened(final int position, boolean toRight) {
+				openPosition=position;
 				if(toRight){
+
 					//requestRating();
 					Thread helper = new Thread() {
 						public void run() {
@@ -178,6 +239,8 @@ public class StudentAllTasksActivity extends BasicClass
 								}
 							}
 							Log.d("UPDATING TO ",updatedTasks+"  -  position: "+savedTaskIDs[position]);
+
+							//Deleting task:
 							//SQL.statement.execute("UPDATE students SET tasks = '"+updatedTasks+"' WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
 							runOnUiThread(new Runnable() {
 								@Override
@@ -193,10 +256,13 @@ public class StudentAllTasksActivity extends BasicClass
 
 						}
 					};
-					//Delete task here
+					//helper.start();
 
 				}else{
 					//openAskForHelpActivity(new View(swipeListView.getContext()));
+					load = new ProgressDialog(StudentAllTasksActivity.this);
+					load.setMessage("\t"+getString(R.string.loading_comments));
+					load.show();
 					Thread helper = new Thread() {
 						public void run() {
 							showCommentDialog(position);
@@ -216,13 +282,20 @@ public class StudentAllTasksActivity extends BasicClass
 			*/
 			@Override
 			public void onClosed(int position, boolean fromRight) {
+				Log.d("swipe", String.format("onClosed %d", position));
 				(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(  255, 255, 255 ));
 				(swipeListView.getChildAt(position).findViewById(R.id.symbol)).setBackgroundColor(Color.rgb(  255, 255, 255 ));
 				(swipeListView.getChildAt(position).findViewById(R.id.front)). setBackgroundColor(Color.rgb(  255, 255, 255 ));
+
+				((TextView) (swipeListView.getChildAt(position).findViewById(R.id.subject))). setTextColor(Color.rgb( 11,167,255 ));
+				((TextView) (swipeListView.getChildAt(position).findViewById(R.id.teacher))). setTextColor(Color.rgb( 11,167,255 ));
+				((TextView) (swipeListView.getChildAt(position).findViewById(R.id.do_date))). setTextColor(Color.rgb( 11,167,255 ));
+
 			}
 
 			@Override
 			public void onListChanged() {
+				Log.d("swipe", "onListChanged");
 			}
 
 			int moves=0;
@@ -231,22 +304,33 @@ public class StudentAllTasksActivity extends BasicClass
 			public void onMove(int position, float x) {
 				int d = (int)Math.abs(x/4);
 
-				moves++;
-				if (moves==20){
-					//Log.d("swipe", "x: "+x);
-					moves=0;
-					//(swipeListView.getChildAt(position).findViewById(R.id.front)).setX(0);
-				}
+
 
 				if (x>0){
-					(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(  255, 255-d, 255-d ));
-					(swipeListView.getChildAt(position).findViewById(R.id.symbol)).setBackgroundColor(Color.rgb(  255, 255-d, 255-d ));
-					(swipeListView.getChildAt(position).findViewById(R.id.front)). setBackgroundColor(Color.rgb(  255, 255-d, 255-d ));
-				}
-				else {
 					(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(  255-d, 255, 255-d ));
 					(swipeListView.getChildAt(position).findViewById(R.id.symbol)).setBackgroundColor(Color.rgb(  255-d, 255, 255-d ));
 					(swipeListView.getChildAt(position).findViewById(R.id.front)). setBackgroundColor(Color.rgb(  255-d, 255, 255-d ));
+
+					int r = 11-(int)(d*1.5); if (r<0)r=0;
+					int g = 167+(int)(d*1.5); if (g>255)g=255;
+					int b = 255-(int)(d*1.5); if (b<0)b=0;
+
+					((TextView) (swipeListView.getChildAt(position).findViewById(R.id.subject))). setTextColor(Color.rgb( r,g,b ));
+					((TextView) (swipeListView.getChildAt(position).findViewById(R.id.teacher))). setTextColor(Color.rgb( r,g,b ));
+					((TextView) (swipeListView.getChildAt(position).findViewById(R.id.do_date))). setTextColor(Color.rgb( r,g,b ));
+				}
+				else {
+					(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(  255, 255, 255-d ));
+					(swipeListView.getChildAt(position).findViewById(R.id.symbol)).setBackgroundColor(Color.rgb(  255, 255, 255-d ));
+					(swipeListView.getChildAt(position).findViewById(R.id.front)). setBackgroundColor(Color.rgb(  255, 255, 255-d ));
+
+					int r = 11+(int)(d*1.5); if (r>255)r=255;
+					int g = 167+(int)(d*1.5); if (g>255)g=255;
+					int b = 255-(int)(d*1.5); if (b<0)b=0;
+
+					((TextView) (swipeListView.getChildAt(position).findViewById(R.id.subject))). setTextColor(Color.rgb( r,g,b ));
+					((TextView) (swipeListView.getChildAt(position).findViewById(R.id.teacher))). setTextColor(Color.rgb( r,g,b ));
+					((TextView) (swipeListView.getChildAt(position).findViewById(R.id.do_date))). setTextColor(Color.rgb( r,g,b ));
 				}
 			}
 
@@ -267,12 +351,21 @@ public class StudentAllTasksActivity extends BasicClass
 			@Override
 			public void onStartClose(int position, boolean right) {
 				Log.d("swipe", String.format("onStartClose %d", position));
-
+				onClosed(position, right);
 			}
 
 			@Override
 			public void onClickFrontView(final int position) {
 				Log.d("swipe", String.format("onClickFrontView %d", position));
+
+			}
+			ProgressDialog load;
+			@Override
+			public void onClickBackView(final int position) {
+				Log.d("swipe", String.format("onClickBackView %d", position));
+				load = new ProgressDialog(StudentAllTasksActivity.this);
+				load.setMessage("\t"+getString(R.string.loading_comments));
+				load.show();
 				Thread helper = new Thread() {
 					public void run() {
 						showCommentDialog(position);
@@ -280,7 +373,6 @@ public class StudentAllTasksActivity extends BasicClass
 				};
 				helper.start();
 			}
-
 
 			public void showCommentDialog(final int position){
 
@@ -300,41 +392,62 @@ public class StudentAllTasksActivity extends BasicClass
 						commentIDs = commentIDs.substring(0, commentIDs.length()-1);
 					else
 						commentIDs = ""+ -1;
-					final ResultSet rs = SQL.statement.executeQuery("SELECT comment, isStudent, commentor FROM comments WHERE commentID IN ("+commentIDs+");");//THIS IS A MISTAKE! SHOULD BE taskID
+					final ResultSet rs = SQL.spareStatement.executeQuery("SELECT comment, isStudent, commentor FROM comments WHERE commentID IN ("+commentIDs+");");//THIS IS A MISTAKE! SHOULD BE taskID
+
+					final ArrayList<String> comments = new ArrayList<String>();
+					final ArrayList<String> names = new ArrayList<String>();
+
+					while(rs.next()) {
+						String comment = rs.getString(1);
+						boolean isStudent = rs.getBoolean(2);
+						int commentor = rs.getInt(3);
+
+						comments.add(comment);
+						names.add(Controller.getStudentName(commentor));
+
+					}
 
 					final String descriptionCopy = description;
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
+							load.dismiss();
 							final AlertDialog.Builder alert = new AlertDialog.Builder(StudentAllTasksActivity.this);
-							alert.setTitle("Comments on Task");
-							alert.setMessage("Task: "+descriptionCopy);
+							alert.setTitle(getString(R.string.comments_title));
 
+
+							ScrollView scroll = new ScrollView(StudentAllTasksActivity.this);
 
 							LinearLayout layout = new LinearLayout(StudentAllTasksActivity.this);
 							layout.setOrientation(LinearLayout.VERTICAL);
 
-							try {
-								while(rs.next()){
-									String comment  = rs.getString(1);
-									boolean isStudent = rs.getBoolean(2);
-									int commentor = rs.getInt(3);
+							TextView task = new TextView(StudentAllTasksActivity.this);
+							task.setTypeface(null, Typeface.BOLD);
+							task.setText("\n"+getString(R.string.task_description_title)+descriptionCopy+"\n");
+							layout.addView(task);
 
-									final TextView commentToDisplay = new TextView(StudentAllTasksActivity.this);
-									commentToDisplay.setText("\n"+comment);
-									layout.addView(commentToDisplay);
-								}
-							} catch (SQLException e) {
-								e.printStackTrace();
+							for (int i=0; i<comments.size(); i++){
+								final TextView nameToDisplay = new TextView(StudentAllTasksActivity.this);
+								nameToDisplay.setPaintFlags(nameToDisplay.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+								nameToDisplay.setTypeface(null, Typeface.BOLD_ITALIC);
+								nameToDisplay.setText("\n"+names.get(i)+":");
+								layout.addView(nameToDisplay);
+
+
+								final TextView commentToDisplay = new TextView(StudentAllTasksActivity.this);
+								commentToDisplay.setText(comments.get(i));
+								layout.addView(commentToDisplay);
+
 							}
 
-
 							final EditText yourComment = new EditText(StudentAllTasksActivity.this);
-							yourComment.setHint("Comment");
+							yourComment.setInputType(InputType.TYPE_CLASS_TEXT);
+							yourComment.setHint(getString(R.string.hint_comment));
 							layout.addView(yourComment);
 
-							alert.setView(layout);
-
+							scroll.addView(layout);
+							//alert.setView(layout);
+							alert.setView(scroll);
 
 
 							alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -345,7 +458,8 @@ public class StudentAllTasksActivity extends BasicClass
 									Thread helper = new Thread() {
 										public void run() {
 											try {
-												Controller.addComment(comment, savedTaskIDs[pos], true, Controller.getStudentIDByPhone(BasicClass.phone));
+												if (!comment.equals(""))
+													Controller.addComment(comment, savedTaskIDs[pos], true, Controller.getStudentIDByPhone(BasicClass.phone));
 											} catch (SQLException e) {
 												e.printStackTrace();
 											}
@@ -354,6 +468,7 @@ public class StudentAllTasksActivity extends BasicClass
 									helper.start();
 								}
 							});
+							alert.setNegativeButton("Close", null);
 							alert.show();
 						}
 					});
@@ -365,10 +480,7 @@ public class StudentAllTasksActivity extends BasicClass
 			}
 
 
-			@Override
-			public void onClickBackView(int position) {
-				Log.d("swipe", String.format("onClickBackView %d", position));
-			}
+
 
 		});
 		runOnUiThread(new Runnable() {
@@ -380,6 +492,130 @@ public class StudentAllTasksActivity extends BasicClass
 			}
 		});
 	}
+
+	public void pressedFace1(View v) throws SQLException {
+		Log.d("FACEPRESS!","1");
+		new SendFeedback().execute(1);
+	}
+	public void pressedFace2(View v) throws SQLException {
+		Log.d("FACEPRESS!","2");
+		new SendFeedback().execute(2);
+	}
+	public void pressedFace3(View v) throws SQLException {
+		Log.d("FACEPRESS!","3");
+		new SendFeedback().execute(3);
+	}
+	public void pressedFace4(View v) throws SQLException {
+		Log.d("FACEPRESS!","4");
+		new SendFeedback().execute(4);
+	}
+	public void pressedFace5(View v) throws SQLException {
+		Log.d("FACEPRESS!","5");
+		new SendFeedback().execute(5);
+	}
+
+	private class SendFeedback extends AsyncTask<Integer, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(StudentAllTasksActivity.this);
+
+		@Override
+		protected Void doInBackground(Integer... ints){
+			try {
+				Controller.finishTaskAndSendFeedback(savedTaskIDs[openPosition], ints[0]);
+
+
+
+				ResultSet rs = SQL.statement.executeQuery("SELECT tasks FROM students WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
+				String tasks=null;
+				while(rs.next())
+					tasks=rs.getString(1);
+
+				if (tasks!=null && !tasks.equals("")){
+					String[] list = tasks.split(";");
+
+					String updatedTasks = "";
+					for (int i=0; i<list.length; i++){
+						Log.d("PAST TASKS: ",list[i]);
+						if (!list[i].equals(""+savedTaskIDs[openPosition])){
+							updatedTasks+=list[i]+";";
+						}
+					}
+					Log.d("UPDATING TO ",updatedTasks+"  -  position: "+savedTaskIDs[openPosition]);
+
+					//Deleting task:
+					SQL.statement.execute("UPDATE students SET tasks = '"+updatedTasks+"' WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
+
+				}
+
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+
+
+
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\t"+getString(R.string.sending_feedback));
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			pdLoading.dismiss();
+
+			openMainActivity(new View(StudentAllTasksActivity.this));
+		}
+	}
+
+	public void deleteSelectedTask(){
+		final int position=openPosition;
+		Thread helper = new Thread() {
+			public void run() {
+				try {
+					ResultSet rs = SQL.statement.executeQuery("SELECT tasks FROM students WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
+					String tasks=null;
+					while(rs.next())
+						tasks=rs.getString(1);
+
+					if (tasks!=null && !tasks.equals("")){
+						String[] list = tasks.split(";");
+
+						String updatedTasks = "";
+						for (int i=0; i<list.length; i++){
+							Log.d("PAST TASKS: ",list[i]);
+							if (!list[i].equals(""+savedTaskIDs[position])){
+								updatedTasks+=list[i]+";";
+							}
+						}
+						Log.d("UPDATING TO ",updatedTasks+"  -  position: "+savedTaskIDs[position]);
+
+						//Deleting task:
+						SQL.statement.execute("UPDATE students SET tasks = '"+updatedTasks+"' WHERE studentID = "+Controller.getStudentIDByPhone(BasicClass.phone)+";");
+						final StudentAllTasksActivity thisClass = StudentAllTasksActivity.this;
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								openMainActivity(new View(thisClass));
+							}
+						});
+					}
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+			}
+		};
+		helper.start();
+	}
+
 
     private void reload() {
         SettingsManager settings = SettingsManager.getInstance();
@@ -398,46 +634,6 @@ public class StudentAllTasksActivity extends BasicClass
         return (int) px;
     }
 
-    public void requestRating() {
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.rating_layout);
-        dialog.findViewById(R.id.imageView3).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Main","RATE 1");
-                dialog.cancel();
-            }
-        });
-        dialog.findViewById(R.id.imageView).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Main", "RATE 2");
-                dialog.cancel();
-            }
-        });
-        dialog.findViewById(R.id.imageView2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Main", "RATE 3");
-                dialog.cancel();
-            }
-        });
-        dialog.findViewById(R.id.imageView4).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Main", "RATE 4");
-                dialog.cancel();
-            }
-        });
-        dialog.findViewById(R.id.imageView5).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Main", "RATE 5");
-                dialog.cancel();
-            }
-        });
-        dialog.show();
-    }
 
 
 	private class LoadTasks extends AsyncTask<Void, Void, Void> {
@@ -452,7 +648,7 @@ public class StudentAllTasksActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tLoading tasks...");
+			pdLoading.setMessage("\t"+getString(R.string.loading_tasks));
 			pdLoading.show();
 		}
 		@Override

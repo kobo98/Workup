@@ -7,7 +7,7 @@
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
 	tools:context="com.app2youth.hackaton.workup.AllGradesActivity$PlaceholderFragment">
-
+	<!--
 	<Switch
 		android:id="@+id/switch_list_graph"
 		android:layout_width="wrap_content"
@@ -26,11 +26,10 @@
 		android:layout_alignParentTop="true"
 		android:layout_toEndOf="@+id/switch_list_graph"
 		android:layout_toRightOf="@+id/switch_list_graph" />
-
+-->
 	<ListView
 		android:id="@+id/list_of_grades"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@+id/spinner_type_of_grades"
 		android:layout_centerHorizontal="true" />
 </RelativeLayout>

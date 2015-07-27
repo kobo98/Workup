@@ -1,16 +1,17 @@
 <resources>
 	<string name="app_name">Workup</string>
 
-	<string name="teacher_title_section1">Groups</string>
-	<string name="teacher_title_section2">New task</string>
-	<string name="teacher_title_section3">Add students</string>
-	<string name="teacher_title_section4">Time table</string>
-	<string name="teacher_title_section5">New group</string>
-	<string name="teacher_title_section6">Statistics</string>
+	<string name="teacher_title_section1">קבוצות</string>
+	<string name="teacher_title_section2">מטלה חדשה</string>
+	<string name="teacher_title_section3">הוסף תלמידים</string>
+	<string name="teacher_title_section4">מערכת שעות</string>
+	<string name="teacher_title_section5">קבוצה חדשה</string>
+	<string name="teacher_title_section6">סטטיסטיקה</string>
+	<string name="teacher_title_section7">הוסף ציון</string>
 
-	<string name="student_title_section1">Tasks</string>
-	<string name="student_title_section2">Grades</string>
-	<string name="student_title_section3">Time table</string>
+	<string name="student_title_section1">מטלות</string>
+	<string name="student_title_section2">ציונים</string>
+	<string name="student_title_section3">מערכת שעות</string>
 
 
 	<string name="teacher_menu_1">רשימת קבוצות</string>
@@ -19,50 +20,128 @@
 	<string name="teacher_menu_4">מערכת שעות</string>
 	<string name="teacher_menu_5">הוסף קבוצה חדשה</string>
 	<string name="teacher_menu_6">הערכת משימות</string>
+	<string name="teacher_menu_7">הוספת ציונים</string>
 
 	<string name="student_menu_1">עבודות ומבחנים</string>
 	<string name="student_menu_2">גליון ציונים</string>
 	<string name="student_menu_3">מערכת שעות</string>
 
-	<string name="day_1">Sunday</string>
-	<string name="day_2">Monday</string>
-	<string name="day_3">Tuesday</string>
-	<string name="day_4">Wednesday</string>
-	<string name="day_5">Thursday</string>
-	<string name="day_6">Friday</string>
-	<string name="day_7">Saturday</string>
+	<string name="day_1">ראשון</string>
+	<string name="day_2">שני</string>
+	<string name="day_3">שלישי</string>
+	<string name="day_4">רביעי</string>
+	<string name="day_5">חמישי</string>
+	<string name="day_6">שישי</string>
+	<string name="day_7">שבת</string>
 
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 
-	<string name="action_example"> - </string>
-
+	<string name="action_example">  </string>
 	<string name="action_settings">Settings</string>
-	<string name="title_activity_school_bag">SchoolBagActivity</string>
-	<string name="title_activity_graph">GraphActivity</string>
-	<string name="title_activity_splash">SplashActivity</string>
 
+
+	<string name="title_activity_graph">GraphActivity</string>
 	<string name="title_activity_registration">Registration</string>
 	<string name="title_activity_registration_details">Registration</string>
-
-	<string name="hello_world">Hello world!</string>
-	<string name="title_activity_sign_in">Sign In</string>
-	<string name="title_activity_orientation">OrientationActivity</string>
-	<string name="title_activity_new_student">NewStudent</string>
-	<string name="title_activity_new_teacher">NewTeacherActivity</string>
 	<string name="title_activity_all_grades">AllGradesActivity</string>
 	<string name="title_activity_lessons_table">LessonsTableActivity</string>
 	<string name="title_activity_add_group">AddGroupActivity</string>
 	<string name="title_activity_add_task">AddTaskActivity</string>
-	<string name="title_activity_ask_for_help">AskForHelpActivity</string>
-	<string name="title_activity_add_grades">AddGradesActivity</string>
-	<string name="title_activity_teachers_groups">TeachersGroups</string>
-	<string name="title_activity_hwlist_for_teacher">HWListForTeacherActivity</string>
-	<string name="title_activity_hwnotice_list_for_teacher">HWNoticeListForTeacherActivity</string>
-	<string name="title_activity_all_groups_actvity">AllGroupsActvity</string>
-	<string name="title_activity_add_teacher_to_group">AddTeacherToGroupActivity</string>
 	<string name="title_activity_teacher_main">TeacherMainActivity</string>
 	<string name="title_activity_lessons_table_activity_teacher">LessonsTableActivityTeacher</string>
+	<string name="title_activity_add_grade">AddGradeActivity</string>
+
+	<string name="title_section1">Section 1</string>
+	<string name="title_section2">Section 2</string>
+	<string name="title_section3">Section 3</string>
+
+
+
+
+	<!-- CHANGE DIS -->
+	<string name="loading_groups">טוען...</string>
+	<string name="loading_students">טוען...</string>
+	<string name="loading_tasks">טוען...</string>
+	<string name="loading_grades">טוען...</string>
+	<string name="loading_timetable">טוען...</string>
+	<string name="loading_comments">טוען...</string>
+	<string name="loading_group_info">טוען...</string>
+	<string name="loading_data">טוען...</string>
+	<string name="loading_graph_data">טוען...</string>
+	<string name="wait">טוען...</string>
+
+	<string name="sending_feedback">מסיים משימה...</string>
+	<string name="comments_title">תגובות</string>
+	<string name="task_description_title">תיאור: </string>
+	<string name="add_class_title">הוסף מטלה</string>
+	<string name="select_time_title">בחר זמן</string>
+	<string name="delete_group_question">למחוק קבוצה?</string>
+	<string name="group_info_title">מידע על הקבוצה </string>
+	<string name="students_title">תלמידים:  </string>
+	<string name="teachers_title">מורים:  </string>
+	<string name="select_group_first">קודם בחר קבוצה</string>
+
+	<string name="adding_class">מוסיף שיעור...</string>
+	<string name="adding_task">מוסיף מטלה...</string>
+	<string name="adding_student">מוסיף תלמיד...</string>
+	<string name="signing_student_up">רושם תלמיד...</string>
+	<string name="adding_students_to_groups">מוסיף תלמידים...</string>
+	<string name="adding_group">יוצר קבוצה...</string>
+	<string name="adding_grade">מוסיף ציון...</string>
+	<string name="deleting_group">מוחק קבוצה...</string>
+
+	<string name="added_task">מטלה הוספה בהצלחה!</string>
+	<string name="added_class">שיעור הוסף בהצלחה!</string>
+	<string name="added_grade">ציון הוסף בהצלחה!</string>
+	<string name="added_group">קבוצה הוספה בהצלחה!</string>
+	<string name="added_student">תתלמיד הוסף</string>
+	<string name="signed_student_up">תתלמיד הוסף בהצלחה!</string>
+	<string name="added_students_to_group">תלמידים הוספו לקבוצה בהצלחה!</string>
+	<string name="group_deleted">קבוצה נמחקה בהצלחה!</string>
+
+	<string name="spinner_select_group">בחר קבוצה</string>
+	<string name="spinner_select_student">בחר תלמיד</string>
+
+	<string name="select_group_alert">בחר קבוצה</string>
+	<string name="select_student_alert">בחר תלמיד</string>
+	<string name="enter_exam_description_alert">נושא המבחן</string>
+	<string name="enter_grade_alert">הכנס ציון</string>
+	<string name="grade_range_alert">הציון חייב להיות בתחום 0-100</string>
+	<string name="enter_student_name_alert">הכנס את שם התלמיד</string>
+	<string name="enter_student_last_name_alert">הכנס את שם המשפחה של התלמיד</string>
+	<string name="enter_group_name_alert">הכנס שם קבוצה</string>
+	<string name="enter_at_least_one_number_alert">הכנס לפחות מספר טלפון אחד</string>
+	<string name="enter_task_name_alert">הכנס שם למטלה</string>
+	<string name="enter_filing_date_alert">הבחר תאריך הגשה</string>
+	<string name="enter_phone_registration_alert">הכנס מספר טלפון</string>
+	<string name="enter_name_registration_alert">הכנס שם פרטי</string>
+	<string name="enter_last_name_registration_alert">הכנס שם משפחה</string>
+	<string name="already_registered_student_alert">אמספר טלפון זה כבר רשום כתלמיד!</string>
+	<string name="already_registered_teacher_alert">מספר טלפון זה רשום כבר כמורה!</string>
+	<string name="choose_hour_alert">בחר שעה</string>
+
+	<string name="add_student_title">הוסף תלמיד עם מספר טלפון </string>
+	<string name="enter_student_name_for_registration">שם התלמיד</string>
+	<string name="enter_student_last_name_for_registration">שם המשפחה</string>
+
+	<string name="hint_comment">תגובה</string>
+	<string name="hint_hour">שעה</string>
+	<string name="hint_exam_name">שם המבחן</string>
+	<string name="hint_grade">ציון</string>
+	<string name="hint_enter_group_name">שם הקבוצה</string>
+	<string name="hint_enter_phone">מספר טלפון</string>
+	<string name="hint_task_title">כותרת</string>
+	<string name="hint_task_description">תיאור</string>
+	<string name="hint_task_date">תאריך</string>
+
+
+	<string name="add_student_button_text">הוסף</string>
+	<string name="yes">כן</string>
+	<string name="no">לא</string>
+	<string name="ok">OK</string>
+	<string name="close">סגור</string>
+	<string name="cancel">סגור</string>
 
 
 </resources>

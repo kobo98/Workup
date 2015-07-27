@@ -111,7 +111,7 @@ public class Controller {
 	}
 	
 	public static void addTask(int groupID, String title, String description, String filingDate) throws SQLException{
-		SQL.statement.execute("INSERT INTO tasks (title, description, teachGroup, filingDate, comments) VALUES ('"+title+"', '"+description+"', "+groupID+", '"+filingDate+"', '');");
+		SQL.statement.execute("INSERT INTO tasks (title, description, teachGroup, filingDate, comments, ranksum, votes) VALUES ('"+title+"', '"+description+"', "+groupID+", '"+filingDate+"', '', 0,0);");
 		int taskID = SQL.getLastID();
 		
 		SQL.statement.execute("UPDATE groups SET tasks = CONCAT(tasks, '"+taskID+";') where groupID = "+groupID+";");
@@ -135,7 +135,7 @@ public class Controller {
 	
 	
 	public static void addStudent(String name, String fname, String phone) throws SQLException{
-		SQL.statement.execute("INSERT INTO students (name, fname, phone, groups, tasks) VALUES ('"+name+"', '"+fname+"', '"+phone+"', '', '')");
+		SQL.statement.execute("INSERT INTO students (name, fname, phone, groups, tasks, grades) VALUES ('"+name+"', '"+fname+"', '"+phone+"', '', '', '')");
 	}
 	
 	public static void addStudentToGroup(int studentID, int groupID) throws SQLException{
@@ -296,7 +296,14 @@ public class Controller {
 
         return tasks;
     }
+	public static String getTasksFromGroup(int groupID) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT tasks FROM groups WHERE groupID = " + groupID + ";");
+		String tasks=null;
+		while(rs.next())
+			tasks=rs.getString(1);
 
+		return tasks;
+	}
 
     public static String getCommentsFromTask(int taskID) throws SQLException{
         ResultSet rs = SQL.statement.executeQuery("SELECT comments FROM tasks WHERE taskID = " + taskID + ";");
@@ -424,6 +431,42 @@ public class Controller {
 		SQL.statement.execute("UPDATE groups SET students = '"+studentsString+"' where groupID = "+groupID+";");
 	}
 
+	private static void deleteGroupOnlyForStudent(int studentID, int groupID) throws SQLException{
+		String[] groups = getGroupIDsForStudent(studentID);
+
+		String groupsString="";
+		for(int i=0; i<groups.length; i++){
+			if (!groups[i].equals(""+groupID))
+				groupsString+=groups[i]+";";
+		}
+
+		SQL.statement.execute("UPDATE students SET groups = '"+groupsString+"' where studentID = "+studentID+";");
+	}
+
+	private static void deleteGroupOnlyForTeacher(int teacherID, int groupID) throws SQLException{
+		String[] groups = getGroupIDsForTeacher(teacherID);
+
+		String groupsString="";
+		for(int i=0; i<groups.length; i++){
+			if (!groups[i].equals(""+groupID))
+				groupsString+=groups[i]+";";
+		}
+
+		SQL.statement.execute("UPDATE teachers SET groups = '"+groupsString+"' where teacherID = "+teacherID+";");
+	}
+
+	public static void deleteGroup(int groupID) throws SQLException {
+		String[] students = getStudentsFromGroup(groupID);
+		for (int i=0; i<students.length; i++){
+			deleteGroupOnlyForStudent(Integer.parseInt(students[i]), groupID);
+		}
+
+		deleteGroupOnlyForTeacher(getGroupTeacher(groupID), groupID);
+
+		SQL.statement.execute("DELETE FROM groups WHERE groupID = "+groupID+";");
+
+	}
+
 	public static String getGroupName(int id) throws SQLException{
 		ResultSet rs = SQL.statement.executeQuery("SELECT name FROM groups WHERE groupID = '"+id+"' LIMIT 1;");
 		String name="";
@@ -442,6 +485,13 @@ public class Controller {
 		return tid;
 	}
 
+	public static void addGrade(int studentID, int groupID, String description, int grade) throws SQLException{
+		SQL.statement.execute("INSERT INTO grades (teachGroup, description, grade) VALUES ("+groupID+", '"+description+"', "+grade+");");
+		int commentID = SQL.getLastID();
+		SQL.statement.execute("UPDATE students SET grades = CONCAT(grades, '"+commentID+";') where studentID = "+studentID+";");
+	}
+
+
 	public static String getTeacherName(int id) throws SQLException{
 		ResultSet rs = SQL.statement.executeQuery("SELECT name FROM teachers WHERE teacherID = '"+id+"' LIMIT 1;");
 		String name="";
@@ -458,4 +508,84 @@ public class Controller {
 		}
 		return name;
 	}
+	public static String getStudentLastName(int id) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT fname FROM students WHERE studentID = '"+id+"' LIMIT 1;");
+		String name="";
+		while(rs.next()){
+			name = rs.getString(1);
+		}
+		return name;
+	}
+
+
+	public static String[] getGradesFromStudent(int studentID) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT grades FROM students WHERE studentID = " + studentID+ ";");
+		String groups=null;
+		while(rs.next())
+			groups=rs.getString(1);
+
+		if (groups==null || groups.length()==0)
+			return new String[0];
+
+		String[] ids = groups.split(";");
+
+		return ids;
+	}
+
+	public static int getGrade(int gradeID) throws SQLException {
+		ResultSet rs = SQL.statement.executeQuery("SELECT grade FROM grades WHERE gradeID = " + gradeID+ ";");
+		int grade=0;
+		while(rs.next())
+			grade=rs.getInt(1);
+		return grade;
+	}
+	public static String getGradeDescription(int gradeID) throws SQLException {
+		ResultSet rs = SQL.statement.executeQuery("SELECT description FROM grades WHERE gradeID = " + gradeID+ ";");
+		String grade=null;
+		while(rs.next())
+			grade=rs.getString(1);
+		return grade;
+	}
+	public static int getGroupFromGrade(int gradeID) throws SQLException {
+		ResultSet rs = SQL.statement.executeQuery("SELECT teachGroup FROM grades WHERE gradeID = " + gradeID+ ";");
+		int group=0;
+		while(rs.next())
+			group=rs.getInt(1);
+		return group;
+	}
+
+	public static void finishTaskAndSendFeedback(int taskID, int rating) throws SQLException {
+		ResultSet rs = SQL.statement.executeQuery("SELECT ranksum,votes FROM tasks WHERE taskID = " + taskID+ ";");
+		int ranksum=0;
+		int votes=0;
+		while(rs.next()) {
+			ranksum = rs.getInt(1);
+			votes = rs.getInt(2);
+		}
+		ranksum+=rating;
+		votes++;
+
+		SQL.statement.execute("UPDATE tasks SET ranksum = "+ranksum+", votes = "+votes+" where taskID = "+taskID+";");
+	}
+
+	public static double getAverageTaskGrade(int taskID) throws SQLException {
+		ResultSet rs = SQL.statement.executeQuery("SELECT ranksum,votes FROM tasks WHERE taskID = " + taskID+ ";");
+		int ranksum=0;
+		int votes=0;
+		while(rs.next()) {
+			ranksum = rs.getInt(1);
+			votes = rs.getInt(2);
+		}
+
+		return votes==0? 0:(double)ranksum/(double)votes;
+	}
+	public static String getTaskTitle(int taskID) throws SQLException {
+		ResultSet rs = SQL.statement.executeQuery("SELECT title FROM tasks WHERE taskID = " + taskID+ ";");
+		String title=null;
+		while(rs.next()) {
+			title = rs.getString(1);
+		}
+		return title;
+	}
+
 }

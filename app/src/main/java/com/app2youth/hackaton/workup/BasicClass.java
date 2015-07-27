@@ -102,6 +102,10 @@ public class BasicClass extends ActionBarActivity
 		startActivity(new Intent(this, LessonsTableActivityStudent.class));
 	}
 
+	public void openAddGradeActivity(View v) {
+		startActivity(new Intent(this, AddGradeActivity.class));
+	}
+
 	public void openLessonTableActivityTeacher(View v) {
 		startActivity(new Intent(this, LessonsTableActivityTeacher.class));
 	}
@@ -152,6 +156,9 @@ public class BasicClass extends ActionBarActivity
 				break;
 			case 6:
 				openGraphActivity(new View(this));
+				break;
+			case 7:
+				openAddGradeActivity(new View(this));
 				break;
 
 		}
@@ -302,7 +309,7 @@ public class BasicClass extends ActionBarActivity
 		private Context context;
 		private String[][] values;
 
-		public HWArrayAdapter(Context context, String[][] objects, String[] programs) {
+		public HWArrayAdapter(Context context, String[][] objects) {
 			this.context = context;
 			this.values = objects;
 		}

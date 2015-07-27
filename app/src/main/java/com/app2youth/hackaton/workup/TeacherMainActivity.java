@@ -119,7 +119,7 @@ public class TeacherMainActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tLoading data...");
+			pdLoading.setMessage("\t"+getString(R.string.loading_data));
 			pdLoading.show();
 		}
 		@Override
@@ -145,7 +145,7 @@ public class TeacherMainActivity extends BasicClass
 
 		final AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
 
-		alert.setTitle("Add class");
+		alert.setTitle(getString(R.string.add_class_title));
 		//alert.setMessage("Message");
 
 		LinearLayout layout = new LinearLayout(TeacherMainActivity.this);
@@ -161,19 +161,19 @@ public class TeacherMainActivity extends BasicClass
 			rg.addView(day[i]);
 
 		}
-		day[0].setText("Sunday");
-		day[1].setText("Monday");
-		day[2].setText("Tuesday");
-		day[3].setText("Wednesday");
-		day[4].setText("Thursday");
-		day[5].setText("Friday");
-		day[6].setText("Saturday");
+		day[0].setText(getString(R.string.day_1));
+		day[1].setText(getString(R.string.day_2));
+		day[2].setText(getString(R.string.day_3));
+		day[3].setText(getString(R.string.day_4));
+		day[4].setText(getString(R.string.day_5));
+		day[5].setText(getString(R.string.day_6));
+		day[6].setText(getString(R.string.day_7));
 
 		layout.addView(rg);
 
 		final EditText hour = new EditText(TeacherMainActivity.this);
 		hour.setInputType(InputType.TYPE_DATETIME_VARIATION_TIME);
-		hour.setHint("Hour");
+		hour.setHint(getString(R.string.hint_hour));
 		hour.setFocusable(false);
 
 		hour.setOnClickListener(new View.OnClickListener() {
@@ -190,7 +190,7 @@ public class TeacherMainActivity extends BasicClass
 						hour.setText(selectedHour + ":" + selectedMinute);
 					}
 				}, currentHour, currentMinute, true);
-				mTimePicker.setTitle("Select Time");
+				mTimePicker.setTitle(getString(R.string.select_time_title));
 				mTimePicker.show();
 			}
 		});
@@ -200,7 +200,7 @@ public class TeacherMainActivity extends BasicClass
 
 		alert.setView(layout);
 
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				final String classHour = hour.getText().toString();
 				final int day = rg.getCheckedRadioButtonId();
@@ -210,33 +210,71 @@ public class TeacherMainActivity extends BasicClass
 					new AddClass().execute("" + groupID, "" + day, classHour);
 				} else {
 
-					Toast t = Toast.makeText(getApplicationContext(), "Choose hour!", Toast.LENGTH_LONG);
+					Toast t = Toast.makeText(getApplicationContext(), getString(R.string.choose_hour_alert), Toast.LENGTH_LONG);
 					t.show();
 				}
 
 			}
 		});
 
-		alert.setNegativeButton("Cancel", null);
+		alert.setNegativeButton(getString(R.string.cancel), null);
 		alert.show();
 	}
 
 	public void deleteGroupButton(int position){
+		final int groupID = savedGroupIDs[position];
 		AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
 
-		alert.setTitle("Delete group?");
-		alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		alert.setTitle(getString(R.string.delete_group_question));
+		alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
-
-
-				Toast t = Toast.makeText(getApplicationContext(), "You can't! HeHeHe!", Toast.LENGTH_LONG);
-				t.show();
+				new DeleteGroup().execute(groupID);
 			}
 		});
 
-		alert.setNegativeButton("No", null);
+		alert.setNegativeButton(getString(R.string.no), null);
 		alert.show();
 	}
+
+
+
+	private class DeleteGroup extends AsyncTask<Integer, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(TeacherMainActivity.this);
+
+		@Override
+		protected Void doInBackground(Integer... input){
+			try {
+				Controller.deleteGroup(input[0]);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\t"+getString(R.string.deleting_group));
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(Void result) {
+			pdLoading.dismiss();
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.group_deleted), Toast.LENGTH_LONG);
+			t.show();
+
+			openTeacherMainActivity();
+		}
+	}
+
+
+
+
+
+
+
 
 	public void presentGroup(int position){
 		group=savedGroupIDs[position];
@@ -251,11 +289,11 @@ public class TeacherMainActivity extends BasicClass
 		protected String doInBackground(Void... input){
 			String info = "";
 			try {
-				info+="Teacher: ";
+				info+=getString(R.string.teachers_title);
 				info+=Controller.getTeacherName(Controller.getGroupTeacher(group));
 				info+="\r\n";
 				info+="\r\n";
-				info+="Students: ";
+				info+=getString(R.string.students_title);
 
 				String[] studentIDs = Controller.getStudentsFromGroup(group);
 				for (String id:studentIDs)
@@ -273,7 +311,7 @@ public class TeacherMainActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tLoading group info...");
+			pdLoading.setMessage("\t"+getString(R.string.loading_group_info));
 			pdLoading.show();
 		}
 		@Override
@@ -283,7 +321,7 @@ public class TeacherMainActivity extends BasicClass
 			pdLoading.dismiss();
 			AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
 
-			alert.setTitle("Group info");
+			alert.setTitle(getString(R.string.group_info_title));
 			alert.setMessage(result);
 
 			alert.show();
@@ -307,7 +345,7 @@ public class TeacherMainActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tAdding class...");
+			pdLoading.setMessage("\t"+getString(R.string.adding_class));
 			pdLoading.show();
 		}
 		@Override
@@ -315,7 +353,7 @@ public class TeacherMainActivity extends BasicClass
 		@Override
 		protected void onPostExecute(Void result) {
 			pdLoading.dismiss();
-			Toast t = Toast.makeText(getApplicationContext(), "Class added", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.added_class), Toast.LENGTH_LONG);
 			t.show();
 		}
 	}

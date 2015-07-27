@@ -41,6 +41,7 @@
 		android:layout_marginBottom="15dp"
 		android:layout_marginRight="5dp"
 		android:layout_marginLeft="50dp"
+		android:hint="@string/hint_enter_phone"
 		android:ems="10"
 		android:inputType="phone" />
 
@@ -53,7 +54,7 @@
 		android:layout_toEndOf="@+id/add_phone"
 		android:layout_toRightOf="@+id/add_phone"
 		android:onClick="addStudentButton"
-		android:text="Add" />
+		android:text="@string/add_student_button_text" />
 
 	<TextView
 		android:id="@+id/phone_list"

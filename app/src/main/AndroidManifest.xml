@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.app2youth.hackaton.workup" >
 
-
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,14 +13,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-
-	    android:theme="@style/AppTheme"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name" >
-
-	    '<!-- android:theme="@style/AppTheme" -->'
-	    <receiver
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+	    '
+        <!-- android:theme="@style/AppTheme" -->
+'
+        <receiver
             android:name=".IncomingSms"
             android:exported="true" >
             <intent-filter android:priority="999" >
@@ -78,21 +77,26 @@
         <activity
             android:name=".LessonsTableActivityTeacher"
             android:label="@string/title_activity_lessons_table_activity_teacher"
-	        android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".AddGroupActivity"
             android:label="@string/title_activity_add_group"
-	        android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".RegistrationActivity"
             android:label="@string/title_activity_registration"
-	        android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".RegistrationDetailsActivity"
             android:label="@string/title_activity_registration_details"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".AddGradeActivity"
+            android:label="@string/title_activity_add_grade"
 	        android:screenOrientation="portrait" >
         </activity>
     </application>

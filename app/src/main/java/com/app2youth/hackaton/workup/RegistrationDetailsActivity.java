@@ -2,8 +2,10 @@ package com.app2youth.hackaton.workup;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
@@ -26,7 +28,25 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_registration_details);
 	}
 
+	@Override
+	public void onResume(){
+		super.onResume();
+		ComponentName component=new ComponentName(this, IncomingSms.class);
+		getPackageManager()
+				.setComponentEnabledSetting(component,
+						PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+						PackageManager.DONT_KILL_APP);
+	}
 
+	@Override
+	public void onPause(){
+		super.onPause();
+		ComponentName component=new ComponentName(this, IncomingSms.class);
+		getPackageManager()
+				.setComponentEnabledSetting(component,
+						PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+						PackageManager.DONT_KILL_APP);
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -64,17 +84,17 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 		final String lname = ((EditText) findViewById(R.id.lname)).getText().toString();
 
 		if (phone.equals("")){
-			Toast t = Toast.makeText(getApplicationContext(), "Please enter phone", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_phone_registration_alert), Toast.LENGTH_LONG);
 			t.show();
 			return;
 		}
 		else if (fname.equals("")){
-			Toast t = Toast.makeText(getApplicationContext(), "Please enter first name", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_name_registration_alert), Toast.LENGTH_LONG);
 			t.show();
 			return;
 		}
 		else if (lname.equals("")){
-			Toast t = Toast.makeText(getApplicationContext(), "Please enter last name", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_last_name_registration_alert), Toast.LENGTH_LONG);
 			t.show();
 			return;
 		}
@@ -181,7 +201,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 					//Teacher
 					if (BasicClass.registeringTeacher){
 						if (Controller.studentExists(in[0])) {
-							Toast t = Toast.makeText(getApplicationContext(), "You are already registered as student!", Toast.LENGTH_LONG);
+							Toast t = Toast.makeText(getApplicationContext(), getString(R.string.already_registered_student_alert), Toast.LENGTH_LONG);
 							t.show();
 							finish();
 							return null;
@@ -201,7 +221,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 					//Student
 					else{
 						if (Controller.teacherExists(in[0])) {
-							Toast t = Toast.makeText(getApplicationContext(), "You are already registered as teacher!", Toast.LENGTH_LONG);
+							Toast t = Toast.makeText(getApplicationContext(), getString(R.string.already_registered_teacher_alert), Toast.LENGTH_LONG);
 							t.show();
 							finish();
 							return null;
@@ -226,7 +246,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 		@Override
 		public void onPreExecute(){
 			super.onPreExecute();
-			pdLoading.setMessage("\tPlease wait...");
+			pdLoading.setMessage("\t"+getString(R.string.wait));
 			pdLoading.show();
 		}
 		@Override

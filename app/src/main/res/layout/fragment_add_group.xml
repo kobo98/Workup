@@ -32,7 +32,7 @@
 		android:layout_marginBottom="60dp"
 		android:layout_marginTop="85dp"
 		android:ems="10"
-		android:hint="Enter group name"
+		android:hint="@string/hint_enter_group_name"
 		android:inputType="textPersonName" />
 
 	<EditText
@@ -46,7 +46,7 @@
 		android:layout_marginRight="5dp"
 		android:layout_marginLeft="50dp"
 		android:ems="10"
-		android:hint="Enter phone"
+		android:hint="@string/hint_enter_phone"
 		android:inputType="phone" />
 
 	<Button
@@ -58,7 +58,7 @@
 		android:layout_toEndOf="@+id/add_phone"
 		android:layout_toRightOf="@+id/add_phone"
 		android:onClick="addStudentButton"
-		android:text="Add" />
+		android:text="@string/add_student_button_text" />
 
 	<TextView
 		android:id="@+id/phone_list"

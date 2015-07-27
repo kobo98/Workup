@@ -63,7 +63,7 @@ public class AddStudentsToGroupActivity extends BasicClass
         Log.d("Msg","2");
     }
 
-    static String selectedSpinner="Select group";
+    static String selectedSpinner=null;
 
     @Override
     public void onStart(){
@@ -73,6 +73,8 @@ public class AddStudentsToGroupActivity extends BasicClass
     }
 
 	public void start(){
+		selectedSpinner=getString(R.string.spinner_select_group);
+
 		dropdown = (Spinner)findViewById(R.id.spinner);
 		phoneList = (TextView) findViewById(R.id.phone_list);
 		addPhone = (EditText) findViewById(R.id.add_phone);
@@ -100,7 +102,7 @@ public class AddStudentsToGroupActivity extends BasicClass
 				e.printStackTrace();
 			}
 			String[] items = new String[list.length+1];
-			items[0]="Select group";
+			items[0]=getString(R.string.spinner_select_group);
 			for (int i=0; i<list.length; i++){
 				items[i+1]=list[i];
 			}
@@ -121,7 +123,7 @@ public class AddStudentsToGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tLoading groups...");
+			pdLoading.setMessage("\t"+getString(R.string.loading_groups));
 			pdLoading.show();
 		}
 		@Override
@@ -162,7 +164,7 @@ public class AddStudentsToGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tAdding student...");
+			pdLoading.setMessage("\t"+getString(R.string.adding_student));
 			pdLoading.show();
 		}
 		@Override
@@ -178,34 +180,33 @@ public class AddStudentsToGroupActivity extends BasicClass
 				addPhone.setText("");
 			}
 			else{
-
 				final String phone = addPhone.getText().toString();
 
 				final AlertDialog.Builder alert = new AlertDialog.Builder(AddStudentsToGroupActivity.this);
-				alert.setTitle("Add student with number "+phone);
+				alert.setTitle(getString(R.string.add_student_title)+phone);
 
 				LinearLayout layout = new LinearLayout(AddStudentsToGroupActivity.this);
 				layout.setOrientation(LinearLayout.VERTICAL);
 
 				newStudentName = new EditText(AddStudentsToGroupActivity.this);
-				newStudentName.setHint("Enter name");
+				newStudentName.setHint(getString(R.string.enter_student_name_for_registration));
 				newStudentName.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
 				layout.addView(newStudentName);
 
 				newStudentFName = new EditText(AddStudentsToGroupActivity.this);
-				newStudentFName.setHint("Enter last name");
+				newStudentFName.setHint(getString(R.string.enter_student_last_name_for_registration));
 				newStudentFName.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
 				layout.addView(newStudentFName);
 
 				alert.setView(layout);
-				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				alert.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (newStudentName.getText().toString().equals("")){
-							Toast t = Toast.makeText(getApplicationContext(), "Please enter student's name", Toast.LENGTH_LONG);
+							Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_student_name_alert), Toast.LENGTH_LONG);
 							t.show();
 						}
 						else if (newStudentFName.getText().toString().equals("")){
-							Toast t = Toast.makeText(getApplicationContext(), "Please enter student's last name", Toast.LENGTH_LONG);
+							Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_student_last_name_alert), Toast.LENGTH_LONG);
 							t.show();
 						}
 						else
@@ -237,7 +238,7 @@ public class AddStudentsToGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tRegistering student...");
+			pdLoading.setMessage("\t"+getString(R.string.signing_student_up));
 			pdLoading.show();
 		}
 		@Override
@@ -253,7 +254,7 @@ public class AddStudentsToGroupActivity extends BasicClass
 			addPhone.setText("");
 
 
-			Toast t = Toast.makeText(getApplicationContext(), "Student added to database", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.signed_student_up), Toast.LENGTH_LONG);
 			t.show();
 		}
 	}
@@ -263,12 +264,12 @@ public class AddStudentsToGroupActivity extends BasicClass
 		String phonesString = phoneList.getText().toString();
 
 		Log.d("Add students to group: ",selectedSpinner+", "+phonesString);
-		if (selectedSpinner.equals("Select group")){
-			Toast t = Toast.makeText(getApplicationContext(), "Please select group", Toast.LENGTH_LONG);
+		if (selectedSpinner.equals(getString(R.string.spinner_select_group))){
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.select_group_alert), Toast.LENGTH_LONG);
 			t.show();
 		}
 		else if (phonesString.length()==0){
-			Toast t = Toast.makeText(getApplicationContext(), "Please enter at least one phone number", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_at_least_one_number_alert), Toast.LENGTH_LONG);
 			t.show();
 		}
 		else{
@@ -300,7 +301,7 @@ public class AddStudentsToGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\tAdding students to group...");
+			pdLoading.setMessage("\t"+getString(R.string.adding_students_to_groups));
 			pdLoading.show();
 		}
 		@Override
@@ -312,7 +313,7 @@ public class AddStudentsToGroupActivity extends BasicClass
 			dropdown.setSelection(0);
 			addPhone.setText("");
 			phoneList.setText("");
-			Toast t = Toast.makeText(getApplicationContext(), "Students added to group", Toast.LENGTH_LONG);
+			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.added_students_to_group), Toast.LENGTH_LONG);
 			t.show();
 
 		}
