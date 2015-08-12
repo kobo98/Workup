@@ -62,7 +62,7 @@ public class StudentAllTasksActivity extends BasicClass
         positionInMenu=0;
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer,(DrawerLayout) findViewById(R.id.drawer_layout),positionInMenu,this);
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), positionInMenu, this);
 
     }
 
@@ -72,6 +72,7 @@ public class StudentAllTasksActivity extends BasicClass
     public void onStart(){
         super.onStart();
 	    firstRun=false;
+	    finishedFirstCheck=false;
 	    checkForNewGroups();
 	    start();
     }
@@ -376,6 +377,10 @@ public class StudentAllTasksActivity extends BasicClass
 
 			public void showCommentDialog(final int position){
 
+				TeacherMainActivity.selectedTask=savedTaskIDs[position];
+				openCommentsActivity(new View(StudentAllTasksActivity.this));
+				load.dismiss();
+				/*
 				final int pos = position;
 				try {
 
@@ -477,6 +482,7 @@ public class StudentAllTasksActivity extends BasicClass
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+				*/
 			}
 
 

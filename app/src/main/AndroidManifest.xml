@@ -97,7 +97,16 @@
         <activity
             android:name=".AddGradeActivity"
             android:label="@string/title_activity_add_grade"
-	        android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".CommentsActivity"
+            android:label="@string/title_activity_comments"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".GradesGraphActivity"
+            android:label="@string/title_activity_grades_graph" >
         </activity>
     </application>
 

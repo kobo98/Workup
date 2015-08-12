@@ -27,8 +27,19 @@
 		android:layout_toEndOf="@+id/switch_list_graph"
 		android:layout_toRightOf="@+id/switch_list_graph" />
 -->
+	<Button
+		android:id="@+id/timeline_button"
+		android:layout_width="wrap_content"
+		android:layout_height="60dp"
+		android:layout_alignParentTop="true"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="15dp"
+		android:text="הצג גרף ציונים"
+		android:onClick="openGradesGraph" />
+
 	<ListView
 		android:id="@+id/list_of_grades"
+		android:layout_below="@id/timeline_button"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_centerHorizontal="true" />

@@ -109,6 +109,9 @@ public class AllGradesActivity extends BasicClass
 		}
 	}
 
+	public void openGradesGraph(View v){
+		openGradesGraphActivity(new View(AllGradesActivity.this));
+	}
 
 
 	boolean firstRun=true;

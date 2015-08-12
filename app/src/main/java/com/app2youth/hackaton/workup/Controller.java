@@ -2,6 +2,7 @@ package com.app2youth.hackaton.workup;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Controller {
 	
@@ -91,11 +92,11 @@ public class Controller {
 	}
 	
 	public static void addClass(int groupID, int day, String startingTime) throws SQLException{
-		SQL.statement.execute("INSERT INTO classes (teachGroup, day, startTime) VALUES ("+groupID+", "+day+", '"+startingTime+"');");
+		SQL.statement.execute("INSERT INTO classes (teachGroup, day, startTime) VALUES (" + groupID + ", " + day + ", '" + startingTime + "');");
 		int classID = SQL.getLastID();
 		
 		int scheduleID = -1;
-		ResultSet rs = SQL.statement.executeQuery("SELECT schedule FROM groups WHERE groupID = "+groupID+";");
+		ResultSet rs = SQL.statement.executeQuery("SELECT schedule FROM groups WHERE groupID = " + groupID + ";");
 		while(rs.next())
 			scheduleID=rs.getInt(1);
 		
@@ -111,12 +112,12 @@ public class Controller {
 	}
 	
 	public static void addTask(int groupID, String title, String description, String filingDate) throws SQLException{
-		SQL.statement.execute("INSERT INTO tasks (title, description, teachGroup, filingDate, comments, ranksum, votes) VALUES ('"+title+"', '"+description+"', "+groupID+", '"+filingDate+"', '', 0,0);");
+		SQL.statement.execute("INSERT INTO tasks (title, description, teachGroup, filingDate, comments, ranksum, votes) VALUES ('" + title + "', '" + description + "', " + groupID + ", '" + filingDate + "', '', 0,0);");
 		int taskID = SQL.getLastID();
 		
 		SQL.statement.execute("UPDATE groups SET tasks = CONCAT(tasks, '"+taskID+";') where groupID = "+groupID+";");
 		
-		ResultSet rs = SQL.statement.executeQuery("SELECT students FROM groups WHERE groupID = "+groupID+";");
+		ResultSet rs = SQL.statement.executeQuery("SELECT students FROM groups WHERE groupID = " + groupID + ";");
 		String students = null;
 		while(rs.next())
 			students=rs.getString(1);
@@ -145,12 +146,17 @@ public class Controller {
 	
 	public static void addComment(String comment, int taskID, boolean student, int commentorID) throws SQLException{
 		int isStudent = student ? 1 : 0;
-		SQL.statement.execute("INSERT INTO comments (comment, isStudent, commentor) VALUES ('"+comment+"', "+isStudent+", "+commentorID+");");
+		SQL.statement.execute("INSERT INTO comments (comment, isStudent, commentor, comments) VALUES ('"+comment+"', "+isStudent+", "+commentorID+", '');");
 		int commentID = SQL.getLastID();
 		SQL.statement.execute("UPDATE tasks SET comments = CONCAT(comments, '"+commentID+";') where taskID = "+taskID+";");
 	}
-	
-	
+
+	public static void addCommentToComment(String comment, int commentedCommentID, boolean student, int commentorID) throws SQLException{
+		int isStudent = student ? 1 : 0;
+		SQL.statement.execute("INSERT INTO comments (comment, isStudent, commentor, comments) VALUES ('"+comment+"', "+isStudent+", "+commentorID+", '');");
+		int commentID = SQL.getLastID();
+		SQL.statement.execute("UPDATE comments SET comments = CONCAT(comments, '"+commentID+";') where commentID = "+commentedCommentID+";");
+	}
 	
 	
 	//User functions
@@ -314,6 +320,15 @@ public class Controller {
         return cmts;
     }
 
+	public static String getCommentsFromComment(int commentID) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT comments FROM comments WHERE commentID = " + commentID + ";");
+		String cmts=null;
+		while(rs.next())
+			cmts=rs.getString(1);
+
+		return cmts;
+	}
+
     public static String[] getGroupNamesForTeacher(String phone) throws SQLException{
         ResultSet rs = SQL.statement.executeQuery("SELECT groups FROM teachers WHERE teacherID = " + getTeacherIDByPhone(phone) + ";");
         String groups=null;
@@ -397,7 +412,7 @@ public class Controller {
 	}
 
 	public static String[] getStudentsFromGroup(int id) throws SQLException{
-		ResultSet rs = SQL.statement.executeQuery("SELECT students FROM groups WHERE groupID = " + id+ ";");
+		ResultSet rs = SQL.statement.executeQuery("SELECT students FROM groups WHERE groupID = " + id + ";");
 		String groups=null;
 		while(rs.next())
 			groups=rs.getString(1);
@@ -468,7 +483,7 @@ public class Controller {
 	}
 
 	public static String getGroupName(int id) throws SQLException{
-		ResultSet rs = SQL.statement.executeQuery("SELECT name FROM groups WHERE groupID = '"+id+"' LIMIT 1;");
+		ResultSet rs = SQL.statement.executeQuery("SELECT name FROM groups WHERE groupID = '" + id + "' LIMIT 1;");
 		String name="";
 		while(rs.next()){
 			name = rs.getString(1);
@@ -532,6 +547,26 @@ public class Controller {
 		return ids;
 	}
 
+	public static ArrayList<Integer> getGradesFromStudentInGroup(int studentID, int groupID) throws SQLException{
+		ResultSet rs = SQL.statement.executeQuery("SELECT grades FROM students WHERE studentID = " + studentID+ ";");
+		String groups=null;
+		while(rs.next())
+			groups=rs.getString(1);
+
+		if (groups==null || groups.length()==0)
+			return new ArrayList<Integer>();
+
+		String[] ids = groups.split(";");
+
+		ArrayList<Integer> idsWithGroup = new ArrayList<Integer>();
+		for (String id:ids){
+			if (!id.equals("") && id!=null)
+				if (getGroupFromGrade(Integer.parseInt(id))==groupID)
+					idsWithGroup.add(Integer.parseInt(id));
+		}
+		return idsWithGroup;
+	}
+
 	public static int getGrade(int gradeID) throws SQLException {
 		ResultSet rs = SQL.statement.executeQuery("SELECT grade FROM grades WHERE gradeID = " + gradeID+ ";");
 		int grade=0;
@@ -553,6 +588,7 @@ public class Controller {
 			group=rs.getInt(1);
 		return group;
 	}
+
 
 	public static void finishTaskAndSendFeedback(int taskID, int rating) throws SQLException {
 		ResultSet rs = SQL.statement.executeQuery("SELECT ranksum,votes FROM tasks WHERE taskID = " + taskID+ ";");

@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 
 public class TeacherMainActivity extends BasicClass
@@ -77,19 +78,6 @@ public class TeacherMainActivity extends BasicClass
 	public void start(){
 		//new LoadData().execute((Void)null);
 		new LoadDataAdapter().execute((Void)null);
-
-		/*
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("item1");
-		list.add("item2");
-
-		//instantiate custom adapter
-		GroupListAdapter adapter = new GroupListAdapter(list, this);
-
-		//handle listview and assign adapter
-		lView = (ListView)findViewById(R.id.list_of_groups);
-		lView.setAdapter(adapter);
-		*/
 	}
 
 	private class LoadDataAdapter extends AsyncTask<Void, Void, Void> {
@@ -358,6 +346,76 @@ public class TeacherMainActivity extends BasicClass
 		}
 	}
 
+
+	public static int selectedTask=-1;
+	public void showTasks(int position){
+		final int groupID = savedGroupIDs[position];
+		new ShowTasks().execute(groupID);
+	}
+
+	private class ShowTasks extends AsyncTask<Integer, Void, HashMap<Integer,String>>{
+		ProgressDialog pdLoading = new ProgressDialog(TeacherMainActivity.this);
+
+		@Override
+		protected HashMap<Integer,String> doInBackground(Integer... inputs){
+			HashMap<Integer,String> taskNames = new HashMap<Integer,String>();
+			try {
+				String tasks = Controller.getTasksFromGroup(inputs[0]);
+				String[] taskList = tasks.split(";");
+				if (!tasks.equals(""))
+					for (int i=0; i<taskList.length; i++){
+						int id=Integer.parseInt(taskList[i]);
+						taskNames.put(id, Controller.getTaskTitle(id));
+					}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return taskNames;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\t" + getString(R.string.loading_tasks));
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(HashMap<Integer,String> result) {
+			pdLoading.dismiss();
+
+			final AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
+
+			alert.setTitle(getString(R.string.select_task));
+			//alert.setMessage("Message");
+
+			LinearLayout layout = new LinearLayout(TeacherMainActivity.this);
+			layout.setOrientation(LinearLayout.VERTICAL);
+
+			//here should be
+
+			alert.setView(layout);
+
+			alert.setNegativeButton(getString(R.string.cancel), null);
+			final AlertDialog ad = alert.show();
+
+			for (final int id:result.keySet()){
+				Button taskButton = new Button(TeacherMainActivity.this);
+				taskButton.setText(result.get(id));
+				taskButton.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						selectedTask=id;
+						openCommentsActivity(new View(TeacherMainActivity.this));
+						ad.dismiss();
+					}
+				});
+				layout.addView(taskButton);
+			}
+
+		}
+	}
 
 	boolean firstRun=true;
     @Override

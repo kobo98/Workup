@@ -29,8 +29,9 @@
 		android:layout_below="@+id/title_new"
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="100dp"
-		android:ems="10"
-		android:hint="Phone"
+		android:ems="12"
+		android:hint="@string/hint_enter_phone"
+		android:imeOptions="flagNoFullscreen"
 		android:inputType="phone" />
 
 	<EditText
@@ -40,8 +41,9 @@
 		android:layout_below="@+id/phone"
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="50dp"
-		android:ems="10"
-		android:hint="First Name"
+		android:ems="12"
+		android:hint="@string/hint_name"
+		android:imeOptions="flagNoFullscreen"
 		android:inputType="textPersonName" />
 
 	<EditText
@@ -51,8 +53,9 @@
 		android:layout_below="@+id/fname"
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="50dp"
-		android:ems="10"
-		android:hint="Last name"
+		android:ems="12"
+		android:hint="@string/hint_last_name"
+		android:imeOptions="flagNoFullscreen"
 		android:inputType="textPersonName" />
 
 	<ImageView

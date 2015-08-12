@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+				android:background="@drawable/rounded_border">
+	<TextView
+		android:id="@+id/commentor"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_alignParentRight="true"
+		android:paddingRight="16dp"
+		android:text="commentor"
+		android:textSize="20sp"
+		android:clickable="true"
+		android:textStyle="normal" />
+	<!--android:textSize="16sp"
+		android:textColor="#ff0f20ff"-->
+
+
+
+	<Button
+		android:id="@+id/open_comments_button"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_centerVertical="true"
+		android:layout_marginRight="5dp"
+		android:text="\\/"
+		android:textSize="25sp"/>
+
+
+</RelativeLayout>

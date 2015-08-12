@@ -110,6 +110,14 @@ public class BasicClass extends ActionBarActivity
 		startActivity(new Intent(this, LessonsTableActivityTeacher.class));
 	}
 
+	public void openCommentsActivity(View v) {
+		startActivity(new Intent(this, CommentsActivity.class));
+	}
+
+	public void openGradesGraphActivity(View v) {
+		startActivity(new Intent(this, GradesGraphActivity.class));
+	}
+
 	public void openAddTaskActivity(View v) {
 		startActivity(new Intent(this, AddTaskActivity.class));
 	}
@@ -251,27 +259,23 @@ public class BasicClass extends ActionBarActivity
 	}
 
 
-	private class LoadGroups extends AsyncTask<Void, Void, Void> {
-		//ProgressDialog pdLoading = new ProgressDialog(BasicClass.this);
-
+	private class LoadSomething extends AsyncTask<Void, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(BasicClass.this);
 		@Override
-		protected Void doInBackground(Void... ints){
-
+		protected Void doInBackground(Void... in){
 			return null;
 		}
 		@Override
 		public void onPreExecute(){
 			super.onPreExecute();
-
-			//pdLoading.setMessage("\tLoading groups...");
-			//pdLoading.show();
+			pdLoading.setMessage("\t" + getString(R.string.loading_data));
+			pdLoading.show();
 		}
 		@Override
 		protected void onProgressUpdate(Void... progress) {}
 		@Override
 		protected void onPostExecute(Void result) {
-			//pdLoading.dismiss();
-
+			pdLoading.dismiss();
 		}
 	}
 
@@ -406,24 +410,18 @@ public class BasicClass extends ActionBarActivity
 	public class GroupListAdapter extends BaseAdapter implements ListAdapter {
 		private ArrayList<String> list = new ArrayList<String>();
 		private Context context;
-
-
 		public GroupListAdapter(ArrayList<String> list, Context context) {
 			this.list = list;
 			this.context = context;
 		}
-
-
 		@Override
 		public int getCount() {
 			return list.size();
 		}
-
 		@Override
 		public Object getItem(int pos) {
 			return list.get(pos);
 		}
-
 		@Override
 		public long getItemId(int pos) {
 			return 0;//list.get(pos).getId();
@@ -447,6 +445,7 @@ public class BasicClass extends ActionBarActivity
 			//Handle buttons and add onClickListeners
 			Button deleteBtn = (Button)view.findViewById(R.id.delete_btn);
 			Button addBtn = (Button)view.findViewById(R.id.add_btn);
+			Button tasksBtn = (Button)view.findViewById(R.id.tasks_btn);
 
 			listItemText.setOnClickListener(new View.OnClickListener(){
 				@Override
@@ -470,6 +469,13 @@ public class BasicClass extends ActionBarActivity
 					notifyDataSetChanged();
 				}
 			});
+			tasksBtn.setOnClickListener(new View.OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					showTasks(position);
+					notifyDataSetChanged();
+				}
+			});
 
 			return view;
 		}
@@ -483,5 +489,10 @@ public class BasicClass extends ActionBarActivity
 	public void presentGroup(int position){
 
 	}
+	public void showTasks(int position){
+
+	}
+
+
 
 }

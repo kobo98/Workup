@@ -81,6 +81,7 @@
 	<string name="students_title">תלמידים:  </string>
 	<string name="teachers_title">מורים:  </string>
 	<string name="select_group_first">קודם בחר קבוצה</string>
+	<string name="select_task">בחר מטלה</string>
 
 	<string name="adding_class">מוסיף שיעור...</string>
 	<string name="adding_task">מוסיף מטלה...</string>
@@ -134,14 +135,20 @@
 	<string name="hint_task_title">כותרת</string>
 	<string name="hint_task_description">תיאור</string>
 	<string name="hint_task_date">תאריך</string>
-
+	<string name="hint_name">שם</string>
+	<string name="hint_last_name">שם משפחה</string>
 
 	<string name="add_student_button_text">הוסף</string>
+	<string name="button_text_tasks">מטלות</string>
 	<string name="yes">כן</string>
 	<string name="no">לא</string>
 	<string name="ok">OK</string>
 	<string name="close">סגור</string>
 	<string name="cancel">סגור</string>
+	<string name="title_activity_comments">CommentsActivity</string>
+
+	<string name="hello_world">Hello world!</string>
+	<string name="title_activity_grades_graph">GradesGraphActivity</string>
 
 
 </resources>
