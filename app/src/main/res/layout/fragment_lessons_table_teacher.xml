@@ -7,7 +7,7 @@
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
-	tools:context="com.app2youth.hackaton.workup.LessonsTableActivityTeacher$PlaceholderFragment">
+	tools:context="com.app2youth.hackaton.Workup1.LessonsTableActivityTeacher$PlaceholderFragment">
 
 	<GridView
 		android:id="@+id/gridView1"

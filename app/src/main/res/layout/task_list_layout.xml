@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/task_list_teacher"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+	<TextView
+		android:id="@+id/task_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_alignParentRight="true"
+		android:paddingLeft="16dp"
+		android:textSize="18sp"
+		android:textStyle="bold" />
+
+	<Button
+		android:id="@+id/delete_btn"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_centerVertical="true"
+		android:layout_marginRight="0dp"
+		android:textSize="20sp"
+		android:text="-" />
+
+	<Button
+		android:id="@+id/info_btn"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/delete_btn"
+		android:layout_centerVertical="true"
+		android:layout_marginRight="0dp"
+		android:textSize="20sp"
+		android:text="@string/info" />
+
+	<Button
+		android:id="@+id/replies_button"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/info_btn"
+		android:layout_centerVertical="true"
+		android:layout_marginRight="0dp"
+		android:textSize="20sp"
+		android:text="@string/button_text_replies" />
+
+
+
+</RelativeLayout>

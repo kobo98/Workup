@@ -6,4 +6,4 @@
           android:divider="@android:color/transparent"
           android:dividerHeight="0dp"
           android:background="#cccc"
-          tools:context="com.app2youth.hackaton.workup.NavigationDrawerFragmentTeacher"/>
+          tools:context="com.app2youth.hackaton.Workup1.NavigationDrawerFragmentTeacher"/>

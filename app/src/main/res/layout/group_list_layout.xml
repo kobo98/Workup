@@ -8,7 +8,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_centerVertical="true"
-		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
 		android:paddingLeft="16dp"
 		android:textSize="18sp"
 		android:textStyle="bold" />
@@ -18,10 +18,10 @@
 		style="?android:attr/buttonStyleSmall"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
+		android:layout_alignParentLeft="true"
 		android:layout_centerVertical="true"
-		android:layout_marginRight="5dp"
-		android:textSize="25sp"
+		android:layout_marginRight="0dp"
+		android:textSize="20sp"
 		android:text="-" />
 
 	<Button
@@ -29,10 +29,10 @@
 		style="?android:attr/buttonStyleSmall"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_toLeftOf="@id/delete_btn"
+		android:layout_toRightOf="@id/delete_btn"
 		android:layout_centerVertical="true"
-		android:layout_marginRight="10dp"
-		android:textSize="25sp"
+		android:layout_marginRight="0dp"
+		android:textSize="20sp"
 		android:text="+" />
 
 	<Button
@@ -40,10 +40,10 @@
 		style="?android:attr/buttonStyleSmall"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_toLeftOf="@id/add_btn"
+		android:layout_toRightOf="@id/add_btn"
 		android:layout_centerVertical="true"
-		android:layout_marginRight="10dp"
-		android:textSize="25sp"
+		android:layout_marginRight="0dp"
+		android:textSize="20sp"
 		android:text="@string/button_text_tasks" />
 
 

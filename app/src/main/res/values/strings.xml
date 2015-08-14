@@ -2,10 +2,10 @@
 	<string name="app_name">Workup</string>
 
 	<string name="teacher_title_section1">קבוצות</string>
-	<string name="teacher_title_section2">מטלה חדשה</string>
+	<string name="teacher_title_section2">קבוצה חדשה</string>
 	<string name="teacher_title_section3">הוסף תלמידים</string>
 	<string name="teacher_title_section4">מערכת שעות</string>
-	<string name="teacher_title_section5">קבוצה חדשה</string>
+	<string name="teacher_title_section5">מטלה חדשה</string>
 	<string name="teacher_title_section6">סטטיסטיקה</string>
 	<string name="teacher_title_section7">הוסף ציון</string>
 
@@ -15,10 +15,10 @@
 
 
 	<string name="teacher_menu_1">רשימת קבוצות</string>
-	<string name="teacher_menu_2">הוסף מטלה</string>
+	<string name="teacher_menu_2">הוסף קבוצה חדשה</string>
 	<string name="teacher_menu_3">הוסף תלמידים לקבוצה</string>
 	<string name="teacher_menu_4">מערכת שעות</string>
-	<string name="teacher_menu_5">הוסף קבוצה חדשה</string>
+	<string name="teacher_menu_5">הוסף מטלה</string>
 	<string name="teacher_menu_6">הערכת משימות</string>
 	<string name="teacher_menu_7">הוספת ציונים</string>
 
@@ -74,14 +74,16 @@
 	<string name="sending_feedback">מסיים משימה...</string>
 	<string name="comments_title">תגובות</string>
 	<string name="task_description_title">תיאור: </string>
-	<string name="add_class_title">הוסף מטלה</string>
+	<string name="add_class_title">הוסף שיעור</string>
 	<string name="select_time_title">בחר זמן</string>
 	<string name="delete_group_question">למחוק קבוצה?</string>
 	<string name="group_info_title">מידע על הקבוצה </string>
-	<string name="students_title">תלמידים:  </string>
-	<string name="teachers_title">מורים:  </string>
+	<string name="students_title">תלמידים:</string>
+	<string name="teachers_title">מורים:</string>
 	<string name="select_group_first">קודם בחר קבוצה</string>
-	<string name="select_task">בחר מטלה</string>
+	<string name="select_task">בחר מטלה בקבוצה</string>
+	<string name="add_students_to_class">הוסף תלמידים לקבוצה</string>
+	<string name="add_to_group">הוסף</string>
 
 	<string name="adding_class">מוסיף שיעור...</string>
 	<string name="adding_task">מוסיף מטלה...</string>
@@ -96,8 +98,8 @@
 	<string name="added_class">שיעור הוסף בהצלחה!</string>
 	<string name="added_grade">ציון הוסף בהצלחה!</string>
 	<string name="added_group">קבוצה הוספה בהצלחה!</string>
-	<string name="added_student">תתלמיד הוסף</string>
-	<string name="signed_student_up">תתלמיד הוסף בהצלחה!</string>
+	<string name="added_student">תלמיד הוסף</string>
+	<string name="signed_student_up">תלמיד הוסף בהצלחה!</string>
 	<string name="added_students_to_group">תלמידים הוספו לקבוצה בהצלחה!</string>
 	<string name="group_deleted">קבוצה נמחקה בהצלחה!</string>
 
@@ -118,7 +120,7 @@
 	<string name="enter_phone_registration_alert">הכנס מספר טלפון</string>
 	<string name="enter_name_registration_alert">הכנס שם פרטי</string>
 	<string name="enter_last_name_registration_alert">הכנס שם משפחה</string>
-	<string name="already_registered_student_alert">אמספר טלפון זה כבר רשום כתלמיד!</string>
+	<string name="already_registered_student_alert">מספר טלפון זה כבר רשום כתלמיד!</string>
 	<string name="already_registered_teacher_alert">מספר טלפון זה רשום כבר כמורה!</string>
 	<string name="choose_hour_alert">בחר שעה</string>
 
@@ -139,16 +141,29 @@
 	<string name="hint_last_name">שם משפחה</string>
 
 	<string name="add_student_button_text">הוסף</string>
+	<string name="add_group">הוסף קבוצה</string>
+	<string name="add_task">הוסף מטלה</string>
 	<string name="button_text_tasks">מטלות</string>
+	<string name="button_text_replies">תגובות</string>
 	<string name="yes">כן</string>
 	<string name="no">לא</string>
 	<string name="ok">OK</string>
 	<string name="close">סגור</string>
 	<string name="cancel">סגור</string>
-	<string name="title_activity_comments">CommentsActivity</string>
+	<string name="info">!</string>
+	<string name="title_activity_comments">תגובות</string>
+	<string name="title_no_groups">אין קבוצות</string>
+	<string name="students_finished_task">תלמידים סיימו את המשימה</string>
+	<string name="info_on_task">מידע על המשימה</string>
+	<string name="finisher_name_list">רשימת התלמידים שלא סיימו:</string>
+	<string name="add_grade">הוסף ציון</string>
+
+	<string name="notification_added_to_group">הוספת לקבוצה</string>
+	<string name="notification_would_you_like_to_stay">האם תרצה להשאר בקבוצה?</string>
+	<string name="notification_would_you_like_to_create_a_group">אין לך קבוצות לימוד. האם תרצה להוסיף קבוצה?</string>
 
 	<string name="hello_world">Hello world!</string>
-	<string name="title_activity_grades_graph">GradesGraphActivity</string>
+	<string name="title_activity_grades_graph">גרף ציונים</string>
 
 
 </resources>

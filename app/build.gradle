@@ -1,15 +1,19 @@
 apply plugin: 'com.android.application'
 
 android {
+	/*
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
+    */
+	compileSdkVersion 22
+	buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.app2youth.hackaton.workup"
+        applicationId "com.app2youth.hackaton.Workup1"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "1.3"
     }
     buildTypes {
         release {

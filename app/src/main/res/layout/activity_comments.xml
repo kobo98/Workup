@@ -9,7 +9,7 @@
                 android:background="#e3e3e3"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                tools:context="com.app2youth.hackaton.workup.CommentsActivity">
+                tools:context="com.app2youth.hackaton.Workup1.CommentsActivity">
 
     <TextView
         android:id="@+id/task_description"
