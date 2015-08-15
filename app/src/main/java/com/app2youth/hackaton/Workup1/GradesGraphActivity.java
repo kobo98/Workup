@@ -1,6 +1,7 @@
 package com.app2youth.hackaton.Workup1;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -115,6 +116,7 @@ public class GradesGraphActivity extends ActionBarActivity {
 	private class LoadGraphData extends AsyncTask<Integer, Void, LineGraphSeries> {
 		ProgressDialog pdLoading = new ProgressDialog(GradesGraphActivity.this);
 		String[] labels=null;
+		double average=0;
 		@Override
 		protected LineGraphSeries doInBackground(Integer... input){
 			String[] list;
@@ -132,9 +134,10 @@ public class GradesGraphActivity extends ActionBarActivity {
 				for (int i=0; i<dataPoints.length; i++){
 
 					dataPoints[i] = new DataPoint(2*i, Controller.getGrade(grades.get(i)));
+					average+=dataPoints[i].getY();
 					labels[i] = Controller.getGradeDescription(grades.get(i));
 				}
-
+				average/=(double)dataPoints.length;
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -159,13 +162,22 @@ public class GradesGraphActivity extends ActionBarActivity {
 			if (result!=null && labels.length>1){
 				graph.addSeries(result);
 				staticLabelsFormatter.setHorizontalLabels(labels);
+
+
+				LineGraphSeries<DataPoint> averageSeries = new LineGraphSeries<DataPoint>(new DataPoint[]{
+						new DataPoint(result.getLowestValueX(), average),
+						new DataPoint(result.getHighestValueX(), average),
+				});
+				averageSeries.setColor(Color.rgb(120,160,120));
+				averageSeries.setThickness(4);
+				graph.addSeries(averageSeries);
 			}
 			else {
 				graph.addSeries(new LineGraphSeries(new DataPoint[]{
 						new DataPoint(0,0),
 						new DataPoint(2,0)
 				}));
-				staticLabelsFormatter.setHorizontalLabels(new String[]{" - ", " - "});
+				staticLabelsFormatter.setHorizontalLabels(new String[]{"more than one grade ", " needed "});
 			}
 
 		}

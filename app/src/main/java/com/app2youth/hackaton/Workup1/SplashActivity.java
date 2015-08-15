@@ -7,6 +7,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 
 import java.sql.SQLException;
 
@@ -61,9 +63,13 @@ public class SplashActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+	    getSupportActionBar().hide();
         setContentView(R.layout.activity_splash);
 
-
+	    View decorView = getWindow().getDecorView();
+	    int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+			    | View.SYSTEM_UI_FLAG_FULLSCREEN;
+	    decorView.setSystemUiVisibility(uiOptions);
 
         Thread background = new Thread() {
             public void run() {

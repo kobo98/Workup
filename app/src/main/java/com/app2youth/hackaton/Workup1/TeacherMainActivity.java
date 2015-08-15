@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBar;
 import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -238,6 +239,7 @@ public class TeacherMainActivity extends BasicClass
 		for (int i = 0; i < 7; i++) {
 			day[i] = new RadioButton(TeacherMainActivity.this);
 			day[i].setId(i + 1);
+
 			rg.addView(day[i]);
 
 		}
@@ -249,7 +251,10 @@ public class TeacherMainActivity extends BasicClass
 		day[5].setText(getString(R.string.day_6));
 		day[6].setText(getString(R.string.day_7));
 
-		layout.addView(rg);
+		LinearLayout.LayoutParams lpView = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		lpView.gravity = Gravity.RIGHT;
+
+		layout.addView(rg, lpView);
 
 		final EditText hour = new EditText(TeacherMainActivity.this);
 		hour.setInputType(InputType.TYPE_DATETIME_VARIATION_TIME);
