@@ -30,10 +30,10 @@ import java.util.Random;
 
 public class LessonsTableActivityStudent extends BasicClass
         implements NavigationDrawerFragmentStudent.NavigationDrawerCallbacks {
-
+    /*
     private GridView gv;
     private GridViewAdapter adapter_nur;
-
+    */
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -355,6 +355,14 @@ public class LessonsTableActivityStudent extends BasicClass
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_lessons_table_student, container, false);
+
+            HorizontalScrollView hsv = (HorizontalScrollView) rootView.findViewById(R.id.horizontal_scroll);
+            TextView button = (TextView) rootView.findViewById(R.id.son);
+            int x, y;
+            x = button.getLeft();
+            y = button.getTop();
+            hsv.scrollTo(x, y);
+
             return rootView;
         }
 
