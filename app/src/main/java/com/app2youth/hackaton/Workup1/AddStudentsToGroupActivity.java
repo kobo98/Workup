@@ -50,7 +50,7 @@ public class AddStudentsToGroupActivity extends BasicClass
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
-        Log.d("Msg","1");
+        Log.d("Msg", "1");
 
         positionInMenu=2;
 
@@ -58,7 +58,10 @@ public class AddStudentsToGroupActivity extends BasicClass
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout),positionInMenu,this);
-        Log.d("Msg","2");
+        Log.d("Msg", "2");
+
+
+
     }
 
     static String selectedSpinner=null;
@@ -104,18 +107,7 @@ public class AddStudentsToGroupActivity extends BasicClass
 			for (int i=0; i<list.length; i++){
 				items[i+1]=list[i];
 			}
-			dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					selectedSpinner=dropdown.getSelectedItem().toString();
-					Log.d("Selected ID", ""+dropdown.getSelectedItemId());
-				}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
-
-				}
-			});
 			return items;
 		}
 		@Override
@@ -131,6 +123,18 @@ public class AddStudentsToGroupActivity extends BasicClass
 		protected void onPostExecute(String[] result) {
 			pdLoading.dismiss();
 
+			dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+					selectedSpinner = dropdown.getSelectedItem().toString();
+					Log.d("Selected ID", "" + dropdown.getSelectedItemId());
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+
+				}
+			});
 
 			dropdown.setAdapter(new ArrayAdapter<String>(AddStudentsToGroupActivity.this, android.R.layout.simple_spinner_item, result));
 			if (BasicClass.groupSelected) {
@@ -147,16 +151,16 @@ public class AddStudentsToGroupActivity extends BasicClass
 
 	public void addStudentButton(View v){
 		if (!((EditText) findViewById(R.id.add_phone)).getText().toString().equals("")){
-			new AddStudent().execute((Void)null);
+			new AddStudent().execute(addPhone.getText().toString());
 		}
 	}
 
-	private class AddStudent extends AsyncTask<Void, Void, Boolean> {
+	private class AddStudent extends AsyncTask<String, Void, Boolean> {
 		ProgressDialog pdLoading = new ProgressDialog(AddStudentsToGroupActivity.this);
 		@Override
-		protected Boolean doInBackground(Void... ints){
+		protected Boolean doInBackground(String... ints){
 
-			final String phone = addPhone.getText().toString();
+			final String phone = ints[0];
 			try {
 				if (Controller.studentExists(phone)){
 
@@ -217,8 +221,10 @@ public class AddStudentsToGroupActivity extends BasicClass
 							Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_student_last_name_alert), Toast.LENGTH_LONG);
 							t.show();
 						}
-						else
-							new SignupAndAddStudent().execute((Void) null);
+						else {
+							String newname=newStudentName.getText().toString(), fname = newStudentFName.getText().toString(), phone=addPhone.getText().toString();
+							new SignupAndAddStudent().execute(newname, fname, phone);
+						}
 					}
 				});
 
@@ -229,13 +235,13 @@ public class AddStudentsToGroupActivity extends BasicClass
 	}
 
 
-	private class SignupAndAddStudent extends AsyncTask<Void, Void, Void> {
+	private class SignupAndAddStudent extends AsyncTask<String, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(AddStudentsToGroupActivity.this);
 		@Override
-		protected Void doInBackground(Void... ints){
+		protected Void doInBackground(String... ints){
 
 			try {
-				Controller.addStudent(newStudentName.getText().toString(), newStudentFName.getText().toString(), addPhone.getText().toString());
+				Controller.addStudent(ints[0], ints[1], ints[2]);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -281,16 +287,16 @@ public class AddStudentsToGroupActivity extends BasicClass
 			t.show();
 		}
 		else{
-			new AddStudentsToGroup().execute((Void)null);
+			new AddStudentsToGroup().execute(phoneList.getText().toString());
 		}
 	}
 
-	private class AddStudentsToGroup extends AsyncTask<Void, Void, Void> {
+	private class AddStudentsToGroup extends AsyncTask<String, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(AddStudentsToGroupActivity.this);
 
 		@Override
-		protected Void doInBackground(Void... ints){
-			String[] phones = phoneList.getText().toString().split(", ");
+		protected Void doInBackground(String... ints){
+			String[] phones = ints[0].split(", ");
 
 			for (String phone:phones){
 				try {

@@ -2,12 +2,14 @@ package com.app2youth.hackaton.Workup1;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
@@ -50,8 +53,14 @@ public class GraphActivity extends BasicClass
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout),positionInMenu,this);
-    }
 
+
+	    Display display = getWindowManager().getDefaultDisplay();
+	    Point size = new Point();
+	    display.getSize(size);
+	    width = size.x;
+    }
+	public static int width=0;
     @Override
     public void onStart() {
 	    super.onStart();
@@ -65,6 +74,9 @@ public class GraphActivity extends BasicClass
 		staticLabelsFormatter = new StaticLabelsFormatter(graph);
 
 	    //staticLabelsFormatter.setHorizontalLabels(new String[] {"zift", "beef", "kleaf","hide", "bife"});
+		graph.getViewport().setScrollable(true);
+		graph.setHorizontalScrollBarEnabled(true);
+
 
 	    graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
@@ -76,6 +88,8 @@ public class GraphActivity extends BasicClass
 	    layoutParams = new RadioGroup.LayoutParams(
 			    RadioGroup.LayoutParams.WRAP_CONTENT,
 			    RadioGroup.LayoutParams.WRAP_CONTENT);
+
+		RelativeLayout layout = (RelativeLayout)findViewById(R.id.layout);
 
 		new LoadGroups().execute((Void)null);
     }
@@ -190,15 +204,23 @@ public class GraphActivity extends BasicClass
 						new DataPoint(0,0),
 						new DataPoint(2,0)
 				}));
+
 				staticLabelsFormatter.setHorizontalLabels(new String[]{" - ", " - "});
 			}
 
+			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) graph.getLayoutParams();
+			params.width=100*(graph.getSeries().size()-1);
+			if (params.width<width)
+				params.width = width;
+			graph.setLayoutParams(params);
 		}
 	}
 
 
 
-
+	public void addGroupMenuButton(MenuItem bs){
+		openAddGroupActivity(new View(GraphActivity.this));
+	}
 
 	boolean firstRun=true;
     @Override
@@ -288,6 +310,10 @@ public class GraphActivity extends BasicClass
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_graph, container, false);
+			/*
+	        GraphView graphView = (GraphView) rootView.findViewById(R.id.graph);
+	        graphView.getViewport().setScrollable(true);
+			*/
             return rootView;
         }
 

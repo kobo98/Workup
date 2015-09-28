@@ -51,6 +51,9 @@ public class AddGradeActivity extends BasicClass
 		mNavigationDrawerFragment.setUp(
 				R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout), positionInMenu, this);
+
+
+
 	}
 
 
@@ -103,19 +106,7 @@ public class AddGradeActivity extends BasicClass
 			for (int i=0; i<list.length; i++){
 				items[i+1]=list[i];
 			}
-			groupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					selectedGroupSpinner=groupSpinner.getSelectedItem().toString();
-					if (!selectedGroupSpinner.equals(getString(R.string.spinner_select_group)))
-						new LoadStudents().execute((Void)null);
-				}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
-
-				}
-			});
 			return items;
 		}
 		@Override
@@ -130,6 +121,22 @@ public class AddGradeActivity extends BasicClass
 		@Override
 		protected void onPostExecute(String[] result) {
 			pdLoading.dismiss();
+
+			groupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+					selectedGroupSpinner = groupSpinner.getSelectedItem().toString();
+					if (!selectedGroupSpinner.equals(getString(R.string.spinner_select_group)))
+						new LoadStudents().execute((Void) null);
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+
+				}
+			});
+
+
 
 			studentSpinner.setAdapter(new ArrayAdapter<String>(AddGradeActivity.this, android.R.layout.simple_spinner_item, new String[]{getString(R.string.select_group_first)}));
 			groupSpinner.setAdapter(new ArrayAdapter<String>(AddGradeActivity.this, android.R.layout.simple_spinner_item, result));
@@ -169,21 +176,7 @@ public class AddGradeActivity extends BasicClass
 			for (int i=0; i<list.length; i++){
 				items[i+1]=list[i];
 			}
-			studentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					selectedStudentSpinner=studentSpinner.getSelectedItem().toString();
-					if (position>0)
-						selectedStudentID=studentIDs[position-1];
-					else
-						selectedStudentID=-1;
-				}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
-
-				}
-			});
 			return items;
 		}
 		@Override
@@ -198,6 +191,24 @@ public class AddGradeActivity extends BasicClass
 		@Override
 		protected void onPostExecute(String[] result) {
 			pdLoading.dismiss();
+
+
+			studentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+					selectedStudentSpinner = studentSpinner.getSelectedItem().toString();
+					if (position > 0)
+						selectedStudentID = studentIDs[position - 1];
+					else
+						selectedStudentID = -1;
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+
+				}
+			});
+
 
 			studentSpinner.setAdapter(new ArrayAdapter<String>(AddGradeActivity.this, android.R.layout.simple_spinner_item, result));
 		}
@@ -227,22 +238,23 @@ public class AddGradeActivity extends BasicClass
 			t.show();
 		}
 		else{
-			new AddGrade().execute((Void)null);
+			String description = examDecription.getText().toString(), text = grade.getText().toString();
+			new AddGrade().execute(description, text);
 		}
 	}
 
 
-	private class AddGrade extends AsyncTask<Void, Void, Void> {
+	private class AddGrade extends AsyncTask<String, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(AddGradeActivity.this);
 
 		@Override
-		protected Void doInBackground(Void... ints){
+		protected Void doInBackground(String... ints){
 			try {
 				Controller.addGrade(
 						selectedStudentID,
 						Controller.getGroupIDByNameAndPhone(selectedGroupSpinner, BasicClass.phone),
-						examDecription.getText().toString(),
-						Integer.parseInt(grade.getText().toString())
+						ints[0],
+						Integer.parseInt(ints[1].toString())
 				);
 			} catch (SQLException e) {
 				e.printStackTrace();

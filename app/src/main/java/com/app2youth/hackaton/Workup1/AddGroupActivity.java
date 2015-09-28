@@ -51,8 +51,11 @@ public class AddGroupActivity extends BasicClass
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout), positionInMenu, this);
+		        R.id.navigation_drawer,
+		        (DrawerLayout) findViewById(R.id.drawer_layout), positionInMenu, this);
+
+
+
     }
 
 
@@ -80,19 +83,20 @@ public class AddGroupActivity extends BasicClass
 
 	public void addStudentButton(View view){
 		if (!((EditText) findViewById(R.id.add_phone)).getText().toString().equals("")){
-			new AddStudent().execute((Void)null);
+			String phonetext = addPhone.getText().toString();
+			new AddStudent().execute(phonetext);
 		}
 	}
 
 
 
 
-	private class AddStudent extends AsyncTask<Void, Void, Boolean> {
+	private class AddStudent extends AsyncTask<String, Void, Boolean> {
 		ProgressDialog pdLoading = new ProgressDialog(AddGroupActivity.this);
 		@Override
-		protected Boolean doInBackground(Void... ints){
+		protected Boolean doInBackground(String... ints){
 
-			final String phone = addPhone.getText().toString();
+			final String phone = ints[0];
 			try {
 				if (Controller.studentExists(phone)){
 
@@ -153,8 +157,10 @@ public class AddGroupActivity extends BasicClass
 							Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_student_last_name_alert), Toast.LENGTH_LONG);
 							t.show();
 						}
-						else
-							new SignupAndAddStudent().execute((Void) null);
+						else {
+							String newname=newStudentName.getText().toString(), fname = newStudentFName.getText().toString(), phone=addPhone.getText().toString();
+							new SignupAndAddStudent().execute(newname, fname, phone);
+						}
 					}
 				});
 
@@ -165,13 +171,13 @@ public class AddGroupActivity extends BasicClass
 	}
 
 
-	private class SignupAndAddStudent extends AsyncTask<Void, Void, Void> {
+	private class SignupAndAddStudent extends AsyncTask<String, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(AddGroupActivity.this);
 		@Override
-		protected Void doInBackground(Void... ints){
+		protected Void doInBackground(String... ints){
 
 			try {
-				Controller.addStudent(newStudentName.getText().toString(), newStudentFName.getText().toString(), addPhone.getText().toString());
+				Controller.addStudent(ints[0], ints[1], ints[2]);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -218,24 +224,25 @@ public class AddGroupActivity extends BasicClass
 			t.show();
 		}
 		else{
-			new AddGroup().execute((Void)null);
+			String phonelist = phoneList.getText().toString(), groupname = groupName.getText().toString();
+			new AddGroup().execute(phonelist, groupname);
 		}
 	}
 
 
-	private class AddGroup extends AsyncTask<Void, Void, Void> {
+	private class AddGroup extends AsyncTask<String, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(AddGroupActivity.this);
 
 		@Override
-		protected Void doInBackground(Void... ints){
-			String phonesString = phoneList.getText().toString();
-			String group = groupName.getText().toString();
+		protected Void doInBackground(String... ints){
+			String phonesString = ints[0];
+			String group = ints[1];
 			try {
 
 				Controller.addGroup(Controller.getTeacherIDByPhone(BasicClass.phone), group);
 
 				if (phonesString.length()!=0){
-					String[] phones = phoneList.getText().toString().split(", ");
+					String[] phones = ints[0].split(", ");
 
 					for (String phone:phones){
 						Controller.addStudentToGroup(

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +23,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
@@ -58,8 +63,19 @@ public class AddTaskActivity extends BasicClass
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout),positionInMenu,this);
-    }
 
+
+
+
+	    Display display = getWindowManager().getDefaultDisplay();
+	    Point size = new Point();
+	    display.getSize(size);
+	    width = size.x;
+
+
+
+    }
+	public static double width=0;
 
 
 
@@ -230,6 +246,7 @@ public class AddTaskActivity extends BasicClass
 			filingDate.setText("");
 			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.added_task), Toast.LENGTH_LONG);
 			t.show();
+
 		}
 	}
 
@@ -322,6 +339,23 @@ public class AddTaskActivity extends BasicClass
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_add_task, container, false);
+
+
+
+
+
+	        ImageView back = (ImageView) rootView.findViewById(R.id.background);
+
+	        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) back.getLayoutParams();
+	        params.width = (int)width;
+	        params.height = (int)((double)width/4.0);
+	        back.setLayoutParams(params);
+	        back.bringToFront();
+
+	        TextView title = (TextView) rootView.findViewById(R.id.title_new);
+	        title.bringToFront();
+
+
             return rootView;
         }
 

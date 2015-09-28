@@ -2,12 +2,15 @@ package com.app2youth.hackaton.Workup1;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,9 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.HorizontalScrollView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Random;
 
 
 public class LessonsTableActivityStudent extends BasicClass
@@ -63,6 +71,7 @@ public class LessonsTableActivityStudent extends BasicClass
 		new LoadTimetable().execute((Void)null);
 	}
 
+	/*
 	private class LoadTimetable extends AsyncTask<Void, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(LessonsTableActivityStudent.this);
 
@@ -71,15 +80,7 @@ public class LessonsTableActivityStudent extends BasicClass
 			LessonsTableActivityStudent.this.gv = (GridView) findViewById(R.id.gridView1);
 			String[] str = new String[7+7*9];
 
-			/*
-			str[0]=getString(R.string.day_1);
-			str[1]=getString(R.string.day_2);
-			str[2]=getString(R.string.day_3);
-			str[3]=getString(R.string.day_4);
-			str[4]=getString(R.string.day_5);
-			str[5]=getString(R.string.day_6);
-			str[6]=getString(R.string.day_7);
-			*/
+
 			str[0]=getString(R.string.day_7);
 			str[1]=getString(R.string.day_6);
 			str[2]=getString(R.string.day_5);
@@ -142,6 +143,126 @@ public class LessonsTableActivityStudent extends BasicClass
 			pdLoading.dismiss();
 			if (gv!=null)
 				gv.setAdapter(adapter_nur);
+			Log.d("TAPLE", "UPZATED");
+		}
+	}
+	*/
+
+
+	private class LoadTimetable extends AsyncTask<Void, Void, ArrayList<String>> {
+		ProgressDialog pdLoading = new ProgressDialog(LessonsTableActivityStudent.this);
+
+		@Override
+		protected ArrayList<String> doInBackground(Void... ints){
+			ArrayList<String> timetable = new ArrayList<String>();
+
+			String classIDs = null;
+			try {
+
+				int[] indices = new int[]{1,1,1,1,1,1,1};
+
+				classIDs = BasicClass.teacher? Controller.getListOfClassesForTeacher(BasicClass.phone):Controller.getListOfClassesForStudent(BasicClass.phone);
+
+				classIDs = classIDs.replace(";", ",");
+				if (classIDs.length()==0)
+					classIDs="-1";
+
+
+
+				ResultSet rs = SQL.statement.executeQuery("SELECT teachGroup,day,startTime FROM classes WHERE classID IN ("+classIDs+");");
+				while(rs.next()){
+					int groupID = rs.getInt(1);
+					int day = rs.getInt(2);//8-rs.getInt(2);
+					String time = rs.getString(3);
+
+					ResultSet groupRS = SQL.spareStatement.executeQuery("SELECT name,teacher FROM groups WHERE groupID = " + groupID + ";");
+					String groupName="";
+					String teacherName="";
+					while(groupRS.next()) {
+						groupName = groupRS.getString(1);
+						int teacher = groupRS.getInt(2);
+					}
+
+					String field = groupName+","+time+","+day;
+					timetable.add(field);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			return timetable;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+
+			pdLoading.setMessage("\t" + getString(R.string.loading_timetable));
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(ArrayList<String> result) {
+			pdLoading.dismiss();
+
+			HorizontalScrollView hsv = (HorizontalScrollView) findViewById(R.id.horizontal_scroll);
+			TextView button = (TextView) findViewById(R.id.son);
+			int x, y;
+			x = button.getLeft();
+			y = button.getTop();
+			hsv.scrollTo(x, y);
+
+
+			for (String block:result){
+				String[] data = block.split(",");
+
+				String groupName=data[0];
+				String time=data[1];
+				int day=Integer.parseInt(data[2]);
+
+				String[] timePieces=time.split(":");
+				int hour = Integer.parseInt(timePieces[0]);
+				int minute = Integer.parseInt(timePieces[1]);
+				if (hour<6) {
+					hour += 12;
+					time=hour+":"+minute;
+				}
+
+
+				RelativeLayout layout = (RelativeLayout)findViewById(R.id.timetable_layout);
+
+				if (timePieces[0].length()<2)
+					time="0"+time;
+				if (timePieces[1].length()<2)
+					time+="0";
+
+				TextView newClass = new TextView(LessonsTableActivityStudent.this);
+				newClass.setTextSize(16);
+				newClass.setText(Html.fromHtml(
+						"<font size='18' color='#0f20ff'>" + time + "</font><br><br><font size='26' color='#000000'>    " + groupName + "</font>"
+				), TextView.BufferType.SPANNABLE);
+
+
+				newClass.setBackground(getDrawable(R.drawable.timetable_class));
+				GradientDrawable bgShape = (GradientDrawable)newClass.getBackground();
+				bgShape.setColor(Color.rgb(
+						(int) (new Random(groupName.hashCode()).nextDouble() * 255),
+						(int) (new Random(new Random(groupName.hashCode()).nextInt()).nextDouble() * 255),
+						(int) (new Random(new Random(new Random(groupName.hashCode()).nextInt()).nextInt()).nextDouble() * 255)
+				));
+
+				layout.addView(newClass);
+
+				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newClass.getLayoutParams();
+				params.leftMargin=223+300*(7-day) - groupName.length()*5;
+				params.topMargin=135+150*(hour-6) + (int)((double)150/(double)60)*minute;
+				newClass.setLayoutParams(params);
+
+				Log.d("Supposable location", params.leftMargin+", "+params.topMargin+", hour: "+hour+", day: "+day);
+			}
+
+
 			Log.d("TAPLE", "UPZATED");
 		}
 	}

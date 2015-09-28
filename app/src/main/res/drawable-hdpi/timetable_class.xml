@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/timetable_class">
+
+	<stroke
+		android:width="1dp"
+		android:color="#909090" />
+
+	<solid android:color="#ffaa70" />
+
+	<padding
+		android:left="9dp"
+		android:right="9dp"
+		android:top="10dp"
+		android:bottom="10dp" />
+
+	<corners android:radius="5dp" />
+
+</shape>

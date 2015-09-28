@@ -47,6 +47,8 @@ public class CommentsActivity extends ActionBarActivity {
 		Point size = new Point();
 		display.getSize(size);
 		height = size.y;
+
+
 	}
 
 

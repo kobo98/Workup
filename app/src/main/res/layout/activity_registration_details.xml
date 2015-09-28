@@ -1,21 +1,18 @@
 <RelativeLayout
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@mipmap/new_user"
-	xmlns:android="http://schemas.android.com/apk/res/android">
+    android:id="@+id/parent_layout"
+    android:background="#FFFFFF"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-	            android:layout_width="match_parent"
-	            android:layout_height="match_parent"
-	            android:fillViewport="true" >
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:focusableInTouchMode="true"
-	android:focusable="true"
-	tools:context="com.app2youth.hackaton.Workup1.RegistrationDetailsActivity">
+	<ImageView
+		android:id="@+id/background"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:layout_centerHorizontal="true"
+		android:layout_alignParentTop="true"
+		android:src="@mipmap/background_small"
+		/>
 
 	<TextView
 		android:id="@+id/title_new"
@@ -30,13 +27,29 @@
 		android:textColor="#ffffffff"
 		android:textSize="40dp" />
 
+
+
+	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:fillViewport="true" >
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="fill_parent"
+	android:layout_height="match_parent"
+	android:focusableInTouchMode="true"
+	android:focusable="true"
+	tools:context="com.app2youth.hackaton.Workup1.RegistrationDetailsActivity">
+
+
+
 	<EditText
 		android:id="@+id/phone"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@+id/title_new"
 		android:layout_centerHorizontal="true"
-		android:layout_marginTop="100dp"
+		android:layout_marginTop="150dp"
 		android:ems="12"
 		android:hint="@string/hint_enter_phone"
 		android:imeOptions="flagNoFullscreen"

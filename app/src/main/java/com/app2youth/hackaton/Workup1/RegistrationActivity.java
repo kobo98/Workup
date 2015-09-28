@@ -39,6 +39,7 @@ public class RegistrationActivity extends ActionBarActivity {
 		final RegistrationActivity ra = this;
 		BasicClass.registeringTeacher=false;
 		Intent intent = new Intent(ra, RegistrationDetailsActivity.class);
+
 		startActivity(intent);
 	}
 
@@ -46,6 +47,7 @@ public class RegistrationActivity extends ActionBarActivity {
 		final RegistrationActivity ra = this;
 		BasicClass.registeringTeacher=true;
 		Intent intent = new Intent(ra, RegistrationDetailsActivity.class);
+
 		startActivity(intent);
 	}
 

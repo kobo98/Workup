@@ -1,7 +1,9 @@
 package com.app2youth.hackaton.Workup1;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 
 
@@ -71,6 +74,8 @@ public class SplashActivity extends ActionBarActivity {
 			    | View.SYSTEM_UI_FLAG_FULLSCREEN;
 	    decorView.setSystemUiVisibility(uiOptions);
 
+	    FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/CHOCRG__.TTF");
+
         Thread background = new Thread() {
             public void run() {
                 try {
@@ -79,6 +84,7 @@ public class SplashActivity extends ActionBarActivity {
 
 					if(!readAndLogin()){
 						Intent i=new Intent(getBaseContext(),RegistrationActivity.class);
+						finish();
 						startActivity(i);
 					}
 
@@ -118,3 +124,26 @@ public class SplashActivity extends ActionBarActivity {
     }
 }
 
+final class FontsOverride {
+
+	public static void setDefaultFont(Context context,
+	                                  String staticTypefaceFieldName, String fontAssetName) {
+		final Typeface regular = Typeface.createFromAsset(context.getAssets(),
+				fontAssetName);
+		replaceFont(staticTypefaceFieldName, regular);
+	}
+
+	private static void replaceFont(String staticTypefaceFieldName,
+	                                  final Typeface newTypeface) {
+		try {
+			final Field staticField = Typeface.class
+					.getDeclaredField(staticTypefaceFieldName);
+			staticField.setAccessible(true);
+			staticField.set(null, newTypeface);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+}

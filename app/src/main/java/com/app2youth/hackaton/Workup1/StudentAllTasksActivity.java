@@ -50,6 +50,7 @@ public class StudentAllTasksActivity extends BasicClass
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), positionInMenu, this);
 
+
     }
 
 

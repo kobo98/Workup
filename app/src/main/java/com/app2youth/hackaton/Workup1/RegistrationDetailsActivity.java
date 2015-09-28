@@ -2,18 +2,27 @@ package com.app2youth.hackaton.Workup1;
 
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.gsm.SmsManager;
+import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
@@ -25,6 +34,24 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_registration_details);
+
+
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		int width = size.x;
+
+		ImageView back = (ImageView) findViewById(R.id.background);
+
+		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) back.getLayoutParams();
+		params.width = width;
+		params.height = (int)((double)width/4.0);
+		back.setLayoutParams(params);
+		back.bringToFront();
+
+		TextView title = (TextView) findViewById(R.id.title_new);
+		title.bringToFront();
+
 	}
 
 	@Override
@@ -215,7 +242,10 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 						}
 
 						Intent i=new Intent(getBaseContext(),TeacherMainActivity.class);
+						finish();
 						startActivity(i);
+
+
 					}
 
 					//Student
@@ -236,6 +266,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 						}
 
 						Intent i=new Intent(getBaseContext(),StudentAllTasksActivity.class);
+						finish();
 						startActivity(i);
 					}
 				} catch (SQLException e) {
