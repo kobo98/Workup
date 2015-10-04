@@ -21,7 +21,7 @@
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="10dp"
 		android:focusable="true"
-		android:text="הרשמה"
+		android:text="מטלה חדשה"
 		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:textColor="#ffffffff"
 		android:textSize="40dp" />
@@ -29,6 +29,7 @@
 	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
+	            android:background="#FFFFFF"
 	            android:fillViewport="true" >
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -41,6 +42,7 @@
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
+	android:background="#FFFFFF"
 	tools:context="com.app2youth.hackaton.Workup1.AddTaskActivity$PlaceholderFragment">
 
 
@@ -89,13 +91,33 @@
 		android:focusable="false" />
 
 	<ImageView
+		android:id="@+id/imageAttachment"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:layout_alignLeft="@id/filingDate"
+		android:layout_alignParentRight="true"
+		android:layout_marginTop="15dp"
+		android:layout_marginRight="-80dp"
+		android:layout_below="@id/filingDate"
+		android:onClick="openImageExplorer"
+		android:src="@mipmap/attachment" />
+
+	<ImageView
+		android:id="@+id/displayImage"
+		android:layout_width="80dp"
+		android:layout_height="80dp"
+		android:layout_marginTop="0dp"
+		android:layout_marginRight="-130dp"
+		android:layout_below="@id/filingDate"
+		android:layout_toLeftOf="@id/imageAttachment"/>
+
+	<ImageView
 		android:id="@+id/addTask"
 		android:layout_width="wrap_content"
 		android:layout_height="115dp"
-
 		android:layout_centerHorizontal="true"
-		android:layout_marginTop="15dp"
-		android:layout_below="@id/filingDate"
+		android:layout_marginTop="0dp"
+		android:layout_below="@id/imageAttachment"
 		android:onClick="createTask"
 		android:src="@mipmap/add_task" />
 

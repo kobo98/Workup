@@ -112,7 +112,8 @@ public class AddGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.adding_student));
+			pdLoading.setMessage("\t" + getString(R.string.adding_student));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -188,7 +189,8 @@ public class AddGroupActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.signing_student_up));
+			pdLoading.setMessage("\t" + getString(R.string.signing_student_up));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -263,6 +265,7 @@ public class AddGroupActivity extends BasicClass
 			super.onPreExecute();
 
 			pdLoading.setMessage("\t"+getString(R.string.adding_group));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override

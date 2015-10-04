@@ -28,7 +28,7 @@ import android.widget.Toast;
 import java.sql.SQLException;
 
 
-public class RegistrationDetailsActivity extends ActionBarActivity {
+public class RegistrationDetailsActivity extends BasicClass {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -237,9 +237,13 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 						saveString("species", "t");
 						BasicClass.teacher=true;
 						BasicClass.phone=in[0];
+
 						if (!Controller.teacherExists(in[0])){
 							Controller.addTeacher(in[1],in[2],in[0]);
 						}
+
+						BasicClass.id=Controller.getTeacherIDByPhone(in[0]);
+						saveInt("id", BasicClass.id);
 
 						Intent i=new Intent(getBaseContext(),TeacherMainActivity.class);
 						finish();
@@ -260,10 +264,14 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 						saveString("species", "s");
 						BasicClass.teacher=false;
 						BasicClass.phone=in[0];
+
 						if (!Controller.studentExists(in[0])){
 							Controller.addStudent(in[1],in[2],in[0]);
 							saveString("groups","");
 						}
+
+						BasicClass.id=Controller.getStudentIDByPhone(phone);
+						saveInt("id", BasicClass.id);
 
 						Intent i=new Intent(getBaseContext(),StudentAllTasksActivity.class);
 						finish();
@@ -279,6 +287,7 @@ public class RegistrationDetailsActivity extends ActionBarActivity {
 		public void onPreExecute(){
 			super.onPreExecute();
 			pdLoading.setMessage("\t"+getString(R.string.wait));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override

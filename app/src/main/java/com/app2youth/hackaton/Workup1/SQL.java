@@ -28,12 +28,14 @@ public class SQL {
 	public static Connection con=null;
 	public static Statement statement = null;
 	public static Statement spareStatement = null;
-	
+	public static Statement pushStatemenet = null;
+
 	public static void start(){
 		try {
 			con = getDBConnection();
 			statement = con.createStatement();
 			spareStatement = con.createStatement();
+			pushStatemenet = con.createStatement();
 			initializePreparedStatements();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -46,7 +48,8 @@ public class SQL {
 			
 			statement.close();
 			spareStatement.close();
-			
+			//pushStatemenet.close();
+
 			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

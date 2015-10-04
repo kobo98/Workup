@@ -1,12 +1,19 @@
 package com.app2youth.hackaton.Workup1;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,11 +23,21 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.NumberPicker;
+import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 
 public class AddGradeActivity extends BasicClass
@@ -67,27 +84,18 @@ public class AddGradeActivity extends BasicClass
 
 	public void start(){
 		selectedGroupSpinner=getString(R.string.spinner_select_group);
-		selectedStudentSpinner=getString(R.string.spinner_select_student);
 
 		groupSpinner = (Spinner)findViewById(R.id.choose_group);
-		studentSpinner = (Spinner)findViewById(R.id.choose_student);
 		examDecription = (EditText) findViewById(R.id.exam_description);
-		grade = (EditText) findViewById(R.id.grade);
 
 		new LoadGroups().execute((Void)null);
 	}
 
+	ListView gradesList;
 	static String selectedGroupSpinner=null;
-	static String selectedStudentSpinner=null;
-	static int selectedStudentID=-1;
 	Spinner groupSpinner;
-	Spinner studentSpinner;
 	EditText examDecription;
-	EditText grade;
-
-
-
-
+	GradesListAdapter gradesAdapter;
 
 
 	private class LoadGroups extends AsyncTask<Void, Void, String[]> {
@@ -113,7 +121,8 @@ public class AddGradeActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.loading_groups));
+			pdLoading.setMessage("\t" + getString(R.string.loading_groups));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -127,7 +136,7 @@ public class AddGradeActivity extends BasicClass
 				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 					selectedGroupSpinner = groupSpinner.getSelectedItem().toString();
 					if (!selectedGroupSpinner.equals(getString(R.string.spinner_select_group)))
-						new LoadStudents().execute((Void) null);
+						new LoadStudentsList().execute((Void) null);
 				}
 
 				@Override
@@ -136,9 +145,6 @@ public class AddGradeActivity extends BasicClass
 				}
 			});
 
-
-
-			studentSpinner.setAdapter(new ArrayAdapter<String>(AddGradeActivity.this, android.R.layout.simple_spinner_item, new String[]{getString(R.string.select_group_first)}));
 			groupSpinner.setAdapter(new ArrayAdapter<String>(AddGradeActivity.this, android.R.layout.simple_spinner_item, result));
 			if (BasicClass.groupSelected) {
 				for (int i = 0; i < result.length; i++)
@@ -153,7 +159,7 @@ public class AddGradeActivity extends BasicClass
 
 
 	int[] studentIDs=null;
-	private class LoadStudents extends AsyncTask<Void, Void, String[]> {
+	private class LoadStudentsList extends AsyncTask<Void, Void, String[]> {
 		ProgressDialog pdLoading = new ProgressDialog(AddGradeActivity.this);
 
 		@Override
@@ -171,10 +177,9 @@ public class AddGradeActivity extends BasicClass
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			String[] items = new String[list.length+1];
-			items[0]=getString(R.string.spinner_select_student);
+			String[] items = new String[list.length];
 			for (int i=0; i<list.length; i++){
-				items[i+1]=list[i];
+				items[i]=list[i];
 			}
 
 			return items;
@@ -183,7 +188,8 @@ public class AddGradeActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.loading_students));
+			pdLoading.setMessage("\t" + getString(R.string.loading_students));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -193,24 +199,13 @@ public class AddGradeActivity extends BasicClass
 			pdLoading.dismiss();
 
 
-			studentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					selectedStudentSpinner = studentSpinner.getSelectedItem().toString();
-					if (position > 0)
-						selectedStudentID = studentIDs[position - 1];
-					else
-						selectedStudentID = -1;
-				}
+			gradesAdapter = new GradesListAdapter(result, studentIDs, AddGradeActivity.this);
 
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
-
-				}
-			});
+			//handle listview and assign adapter
+			gradesList = (ListView) findViewById(R.id.list_of_grades);
+			gradesList.setAdapter(gradesAdapter);
 
 
-			studentSpinner.setAdapter(new ArrayAdapter<String>(AddGradeActivity.this, android.R.layout.simple_spinner_item, result));
 		}
 	}
 
@@ -221,28 +216,37 @@ public class AddGradeActivity extends BasicClass
 			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.select_group_alert), Toast.LENGTH_LONG);
 			t.show();
 		}
-		else if (selectedStudentSpinner.equals(getString(R.string.spinner_select_student))){
-			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.select_student_alert), Toast.LENGTH_LONG);
-			t.show();
-		}
 		else if (examDecription.getText().toString().equals("")){
 			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_exam_description_alert), Toast.LENGTH_LONG);
 			t.show();
 		}
-		else if (grade.getText().toString().equals("")){
-			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.enter_grade_alert), Toast.LENGTH_LONG);
-			t.show();
-		}
-		else if (Integer.parseInt(grade.getText().toString())<0 || Integer.parseInt(grade.getText().toString())>100){
-			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.grade_range_alert), Toast.LENGTH_LONG);
-			t.show();
-		}
 		else{
-			String description = examDecription.getText().toString(), text = grade.getText().toString();
-			new AddGrade().execute(description, text);
-		}
-	}
 
+
+			String description = examDecription.getText().toString();
+			/*
+			pdLoading = new ProgressDialog(AddGradeActivity.this);
+			pdLoading.setMessage("\t" + getString(R.string.adding_grade));
+			pdLoading.setCanceledOnTouchOutside(false);
+			pdLoading.show();
+			*/
+			/*
+			for (int i=0; i<gradesAdapter.selected.length; i++){
+				if (gradesAdapter.selected[i]){
+					String grade = ""+gradesAdapter.grades[i];
+					new AddGrade().execute(gradesAdapter.ids[i]+"", description, grade);
+				}
+			}
+			*/
+			new AddGrade().execute(description);
+
+			//finish();
+			//Toast t = Toast.makeText(getApplicationContext(), getString("Grades added successfully!"), Toast.LENGTH_LONG);
+			//t.show();
+		}
+
+
+	}
 
 	private class AddGrade extends AsyncTask<String, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(AddGradeActivity.this);
@@ -250,12 +254,23 @@ public class AddGradeActivity extends BasicClass
 		@Override
 		protected Void doInBackground(String... ints){
 			try {
-				Controller.addGrade(
-						selectedStudentID,
-						Controller.getGroupIDByNameAndPhone(selectedGroupSpinner, BasicClass.phone),
-						ints[0],
-						Integer.parseInt(ints[1].toString())
-				);
+
+
+				for (int i=0; i<gradesAdapter.selected.length; i++){
+					if (gradesAdapter.selected[i]){
+						int grade = gradesAdapter.grades[i];
+
+						Controller.addGrade(
+								gradesAdapter.ids[i],
+								Controller.getGroupIDByNameAndPhone(selectedGroupSpinner, BasicClass.phone),
+								ints[0],
+								grade,
+								AddGradeActivity.this
+						);
+					}
+				}
+
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -265,17 +280,21 @@ public class AddGradeActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.adding_grade));
+
+			pdLoading.setMessage("\t" + getString(R.string.adding_grade));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
+
 		}
 		@Override
 		protected void onProgressUpdate(Void... progress) {}
 		@Override
 		protected void onPostExecute(Void result) {
 			pdLoading.dismiss();
-			grade.setText("");
 			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.added_grade), Toast.LENGTH_LONG);
 			t.show();
+
+			finish();
 		}
 	}
 
@@ -376,5 +395,91 @@ public class AddGradeActivity extends BasicClass
 					getArguments().getInt(ARG_SECTION_NUMBER));
 		}
 	}
+
+
+
+
+
+
+
+
+	public class GradesListAdapter extends BaseAdapter implements ListAdapter {
+		private String[] list;
+		private Context context;
+		public static final int defaultGrade=0;
+
+		public int[] grades;
+		public int[] ids;
+		public boolean[] selected;
+
+		public GradesListAdapter(String[] list, int[] ids, Context context) {
+			this.list = list;
+			this.context = context;
+
+			grades = new int[list.length];
+			for (int i=0; i<grades.length; i++){
+				grades[i]=defaultGrade;
+			}
+			this.ids = ids;
+			selected = new boolean[list.length];
+			for (int i=0; i<selected.length; i++){
+				selected[i]=true;
+			}
+		}
+		@Override
+		public int getCount() {
+			return list.length;
+		}
+		@Override
+		public Object getItem(int pos) {
+			return list[pos];
+		}
+		@Override
+		public long getItemId(int pos) {
+			return 0;//list.get(pos).getId();
+			//just return 0 if your list items do not have an Id variable.
+		}
+
+		@Override
+		public View getView(final int position, View convertView, ViewGroup parent) {
+			View view = convertView;
+			if (view == null) {
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				view = inflater.inflate(R.layout.grade_list_layout, null);
+			}
+
+			final CheckBox included = (CheckBox)view.findViewById(R.id.include_checkbox);
+			included.setChecked(true);
+			included.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					selected[position] = included.isChecked();
+				}
+			});
+
+
+			final TextView student = (TextView)view.findViewById(R.id.student_name);
+			student.setText(list[position]);
+
+			final NumberPicker grade = (NumberPicker) view.findViewById(R.id.grade_picker);
+			grade.setMinValue(0);
+			grade.setMaxValue(100);
+			grade.setValue(defaultGrade);
+			grade.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+				@Override
+				public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+					grades[position] = newVal;
+				}
+			});
+
+			return view;
+		}
+	}
+
+
+
+
+
+
 
 }

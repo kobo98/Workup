@@ -1,7 +1,10 @@
 package com.app2youth.hackaton.Workup1;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -121,7 +124,8 @@ public class GraphActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.loading_groups));
+			pdLoading.setMessage("\t" + getString(R.string.loading_groups));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -188,6 +192,7 @@ public class GraphActivity extends BasicClass
 			super.onPreExecute();
 
 			pdLoading.setMessage("\t"+getString(R.string.loading_graph_data));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -221,6 +226,55 @@ public class GraphActivity extends BasicClass
 	public void addGroupMenuButton(MenuItem bs){
 		openAddGroupActivity(new View(GraphActivity.this));
 	}
+	public void deleteUser(MenuItem bs){
+		final AlertDialog.Builder alert = new AlertDialog.Builder(GraphActivity.this);
+
+		alert.setTitle(getString(R.string.delete_user));
+		alert.setMessage(getString(R.string.delete_user_confirmation));
+
+
+		alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				new DeleteTeacher().execute((Void) null);
+			}
+		});
+		alert.setNegativeButton(getString(R.string.no), null);
+
+		alert.show();
+	}
+
+	private class DeleteTeacher extends AsyncTask<Void, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(GraphActivity.this);
+		@Override
+		protected Void doInBackground(Void... in){
+			try {
+				Controller.deleteTeacher(BasicClass.id);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+			pdLoading.setMessage("\t" + getString(R.string.deleting_user));
+			pdLoading.setCanceledOnTouchOutside(false);
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(Void result) {
+			startActivity(new Intent(GraphActivity.this, SplashActivity.class));
+			finish();
+			pdLoading.dismiss();
+		}
+	}
+
+
+
+
+
 
 	boolean firstRun=true;
     @Override

@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -13,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.InputType;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -24,9 +27,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -61,25 +66,54 @@ public class CommentsActivity extends ActionBarActivity {
 	}
 
 	public void start(){
-		Log.d("Comments Activity", "Selected task: "+TeacherMainActivity.selectedTask);
+		Log.d("Comments Activity", "Selected task: " + TeacherMainActivity.selectedTask);
+
+
+		if (BasicClass.teacher){
+			Button butt = (Button)findViewById(R.id.public_or_private_button);
+			butt.setVisibility(View.INVISIBLE);
+		}
+
 		new LoadComments().execute(TeacherMainActivity.selectedTask);
 	}
 
-
+	boolean publicity=true;
 	boolean firstTime=true;
 	ArrayList<Integer> savedIDs = new ArrayList<Integer>();
-
+	Bitmap image=null;
 	private class LoadComments extends AsyncTask<Integer, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(CommentsActivity.this);
 		final ArrayList<String> data = new ArrayList<String>();
+
 		String taskDescription=null;
+
+
+
+		public Bitmap StringToBitmap(String encodedString){
+			try {
+				byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+				Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+				return bitmap;
+			} catch(Exception e) {
+				e.getMessage();
+				return null;
+			}
+		}
+
+
 		@Override
 		protected Void doInBackground(Integer... ints){
 			try {
-				ResultSet rstask = SQL.statement.executeQuery("SELECT description FROM tasks WHERE taskID = "+TeacherMainActivity.selectedTask+";");
-				while(rstask.next())
+				ResultSet rstask = SQL.statement.executeQuery("SELECT description, taskImage FROM tasks WHERE taskID = "+TeacherMainActivity.selectedTask+";");
+				String imageString = null;
+				while(rstask.next()) {
 					taskDescription = rstask.getString(1);
+					imageString = rstask.getString(2);
+				}
 
+				if (imageString!=null){
+					image = StringToBitmap(imageString);
+				}
 
 				String commentIDs = Controller.getCommentsFromTask(TeacherMainActivity.selectedTask);
 
@@ -88,7 +122,7 @@ public class CommentsActivity extends ActionBarActivity {
 					commentIDs = commentIDs.substring(0, commentIDs.length()-1);
 				else
 					commentIDs = ""+ -1;
-				final ResultSet rs = SQL.spareStatement.executeQuery("SELECT comment, isStudent, commentor, commentID FROM comments WHERE commentID IN ("+commentIDs+");");//THIS IS A MISTAKE! SHOULD BE taskID
+				final ResultSet rs = SQL.spareStatement.executeQuery("SELECT comment, isStudent, commentor, commentID, isPublic FROM comments WHERE commentID IN ("+commentIDs+");");//THIS IS A MISTAKE! SHOULD BE taskID
 
 				savedIDs.clear();
 				while(rs.next()) {
@@ -96,12 +130,23 @@ public class CommentsActivity extends ActionBarActivity {
 					boolean isStudent = rs.getBoolean(2);
 					int commentor = rs.getInt(3);
 					int id = rs.getInt(4);
+					boolean isPublic = rs.getBoolean(5);
 
-					savedIDs.add(id);
-					if (isStudent)
-						data.add("<font size='14' color='#0f20ff'>"+Controller.getStudentName(commentor)+"</font><br><font size='18' color='#000000'>"+comment+"</font>");
-					else
-						data.add("<font size='14' color='#0f20ff'>"+Controller.getTeacherName(commentor)+"</font><br><font size='18' color='#000000'>"+comment+"</font>");
+					if (BasicClass.teacher || isPublic || Controller.getStudentIDByPhone(BasicClass.phone) == commentor) {
+						savedIDs.add(id);
+						if (isStudent)
+							if (isPublic)
+								data.add("<font size='14' color='#0f20ff'>" + Controller.getStudentName(commentor) + "</font><br><font size='18' color='#000000'>" + comment + "</font>");
+							else
+								data.add("<font size='14' color='#0f20ff'>" + Controller.getStudentName(commentor) + "</font><br><font size='18' color='#000000'>[private] " + comment + "</font>");
+						else {
+							if (isPublic)
+								data.add("<font size='14' color='#0f20ff'>" + Controller.getTeacherName(commentor) + "</font><br><font size='18' color='#000000'>" + comment + "</font>");
+							else
+								data.add("<font size='14' color='#0f20ff'>" + Controller.getTeacherName(commentor) + "</font><br><font size='18' color='#000000'>[private] " + comment + "</font>");
+						}
+					}
+
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -116,7 +161,8 @@ public class CommentsActivity extends ActionBarActivity {
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.loading_comments));
+			pdLoading.setMessage("\t" + getString(R.string.loading_comments));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -128,6 +174,15 @@ public class CommentsActivity extends ActionBarActivity {
 
 			final TextView taskDescriptionView = (TextView) findViewById(R.id.task_description);
 			taskDescriptionView.setText(taskDescription);
+
+			final ImageView displayImage = (ImageView) findViewById(R.id.display_image);
+			if (image!=null) {
+				displayImage.setImageBitmap(image);
+
+				displayImage.getLayoutParams().width = image.getWidth();
+				displayImage.getLayoutParams().height = image.getHeight();
+				displayImage.requestLayout();
+			}
 
 			final EditText commentField = (EditText) findViewById(R.id.comment_field);
 
@@ -144,18 +199,43 @@ public class CommentsActivity extends ActionBarActivity {
 		}
 	}
 
+	public void changePublicity(View v){
+		if (!BasicClass.teacher) {
+			publicity = !publicity;
+			Button butt = (Button) findViewById(R.id.public_or_private_button);
+			if (publicity){
+				butt.setText(getString(R.string.everybody));
+			}
+			else{
+				butt.setText(getString(R.string.teacher));
+			}
+			butt.invalidate();
+		}
 
+	}
+
+	public void imageClicked(View v){
+		final ImageView displayImage = (ImageView) findViewById(R.id.display_image);
+
+		if (displayImage.getWidth() == image.getWidth()){
+			Display display = getWindowManager().getDefaultDisplay();
+			Point size = new Point();
+			display.getSize(size);
+			int width = size.x;
+
+			displayImage.getLayoutParams().width = width;
+			displayImage.getLayoutParams().height = (int) ((double)image.getHeight()*((double)width/(double)image.getWidth()));
+			displayImage.requestLayout();
+		}
+		else{
+			displayImage.getLayoutParams().width = image.getWidth();
+			displayImage.getLayoutParams().height = image.getHeight();
+			displayImage.requestLayout();
+		}
+
+	}
 
 	public void addComment(View v){
-		/*
-		final TextView taskDescriptionView = (TextView)findViewById(R.id.task_description);
-		final EditText commentField = (EditText)findViewById(R.id.comment_field);
-		Display display = getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-		int height = size.y;
-		lView.getLayoutParams().height=(int) (((double)height-taskDescriptionView.getWidth()-commentField.getWidth()));
-		*/
 
 		EditText commentField = (EditText)findViewById(R.id.comment_field);
 
@@ -184,9 +264,24 @@ public class CommentsActivity extends ActionBarActivity {
 		@Override
 		protected Void doInBackground(String... ints){
 			String comment = ints[0];
+			Log.d("SHIT", ""+publicity);
 			try {
-				if (!comment.equals(""))
-					Controller.addComment(comment, TeacherMainActivity.selectedTask, !BasicClass.teacher, BasicClass.teacher? Controller.getTeacherIDByPhone(BasicClass.phone):Controller.getStudentIDByPhone(BasicClass.phone));
+				if (!comment.equals("")) {
+					Controller.addComment(comment, TeacherMainActivity.selectedTask, !BasicClass.teacher, BasicClass.teacher ? Controller.getTeacherIDByPhone(BasicClass.phone) : Controller.getStudentIDByPhone(BasicClass.phone), publicity);
+
+					int groupID = Controller.getGroupFromTask( TeacherMainActivity.selectedTask);
+					String[] ids = Controller.getStudentsFromGroup(groupID);
+					if (publicity)
+						for (int i=0; i<ids.length; i++){
+							if (BasicClass.teacher || BasicClass.id!=Integer.parseInt(ids[i]))
+								Controller.addNotification(getString(R.string.push_new_topic), getString(R.string.push_new_topic_description)+" "+Controller.getTaskTitle(TeacherMainActivity.selectedTask), Integer.parseInt(ids[i]) ,false);
+						}
+
+					if (!BasicClass.teacher)
+						Controller.addNotification(getString(R.string.push_new_topic), getString(R.string.push_new_topic_description)+" "+Controller.getTaskTitle(TeacherMainActivity.selectedTask),
+								Controller.getGroupTeacher(groupID),
+								true);
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -197,6 +292,7 @@ public class CommentsActivity extends ActionBarActivity {
 			super.onPreExecute();
 
 			pdLoading.setMessage("\t" + getString(R.string.loading_data));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -466,8 +562,18 @@ public class CommentsActivity extends ActionBarActivity {
 												Thread helper = new Thread() {
 													public void run() {
 														try {
-															if (!comment.equals(""))
-																Controller.addCommentToComment(comment, savedIDs.get(pos), !BasicClass.teacher, BasicClass.teacher ? Controller.getTeacherIDByPhone(BasicClass.phone) : Controller.getStudentIDByPhone(BasicClass.phone));
+															if (!comment.equals("")) {
+																Controller.addCommentToComment(comment, savedIDs.get(pos), !BasicClass.teacher, BasicClass.teacher ? Controller.getTeacherIDByPhone(BasicClass.phone) : Controller.getStudentIDByPhone(BasicClass.phone), true);
+
+																int commentorID = Controller.getCommentorID(savedIDs.get(pos));
+																boolean isTeacher = Controller.getCommentorType(savedIDs.get(pos));
+
+																if (commentorID!=BasicClass.id || BasicClass.teacher!=isTeacher)
+																	Controller.addNotification(getString(R.string.push_new_reply_by) +" "+ (BasicClass.teacher ? Controller.getTeacherName(BasicClass.id) : Controller.getStudentName(BasicClass.id)),
+																			comment, commentorID, isTeacher);
+
+
+															}
 														} catch (SQLException e) {
 															e.printStackTrace();
 														}

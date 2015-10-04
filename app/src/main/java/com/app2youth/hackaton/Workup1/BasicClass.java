@@ -24,6 +24,8 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -32,6 +34,7 @@ public class BasicClass extends ActionBarActivity
 
 
 	public static String phone;
+	public static int id;
 	public static boolean teacher;
 	public static boolean registeringTeacher;
 
@@ -49,6 +52,18 @@ public class BasicClass extends ActionBarActivity
 	public int getInt(String name) {
 		SharedPreferences mPreferences = getSharedPreferences("WorkUp", MODE_PRIVATE);
 		return mPreferences.getInt(name, -1);
+	}
+
+	public void saveBoolean(String name, boolean bool) {
+		SharedPreferences mPreferences = getSharedPreferences("WorkUp", MODE_PRIVATE);
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putBoolean(name, bool);
+		editor.commit();
+	}
+
+	public boolean getBoolean(String name) {
+		SharedPreferences mPreferences = getSharedPreferences("WorkUp", MODE_PRIVATE);
+		return mPreferences.getBoolean(name, false);
 	}
 
 	public void saveString(String name, String str) {
@@ -139,37 +154,21 @@ public class BasicClass extends ActionBarActivity
 	}
 
 	public void openActivityFromMenuTeacher(int position) {
+
 		switch (position) {
 			case 1:
 				openTeacherMainActivity();
 				break;
-			/*
-			case 2:
-				openAddGroupActivity(new View(this));
-				break;
-
-			case 3:
-				openAddStudentsToGroupActivity(new View(this), false);
-				break;
-				*/
 			case 2:
 				openLessonTableActivityTeacher(new View(this));
 				break;
-			/*
-			case 4:
-				openAddTaskActivity(new View(this), false);
-				break;
-				*/
 			case 3:
 				openGraphActivity(new View(this));
 				break;
-			/*
-			case 4:
-				openAddGradeActivity(new View(this),false);
-				break;
-				*/
 
 		}
+		finishAffinity();
+		//finish();
 	}
 
 	private boolean contains(String[] s1, String s){
@@ -186,6 +185,8 @@ public class BasicClass extends ActionBarActivity
 		Thread check = new Thread(){
 			public void run(){
 				try {
+					if (phone==null)
+						return;
 					Log.d("Signed groups", getString("groups"));
 					String[] signedGroups = getString("groups").split(";");
 					final String[] groups = Controller.getGroupIDsForStudent(phone);
@@ -269,6 +270,7 @@ public class BasicClass extends ActionBarActivity
 		public void onPreExecute(){
 			super.onPreExecute();
 			pdLoading.setMessage("\t" + getString(R.string.loading_data));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -303,10 +305,12 @@ public class BasicClass extends ActionBarActivity
 						PendingIntent.FLAG_UPDATE_CURRENT
 				);
 		mBuilder.setContentIntent(resultPendingIntent);
+		mBuilder.setAutoCancel(true);
 		NotificationManager mNotificationManager =
 				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		// id allows you to update the notification later on.
 		mNotificationManager.notify(idOfNotification, mBuilder.build());
+
 	}
 
 	public class HWArrayAdapter extends BaseAdapter {
@@ -338,17 +342,24 @@ public class BasicClass extends ActionBarActivity
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			final View rowView = inflater.inflate(R.layout.hwlayout, parent, false);
 			TextView subject = (TextView) rowView.findViewById(R.id.subject);
-			TextView teacher = (TextView) rowView.findViewById(R.id.teacher);
+			TextView group_name = (TextView) rowView.findViewById(R.id.group_name);
 			TextView do_date = (TextView) rowView.findViewById(R.id.do_date);
-			ImageView symbol = (ImageView) rowView.findViewById(R.id.symbol);
+			ImageView attachment = (ImageView) rowView.findViewById(R.id.attachment);
+			TextView description = (TextView) rowView.findViewById(R.id.description);
 			//((SwipeListView)parent).recycle(convertView, position);
 
 			subject.setText(values[position][0]);
-			teacher.setText(values[position][1]);
+			group_name.setText(values[position][1]);
 			do_date.setText(values[position][2]);
 
-			symbol.setBackgroundColor(0xffffffff);
+			attachment.setBackgroundColor(0xffffffff);
+			if (values[position].length>4 && (values[position][4]==null || values[position][4].equals(""))){
+				attachment.setImageDrawable(null);
+			}
 
+			if (values[position].length>5 && values[position][5]!=null){
+				description.setText(values[position][5]);
+			}
 
 			return rowView;
 		}

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+	<TextView
+		android:id="@+id/index_number"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+		android:layout_centerVertical="true"
+		android:paddingRight="10dp"
+		android:textSize="50sp"
+		android:textStyle="bold"
+		android:textColor="#0683b1"
+		android:text="(0"/>
+
+	<TextView
+		android:id="@+id/subject"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toLeftOf="@+id/index_number"
+		android:paddingLeft="26dp"
+		android:paddingTop="7dp"
+		android:textSize="24sp"
+		android:textStyle="bold"
+		android:text="מתמטיקהקה"
+		android:textColor="#0683b1"
+		android:layout_alignTop="@+id/index_number"/>
+
+	<TextView
+		android:id="@+id/teacher"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toLeftOf="@id/index_number"
+		android:layout_below="@id/subject"
+		android:paddingLeft="26dp"
+		android:paddingTop="2dp"
+		android:textSize="18sp"
+		android:text="מורה מסויים"/>
+
+	<TextView
+		android:id="@+id/time"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="18dp"
+		android:textSize="30sp"
+		android:text="12:40" />
+
+
+
+</RelativeLayout>

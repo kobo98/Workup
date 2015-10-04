@@ -1,10 +1,13 @@
 package com.app2youth.hackaton.Workup1;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -74,9 +77,27 @@ public class TeacherMainActivity extends BasicClass
     @Override
     public void onStart(){
         super.onStart();
+
+	    if (!isMyServiceRunning(PushService.class)){
+		    Intent bindIntent = new Intent(this,PushService.class);
+		    startService(bindIntent);
+	    }
+
 	    firstRun=false;
 	    start();
     }
+
+
+	private boolean isMyServiceRunning(Class<?> serviceClass) {
+		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (serviceClass.getName().equals(service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	public void start(){
 		//new LoadData().execute((Void)null);
@@ -110,7 +131,8 @@ public class TeacherMainActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.loading_data));
+			pdLoading.setMessage("\t" + getString(R.string.loading_data));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -324,7 +346,8 @@ public class TeacherMainActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.deleting_group));
+			pdLoading.setMessage("\t" + getString(R.string.deleting_group));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -382,7 +405,8 @@ public class TeacherMainActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.loading_group_info));
+			pdLoading.setMessage("\t" + getString(R.string.loading_group_info));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -416,7 +440,8 @@ public class TeacherMainActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.adding_class));
+			pdLoading.setMessage("\t" + getString(R.string.adding_class));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -462,6 +487,7 @@ public class TeacherMainActivity extends BasicClass
 			super.onPreExecute();
 
 			pdLoading.setMessage("\t" + getString(R.string.loading_tasks));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -590,9 +616,60 @@ public class TeacherMainActivity extends BasicClass
 		}
 	}
 
+
+
 	public void addGroupMenuButton(MenuItem bs){
 		openAddGroupActivity(new View(TeacherMainActivity.this));
 	}
+	public void deleteUser(MenuItem bs){
+		final AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
+
+		alert.setTitle(getString(R.string.delete_user));
+		alert.setMessage(getString(R.string.delete_user_confirmation));
+
+
+		alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				new DeleteTeacher().execute((Void) null);
+			}
+		});
+		alert.setNegativeButton(getString(R.string.no), null);
+
+		alert.show();
+	}
+
+	private class DeleteTeacher extends AsyncTask<Void, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(TeacherMainActivity.this);
+		@Override
+		protected Void doInBackground(Void... in){
+			try {
+				Controller.deleteTeacher(BasicClass.id);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+			pdLoading.setMessage("\t" + getString(R.string.deleting_user));
+			pdLoading.setCanceledOnTouchOutside(false);
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(Void result) {
+			startActivity(new Intent(TeacherMainActivity.this, SplashActivity.class));
+			finish();
+			pdLoading.dismiss();
+		}
+	}
+
+
+
+
+
 
 	int infoedTaskID=-1;
 	public void openTaskInfoDialog(int taskID){
@@ -622,6 +699,7 @@ public class TeacherMainActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 			pdLoading.setMessage("\t" + getString(R.string.loading_data));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override

@@ -79,7 +79,8 @@ public class GradesGraphActivity extends ActionBarActivity {
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.loading_groups));
+			pdLoading.setMessage("\t" + getString(R.string.loading_groups));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -152,6 +153,7 @@ public class GradesGraphActivity extends ActionBarActivity {
 			super.onPreExecute();
 
 			pdLoading.setMessage("\t"+getString(R.string.loading_graph_data));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override

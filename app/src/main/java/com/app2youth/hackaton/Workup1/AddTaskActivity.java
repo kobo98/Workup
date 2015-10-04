@@ -4,13 +4,18 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -29,6 +34,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -101,6 +109,7 @@ public class AddTaskActivity extends BasicClass
 		taskName = (EditText) findViewById(R.id.taskName);
 		taskDescription = (EditText) findViewById(R.id.taskDescription);
 		filingDate = (EditText) findViewById(R.id.filingDate);
+		imageTask = (ImageView) findViewById(R.id.displayImage);
 
 		myCalendar = Calendar.getInstance();
 		datePicker = new DatePickerDialog.OnDateSetListener() {
@@ -124,7 +133,8 @@ public class AddTaskActivity extends BasicClass
 	EditText taskName;
 	EditText taskDescription;
 	EditText filingDate;
-
+	ImageView imageTask;
+	Bitmap image=null;
 
 	private class LoadGroups extends AsyncTask<Void, Void, String[]> {
 		ProgressDialog pdLoading = new ProgressDialog(AddTaskActivity.this);
@@ -142,24 +152,15 @@ public class AddTaskActivity extends BasicClass
 			for (int i=0; i<list.length; i++){
 				items[i+1]=list[i];
 			}
-			dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					selectedSpinner=dropdown.getSelectedItem().toString();
-				}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
-
-				}
-			});
 			return items;
 		}
 		@Override
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.loading_groups));
+			pdLoading.setMessage("\t" + getString(R.string.loading_groups));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -167,6 +168,19 @@ public class AddTaskActivity extends BasicClass
 		@Override
 		protected void onPostExecute(String[] result) {
 			pdLoading.dismiss();
+
+			dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+					selectedSpinner = dropdown.getSelectedItem().toString();
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+
+				}
+			});
+
 
 			dropdown.setAdapter(new ArrayAdapter<String>(AddTaskActivity.this, android.R.layout.simple_spinner_item, result));
 			if (BasicClass.groupSelected) {
@@ -191,9 +205,77 @@ public class AddTaskActivity extends BasicClass
 
 	}
 
+	private static final int SELECT_PHOTO = 100;
+	public void openImageExplorer(View v){
+		Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+		photoPickerIntent.setType("image/*");
+		startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+	}
+
+	public static int MAX_IMAGE_SIZE=300;
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+		super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+		switch(requestCode) {
+			case SELECT_PHOTO:
+				if(resultCode == RESULT_OK){
+					Log.d("SHIT", "photo chosent");
+					Uri selectedImage = imageReturnedIntent.getData();
+					/*
+					InputStream imageStream = null;
+					try {
+						imageStream = getContentResolver().openInputStream(selectedImage);
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
+					Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
+					*/
+					try {
+						image = decodeUri(selectedImage, MAX_IMAGE_SIZE);
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
+
+					imageTask.setImageBitmap(image);
+				}
+		}
+	}
+
+
+	private Bitmap decodeUri(Uri selectedImage, int size) throws FileNotFoundException {
+
+		// Decode image size
+		BitmapFactory.Options o = new BitmapFactory.Options();
+		o.inJustDecodeBounds = true;
+		BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o);
+
+		// The new size we want to scale to
+		final int REQUIRED_SIZE = size;
+
+		// Find the correct scale value. It should be the power of 2.
+		int width_tmp = o.outWidth, height_tmp = o.outHeight;
+		int scale = 1;
+		while (true) {
+			if (width_tmp / 2 < REQUIRED_SIZE
+					|| height_tmp / 2 < REQUIRED_SIZE) {
+				break;
+			}
+			width_tmp /= 2;
+			height_tmp /= 2;
+			scale *= 2;
+		}
+
+		// Decode with inSampleSize
+		BitmapFactory.Options o2 = new BitmapFactory.Options();
+		o2.inSampleSize = scale;
+		return BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o2);
+
+	}
+
 
 	public void createTask(View v){
-		Log.d("Add Task: ", selectedSpinner + ", " + taskName.getText().toString()+", "+taskDescription.getText().toString()+", "+filingDate.getText().toString());
+		Log.d("Add Task: ", selectedSpinner + ", " + taskName.getText().toString()+", "+taskDescription.getText().toString()+", "+filingDate.getText().toString()+", "+(image==null? "Without image":"With image"));
 		if (selectedSpinner.equals(getString(R.string.spinner_select_group))){
 			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.select_group_alert), Toast.LENGTH_LONG);
 			t.show();
@@ -207,23 +289,36 @@ public class AddTaskActivity extends BasicClass
 			t.show();
 		}
 		else{
-			new AddTask().execute((Void)null);
+			String name = taskName.getText().toString(), description = taskDescription.getText().toString(), date = filingDate.getText().toString();
+
+			new AddTask().execute(name,description,date);
 		}
 	}
 
 
-	private class AddTask extends AsyncTask<Void, Void, Void> {
+	private class AddTask extends AsyncTask<String, Void, Void> {
 		ProgressDialog pdLoading = new ProgressDialog(AddTaskActivity.this);
 
 		@Override
-		protected Void doInBackground(Void... ints){
+		protected Void doInBackground(String... ints){
 			try {
-				Controller.addTask(
-						Controller.getGroupIDByNameAndPhone(selectedSpinner, BasicClass.phone),
-						taskName.getText().toString(),
-						taskDescription.getText().toString(),
-						filingDate.getText().toString()
-				);
+				if (image==null)
+					Controller.addTask(
+							Controller.getGroupIDByNameAndPhone(selectedSpinner, BasicClass.phone),
+							ints[0],
+							ints[1],
+							ints[2],
+							AddTaskActivity.this
+					);
+				else
+					Controller.addTask(
+							Controller.getGroupIDByNameAndPhone(selectedSpinner, BasicClass.phone),
+							ints[0],
+							ints[1],
+							ints[2],
+							BitmapToString(image),
+							AddTaskActivity.this
+					);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -233,7 +328,8 @@ public class AddTaskActivity extends BasicClass
 		public void onPreExecute(){
 			super.onPreExecute();
 
-			pdLoading.setMessage("\t"+getString(R.string.adding_task));
+			pdLoading.setMessage("\t" + getString(R.string.adding_task));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -244,11 +340,22 @@ public class AddTaskActivity extends BasicClass
 			taskName.setText("");
 			taskDescription.setText("");
 			filingDate.setText("");
+			imageTask.setImageDrawable(null);
+
 			Toast t = Toast.makeText(getApplicationContext(), getString(R.string.added_task), Toast.LENGTH_LONG);
 			t.show();
 
 		}
 	}
+
+	public String BitmapToString(Bitmap bitmap){
+		ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+		bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+		byte [] b=baos.toByteArray();
+		String temp= Base64.encodeToString(b, Base64.DEFAULT);
+		return temp;
+	}
+
 
 
 	boolean firstRun=true;

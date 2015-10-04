@@ -1,7 +1,10 @@
 package com.app2youth.hackaton.Workup1;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -70,10 +73,10 @@ public class AllGradesActivity extends BasicClass
 			try {
 				list = Controller.getGradesFromStudent(Controller.getStudentIDByPhone(phone));
 
-				dataToListView = new String[list.length][4];
+				dataToListView = new String[list.length][6];
 				for (int i=0; i<list.length; i++){
 					int id = Integer.parseInt(list[i]);
-					dataToListView[i] = new String[]{""+Controller.getGroupName(Controller.getGroupFromGrade(id)), Controller.getGradeDescription(id), ""+Controller.getGrade(id)};
+					dataToListView[dataToListView.length-1-i] = new String[]{""+Controller.getGroupName(Controller.getGroupFromGrade(id)), Controller.getGradeDescription(id), ""+Controller.getGrade(id), "", "",""};
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -91,6 +94,7 @@ public class AllGradesActivity extends BasicClass
 			super.onPreExecute();
 
 			pdLoading.setMessage("\t"+getString(R.string.loading_groups));
+			pdLoading.setCanceledOnTouchOutside(false);
 			pdLoading.show();
 		}
 		@Override
@@ -210,5 +214,52 @@ public class AllGradesActivity extends BasicClass
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+
+
+
+	public void deleteUser(MenuItem bs){
+		final AlertDialog.Builder alert = new AlertDialog.Builder(AllGradesActivity.this);
+
+		alert.setTitle(getString(R.string.delete_user));
+		alert.setMessage(getString(R.string.delete_user_confirmation));
+
+
+		alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				new DeleteStudent().execute((Void) null);
+			}
+		});
+		alert.setNegativeButton(getString(R.string.no), null);
+
+		alert.show();
+	}
+
+	private class DeleteStudent extends AsyncTask<Void, Void, Void> {
+		ProgressDialog pdLoading = new ProgressDialog(AllGradesActivity.this);
+		@Override
+		protected Void doInBackground(Void... in){
+			try {
+				Controller.deleteStudent(BasicClass.id);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		@Override
+		public void onPreExecute(){
+			super.onPreExecute();
+			pdLoading.setMessage("\t" + getString(R.string.deleting_user));
+			pdLoading.setCanceledOnTouchOutside(false);
+			pdLoading.show();
+		}
+		@Override
+		protected void onProgressUpdate(Void... progress) {}
+		@Override
+		protected void onPostExecute(Void result) {
+			startActivity(new Intent(AllGradesActivity.this, SplashActivity.class));
+			finish();
+			pdLoading.dismiss();
+		}
+	}
 
 }

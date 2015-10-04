@@ -26,6 +26,7 @@
 	<string name="student_menu_2">גליון ציונים</string>
 	<string name="student_menu_3">מערכת שעות</string>
 
+
 	<string name="day_1">ראשון</string>
 	<string name="day_2">שני</string>
 	<string name="day_3">שלישי</string>
@@ -34,6 +35,21 @@
 	<string name="day_6">שישי</string>
 	<string name="day_7">שבת</string>
 
+	<string name="month_1">ינואר</string>
+	<string name="month_2">פברואר</string>
+	<string name="month_3">מרץ</string>
+	<string name="month_4">אפריל</string>
+	<string name="month_5">מאי</string>
+	<string name="month_6">יוני</string>
+	<string name="month_7">יולי</string>
+	<string name="month_8">אוגוסט</string>
+	<string name="month_9">ספטמבר</string>
+	<string name="month_10">אוקטובר</string>
+	<string name="month_11">נובמבר</string>
+	<string name="month_12">דצמבר</string>
+
+	<string name="in">ב</string>
+
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -41,20 +57,20 @@
 	<string name="action_settings">Settings</string>
 
 
-	<string name="title_activity_graph">GraphActivity</string>
-	<string name="title_activity_registration">Registration</string>
-	<string name="title_activity_registration_details">Registration</string>
-	<string name="title_activity_all_grades">AllGradesActivity</string>
-	<string name="title_activity_lessons_table">LessonsTableActivity</string>
-	<string name="title_activity_add_group">AddGroupActivity</string>
-	<string name="title_activity_add_task">AddTaskActivity</string>
-	<string name="title_activity_teacher_main">TeacherMainActivity</string>
-	<string name="title_activity_lessons_table_activity_teacher">LessonsTableActivityTeacher</string>
-	<string name="title_activity_add_grade">AddGradeActivity</string>
+	<string name="title_activity_graph">גרף</string>
+	<string name="title_activity_registration">הרשמה</string>
+	<string name="title_activity_registration_details">הרשמה</string>
+	<string name="title_activity_all_grades">ציונים</string>
+	<string name="title_activity_lessons_table">מערכת שעות</string>
+	<string name="title_activity_add_group">הוספת קבוצה</string>
+	<string name="title_activity_add_task">הוספת מטלה</string>
+	<string name="title_activity_teacher_main">רשימת קבוצות</string>
+	<string name="title_activity_lessons_table_activity_teacher">מערכת שעות</string>
+	<string name="title_activity_add_grade">הוספת ציונים</string>
 
-	<string name="title_section1">Section 1</string>
-	<string name="title_section2">Section 2</string>
-	<string name="title_section3">Section 3</string>
+	<string name="title_section1">מטלות</string>
+	<string name="title_section2">ציונים</string>
+	<string name="title_section3">מערכת שעות</string>
 
 
 
@@ -136,7 +152,7 @@
 	<string name="hint_enter_phone">מספר טלפון</string>
 	<string name="hint_task_title">כותרת</string>
 	<string name="hint_task_description">תיאור</string>
-	<string name="hint_task_date">תאריך</string>
+	<string name="hint_task_date">תאריך הגשה</string>
 	<string name="hint_name">שם</string>
 	<string name="hint_last_name">שם משפחה</string>
 
@@ -165,5 +181,22 @@
 	<string name="hello_world">Hello world!</string>
 	<string name="title_activity_grades_graph">גרף ציונים</string>
 
+	<string name="teacher">מורה</string>
+	<string name="everybody">כולם</string>
+	<string name="private_item">פרטי</string>
 
+	<string name="delete_user">מחק משתמש</string>
+	<string name="deleting_user">מוחק משתמש...</string>
+	<string name="delete_user_confirmation">האם אתה בטוח שתרצה למחוק את המשתמש?</string>
+
+	<string name="push_new_topic">שאלה חדשה</string>
+	<string name="push_new_topic_description">שאלה על מטלה</string>
+
+	<string name="push_new_reply_by">תגובה על ידי</string>
+
+	<string name="push_new_grade"> ציון חדש </string>
+	<string name="push_new_grade_description"> ציון חדש בקבוצה </string>
+
+	<string name="push_new_task"> מטלה חדשה </string>
+	<string name="push_new_task_description"> מטלה חדשה בקבוצה </string>
 </resources>

@@ -2,5 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.app2youth.hackaton.Workup1.LessonsTableActivityStudent">
-
+	<item android:id="@+id/action_example"
+	      android:title="@string/action_example"
+	      app:showAsAction="withText|ifRoom"/>
+	<item android:id="@+id/delete_user" android:title="@string/delete_user"
+	      android:orderInCategory="100" app:showAsAction="never"
+	      android:onClick="deleteUser"/>
 </menu>

@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 
 
-public class SplashActivity extends ActionBarActivity {
+public class SplashActivity extends BasicClass {
 	public String getString(String name){
 		SharedPreferences mPreferences = getSharedPreferences("WorkUp",MODE_PRIVATE);
 		return mPreferences.getString(name,"");
@@ -36,6 +36,8 @@ public class SplashActivity extends ActionBarActivity {
 					if (Controller.teacherExists(phone)){
 						BasicClass.teacher=true;
 						BasicClass.phone=phone;
+						BasicClass.id=Controller.getTeacherIDByPhone(phone);
+						saveInt("id", BasicClass.id);
 						Intent i=new Intent(getBaseContext(),TeacherMainActivity.class);
 						startActivity(i);
 						finish();
@@ -47,6 +49,8 @@ public class SplashActivity extends ActionBarActivity {
 					if (Controller.studentExists(phone)){
 						BasicClass.teacher=false;
 						BasicClass.phone=phone;
+						BasicClass.id=Controller.getStudentIDByPhone(phone);
+						saveInt("id", BasicClass.id);
 						Intent i=new Intent(getBaseContext(),StudentAllTasksActivity.class);
 						startActivity(i);
 						finish();
