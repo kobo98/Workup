@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -80,8 +82,41 @@ public class BasicClass extends ActionBarActivity
 		return mPreferences.getString(name, "");
 	}
 
-    public static boolean isTomorrow(String dateStr){
+    public static int isTomorrow(String date){
+		//0 is nothing, 1 is today, 2 is tommorow, 3 in 2 days
+
+
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    String current = sdf.format(new Date());
+
+	    Log.d("SHIT", date);
+	    Log.d("SHIT", current);
+
+	    String currentParts[] = current.split("-");
+	    String parts[] = date.split("-");
+
+	    int cday=Integer.parseInt(currentParts[2]), day = Integer.parseInt(parts[2]);
+	    int cmonth=Integer.parseInt(currentParts[1]), month = Integer.parseInt(parts[1]);
+	    int cyear=Integer.parseInt(currentParts[0]), year = Integer.parseInt(parts[0]);
+
+	    if (cyear==year){
+		    if (cmonth==month){
+				if (cday==day){
+					return 1;
+				}
+			    else if (cday+1==day){
+					return 2;
+				}
+				else if (cday+2==day){
+					return 3;
+				}
+		    }
+
+	    }
+		return 0;
+	    /*
         Date today= Calendar.getInstance().getTime();
+	    String[] parts = dateStr.split("-");
         int day = today.getDay(), dDay = Integer.parseInt(dateStr.substring(8));
         int month = today.getMonth(), dMonth = Integer.parseInt(dateStr.substring(5,7));
         int year = today.getYear(), dYear = Integer.parseInt(dateStr.substring(0, 4));
@@ -142,6 +177,7 @@ public class BasicClass extends ActionBarActivity
             return (last && dDay==1);
         }
         return ((dDay-day)==1);
+        */
     }
 
 	public void openMainActivity(View v) {
@@ -413,7 +449,7 @@ public class BasicClass extends ActionBarActivity
 
 			subject.setText(values[position][0]);
 			group_name.setText(values[position][1]);
-			do_date.setText(values[position][2]);
+
 
 			attachment.setBackgroundColor(0xffffffff);
 			if (values[position].length>4 && (values[position][4]==null || values[position][4].equals(""))){
@@ -423,7 +459,25 @@ public class BasicClass extends ActionBarActivity
 			if (values[position].length>5 && values[position][5]!=null){
 				description.setText(values[position][5]);
 			}
+			if (values[position].length>6 && values[position][6]!=null){
 
+				String addition="";
+
+				if (values[position][6].equals("r")) {
+					addition=" (" +getString(R.string.today)+ ")";
+					do_date.setTextColor(Color.rgb(250,0,0));
+				}
+				else if (values[position][6].equals("ry")) {
+					addition=" (" +getString(R.string.tomorrow)+ ")";
+					do_date.setTextColor(Color.rgb(200,150,0));
+				}
+				else if (values[position][6].equals("y")) {
+					addition=" (" +getString(R.string.after_tomorrow)+ ")";
+					do_date.setTextColor(Color.rgb(150,200,0));
+				}
+
+				do_date.setText(values[position][2]+addition);
+			}
 			return rowView;
 		}
 	}

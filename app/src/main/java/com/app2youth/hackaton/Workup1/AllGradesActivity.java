@@ -3,8 +3,10 @@ package com.app2youth.hackaton.Workup1;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +19,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.sql.SQLException;
 
@@ -73,10 +78,10 @@ public class AllGradesActivity extends BasicClass
 			try {
 				list = Controller.getGradesFromStudent(Controller.getStudentIDByPhone(phone));
 
-				dataToListView = new String[list.length][6];
+				dataToListView = new String[list.length][3];
 				for (int i=0; i<list.length; i++){
 					int id = Integer.parseInt(list[i]);
-					dataToListView[dataToListView.length-1-i] = new String[]{""+Controller.getGroupName(Controller.getGroupFromGrade(id)), Controller.getGradeDescription(id), ""+Controller.getGrade(id), "", "",""};
+					dataToListView[dataToListView.length-1-i] = new String[]{Controller.getGradeDescription(id), ""+Controller.getGrade(id), ""+Controller.getGroupName(Controller.getGroupFromGrade(id))};
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -107,13 +112,64 @@ public class AllGradesActivity extends BasicClass
 			mDrawerListView = (ListView) findViewById(R.id.list_of_grades);
 			mDrawerListView.setDivider(new ColorDrawable(0xff11a7ff));
 			mDrawerListView.setDividerHeight(1);
-			mDrawerListView.setAdapter(new BasicClass.HWArrayAdapter(AllGradesActivity.this,dataToListView));
+			mDrawerListView.setAdapter(new StudentGradeListAdapter(AllGradesActivity.this,dataToListView));
 		}
 	}
 
 	public void openGradesGraph(View v){
 		openGradesGraphActivity(new View(AllGradesActivity.this));
 	}
+
+
+
+
+
+
+
+	public class StudentGradeListAdapter extends BaseAdapter {
+		private Context context;
+		private String[][] values;
+
+		public StudentGradeListAdapter(Context context, String[][] objects) {
+			this.context = context;
+			this.values = objects;
+		}
+
+		@Override
+		public int getCount() {
+			return values.length;
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return values[position];
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(final int position, View convertView, ViewGroup parent) {
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final View rowView = inflater.inflate(R.layout.student_grade_list_layout, parent, false);
+
+			TextView title = (TextView) rowView.findViewById(R.id.title);
+			TextView grade = (TextView) rowView.findViewById(R.id.grade);
+			TextView subject = (TextView) rowView.findViewById(R.id.subject);
+
+			title.setText(values[position][0]);
+			grade.setText(values[position][1]);
+			subject.setText(values[position][2]);
+
+			return rowView;
+		}
+	}
+
+
+
+
 
 
 	boolean firstRun=true;

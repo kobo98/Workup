@@ -621,6 +621,10 @@ public class TeacherMainActivity extends BasicClass
 	public void addGroupMenuButton(MenuItem bs){
 		openAddGroupActivity(new View(TeacherMainActivity.this));
 	}
+	public void openAddTaskActivityButton(View view){
+		openAddGroupActivity(new View(TeacherMainActivity.this));
+	}
+
 	public void deleteUser(MenuItem bs){
 		final AlertDialog.Builder alert = new AlertDialog.Builder(TeacherMainActivity.this);
 

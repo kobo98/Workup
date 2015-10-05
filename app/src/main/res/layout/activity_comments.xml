@@ -76,14 +76,13 @@
 	<Button
 		android:id="@+id/submit_comment_button"
 		style="?android:attr/buttonStyleSmall"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
+		android:layout_width="43dp"
+		android:layout_height="43dp"
 		android:layout_toRightOf="@id/comment_field"
-		android:layout_marginBottom="2dp"
+		android:layout_marginBottom="7dp"
 		android:layout_centerVertical="true"
 		android:layout_alignParentBottom="true"
 		android:onClick="addComment"
-		android:textSize="25sp"
 		android:background="@mipmap/send_button"
 		android:text="" />
 

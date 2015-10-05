@@ -5,11 +5,11 @@
 	<string name="teacher_title_section2">קבוצה חדשה</string>
 	<string name="teacher_title_section3">הוסף תלמידים</string>
 	<string name="teacher_title_section4">מערכת שעות</string>
-	<string name="teacher_title_section5">מטלה חדשה</string>
+	<string name="teacher_title_section5">משימה חדשה</string>
 	<string name="teacher_title_section6">סטטיסטיקה</string>
 	<string name="teacher_title_section7">הוסף ציון</string>
 
-	<string name="student_title_section1">מטלות</string>
+	<string name="student_title_section1">משימות</string>
 	<string name="student_title_section2">ציונים</string>
 	<string name="student_title_section3">מערכת שעות</string>
 
@@ -18,7 +18,7 @@
 	<string name="teacher_menu_2">הוסף קבוצה חדשה</string>
 	<string name="teacher_menu_3">הוסף תלמידים לקבוצה</string>
 	<string name="teacher_menu_4">מערכת שעות</string>
-	<string name="teacher_menu_5">הוסף מטלה</string>
+	<string name="teacher_menu_5">הוסף משימה</string>
 	<string name="teacher_menu_6">הערכת משימות</string>
 	<string name="teacher_menu_7">הוספת ציונים</string>
 
@@ -49,6 +49,7 @@
 	<string name="month_12">דצמבר</string>
 
 	<string name="in">ב</string>
+	<string name="to">ל</string>
 
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
@@ -63,12 +64,12 @@
 	<string name="title_activity_all_grades">ציונים</string>
 	<string name="title_activity_lessons_table">מערכת שעות</string>
 	<string name="title_activity_add_group">הוספת קבוצה</string>
-	<string name="title_activity_add_task">הוספת מטלה</string>
+	<string name="title_activity_add_task">הוספת משימה</string>
 	<string name="title_activity_teacher_main">רשימת קבוצות</string>
 	<string name="title_activity_lessons_table_activity_teacher">מערכת שעות</string>
 	<string name="title_activity_add_grade">הוספת ציונים</string>
 
-	<string name="title_section1">מטלות</string>
+	<string name="title_section1">משימות</string>
 	<string name="title_section2">ציונים</string>
 	<string name="title_section3">מערכת שעות</string>
 
@@ -97,12 +98,12 @@
 	<string name="students_title">תלמידים:</string>
 	<string name="teachers_title">מורים:</string>
 	<string name="select_group_first">קודם בחר קבוצה</string>
-	<string name="select_task">בחר מטלה בקבוצה</string>
+	<string name="select_task">בחר משימה בקבוצה</string>
 	<string name="add_students_to_class">הוסף תלמידים לקבוצה</string>
 	<string name="add_to_group">הוסף</string>
 
 	<string name="adding_class">מוסיף שיעור...</string>
-	<string name="adding_task">מוסיף מטלה...</string>
+	<string name="adding_task">מוסיף משימה...</string>
 	<string name="adding_student">מוסיף תלמיד...</string>
 	<string name="signing_student_up">רושם תלמיד...</string>
 	<string name="adding_students_to_groups">מוסיף תלמידים...</string>
@@ -110,7 +111,7 @@
 	<string name="adding_grade">מוסיף ציון...</string>
 	<string name="deleting_group">מוחק קבוצה...</string>
 
-	<string name="added_task">מטלה הוספה בהצלחה!</string>
+	<string name="added_task">משימה הוספה בהצלחה!</string>
 	<string name="added_class">שיעור הוסף בהצלחה!</string>
 	<string name="added_grade">ציון הוסף בהצלחה!</string>
 	<string name="added_group">קבוצה הוספה בהצלחה!</string>
@@ -131,7 +132,7 @@
 	<string name="enter_student_last_name_alert">הכנס את שם המשפחה של התלמיד</string>
 	<string name="enter_group_name_alert">הכנס שם קבוצה</string>
 	<string name="enter_at_least_one_number_alert">הכנס לפחות מספר טלפון אחד</string>
-	<string name="enter_task_name_alert">הכנס שם למטלה</string>
+	<string name="enter_task_name_alert">הכנס שם למשימה</string>
 	<string name="enter_filing_date_alert">הבחר תאריך הגשה</string>
 	<string name="enter_phone_registration_alert">הכנס מספר טלפון</string>
 	<string name="enter_name_registration_alert">הכנס שם פרטי</string>
@@ -158,8 +159,8 @@
 
 	<string name="add_student_button_text">הוסף</string>
 	<string name="add_group">הוסף קבוצה</string>
-	<string name="add_task">הוסף מטלה</string>
-	<string name="button_text_tasks">מטלות</string>
+	<string name="add_task">הוסף משימה</string>
+	<string name="button_text_tasks">משימות</string>
 	<string name="button_text_replies">תגובות</string>
 	<string name="yes">כן</string>
 	<string name="no">לא</string>
@@ -190,16 +191,20 @@
 	<string name="delete_user_confirmation">האם אתה בטוח שתרצה למחוק את המשתמש?</string>
 
 	<string name="push_new_topic">שאלה חדשה</string>
-	<string name="push_new_topic_description">שאלה על מטלה</string>
+	<string name="push_new_topic_description">שאלה על משימה</string>
 
 	<string name="push_new_reply_by">תגובה על ידי</string>
 
 	<string name="push_new_grade"> ציון חדש </string>
 	<string name="push_new_grade_description"> ציון חדש בקבוצה </string>
 
-	<string name="push_new_task"> מטלה חדשה </string>
-	<string name="push_new_task_description"> מטלה חדשה בקבוצה </string>
-
+	<string name="push_new_task"> משימה חדשה </string>
+	<string name="push_new_task_description"> משימה חדשה בקבוצה </string>
 
 	<string name="private_in_hebrew">[פרטי]</string>
+
+	<string name="today">היום</string>
+	<string name="tomorrow">מחר</string>
+	<string name="after_tomorrow">מחרותיים</string>
+
 </resources>

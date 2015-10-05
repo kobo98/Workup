@@ -26,8 +26,10 @@
 		swipe:swipeFrontView="@+id/left"
 		swipe:swipeMode="right"
 		swipe:swipeOffsetRight="400dp"
-		swipe:swipeOpenOnLongPress="false" />
-
+		swipe:swipeOpenOnLongPress="false"
+		android:dividerHeight="1dp"
+		/>
+	<!--android:divider="@null"-->
 
 
 </LinearLayout>

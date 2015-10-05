@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -207,7 +209,7 @@ public class StudentAllTasksActivity extends BasicClass
 		int day = Integer.parseInt(parts[2]);
 		int month = Integer.parseInt(parts[1]);
 		String monthName = getMonthName(month);
-		String line = day +" "+getString(R.string.in) + monthName;
+		String line = getString(R.string.to)+"-"+day +" "+getString(R.string.in) + monthName;
 		return line;
 	}
 
@@ -215,6 +217,7 @@ public class StudentAllTasksActivity extends BasicClass
 		String[][] dataToListView = null;
 
 		String taskIDs = null;
+		int dayResult=0;
 		try {
 			Log.d("phone", phone);
 			taskIDs = Controller.getTasksFromStudent(BasicClass.phone);
@@ -224,13 +227,14 @@ public class StudentAllTasksActivity extends BasicClass
 				taskIDs = taskIDs.substring(0, taskIDs.length()-1);
 			else
 				taskIDs="-1";
-			dataToListView = new String[taskIDs.split(",").length][6];
+			dataToListView = new String[taskIDs.split(",").length][7];
 			savedTaskIDs = new int[taskIDs.split(",").length];
 
 			if (taskIDs.equals("-1")) {
 				savedTaskIDs = new int[]{};
-				dataToListView = new String[0][6];
+				dataToListView = new String[0][7];
 			}
+
 
 			ResultSet rs = SQL.statement.executeQuery("SELECT title, teachGroup, filingDate, taskID, taskImage, description FROM tasks WHERE taskID IN ("+taskIDs+");");
 
@@ -249,7 +253,17 @@ public class StudentAllTasksActivity extends BasicClass
 				while(groupRS.next())
 					groupName=groupRS.getString(1);
 
-				dataToListView[index] = new String[]{title,groupName,date,"0x00ff00", (image==null? "":"image"), description};
+
+				String lastDay = "";
+				dayResult = BasicClass.isTomorrow(date);
+				if (dayResult==1)
+					lastDay="r";
+				else if (dayResult==2)
+					lastDay="ry";
+				else if (dayResult==3)
+					lastDay="y";
+
+				dataToListView[index] = new String[]{title,groupName,date,"0x00ff00", (image==null? "":"image"), description, lastDay};
 				savedTaskIDs[index] = taskID;
 				index++;
 			}
@@ -261,6 +275,7 @@ public class StudentAllTasksActivity extends BasicClass
 
 		sortTasks(dataToListView, savedTaskIDs);
 		for (int i=0; i<dataToListView.length; i++){
+
 			dataToListView[i][2] = getDateLine(dataToListView[i][2]);
 		}
 
@@ -349,6 +364,20 @@ public class StudentAllTasksActivity extends BasicClass
 			@Override
 			public void onClosed(int position, boolean fromRight) {
 				Log.d("swipe", String.format("onClosed %d", position));
+
+				float value = 0;
+
+				ImageView s1 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView);
+				s1.setAlpha(value);
+				ImageView s2 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView2);
+				s2.setAlpha(value);
+				ImageView s3 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView3);
+				s3.setAlpha(value);
+				ImageView s4 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView4);
+				s4.setAlpha(value);
+				ImageView s5 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView5);
+				s5.setAlpha(value);
+
 				/*
 				(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(255, 255, 255));
 				(swipeListView.getChildAt(position).findViewById(R.id.attachment)).setBackgroundColor(Color.rgb(255, 255, 255));
@@ -370,7 +399,20 @@ public class StudentAllTasksActivity extends BasicClass
 
 			@Override
 			public void onMove(int position, float x) {
-				int d = (int)Math.abs(x/4);
+				double d = Math.abs(x);
+
+				float value = (float) (d/350);
+
+				ImageView s1 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView);
+				s1.setAlpha(value);
+				ImageView s2 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView2);
+				s2.setAlpha(value);
+				ImageView s3 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView3);
+				s3.setAlpha(value);
+				ImageView s4 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView4);
+				s4.setAlpha(value);
+				ImageView s5 = (ImageView) swipeListView.getChildAt(position).findViewById(R.id.imageView5);
+				s5.setAlpha(value);
 
 				/*
 				RelativeLayout layout = (RelativeLayout) findViewById(R.id.before_swipe);

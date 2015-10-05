@@ -207,7 +207,7 @@ public class Controller {
 	
 	private static void addTaskToStudent(int taskID, int studentID, Context context) throws SQLException{
 		SQL.statement.execute("UPDATE students SET tasks = CONCAT(tasks, '" + taskID + ";') where studentID = " + studentID + ";");
-		addNotification(context.getString(R.string.push_new_task), context.getString(R.string.push_new_task_description), studentID, false);
+		addNotification(context.getString(R.string.push_new_task), context.getString(R.string.push_new_task_description)+" "+getGroupName(getGroupFromTask(taskID)), studentID, false);
 	}
 	
 	
