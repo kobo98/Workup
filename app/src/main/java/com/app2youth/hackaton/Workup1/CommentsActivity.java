@@ -138,12 +138,12 @@ public class CommentsActivity extends ActionBarActivity {
 							if (isPublic)
 								data.add("<font size='14' color='#0f20ff'>" + Controller.getStudentName(commentor) + "</font><br><font size='18' color='#000000'>" + comment + "</font>");
 							else
-								data.add("<font size='14' color='#0f20ff'>" + Controller.getStudentName(commentor) + "</font><br><font size='18' color='#000000'>[private] " + comment + "</font>");
+								data.add("<font size='14' color='#0f20ff'>" + Controller.getStudentName(commentor) + "</font><br><font size='18' color='#000000'> "+getString(R.string.private_in_hebrew)+" " + comment + "</font>");
 						else {
 							if (isPublic)
 								data.add("<font size='14' color='#0f20ff'>" + Controller.getTeacherName(commentor) + "</font><br><font size='18' color='#000000'>" + comment + "</font>");
 							else
-								data.add("<font size='14' color='#0f20ff'>" + Controller.getTeacherName(commentor) + "</font><br><font size='18' color='#000000'>[private] " + comment + "</font>");
+								data.add("<font size='14' color='#0f20ff'>" + Controller.getTeacherName(commentor) + "</font><br><font size='18' color='#000000'> "+getString(R.string.private_in_hebrew)+ " " + comment + "</font>");
 						}
 					}
 

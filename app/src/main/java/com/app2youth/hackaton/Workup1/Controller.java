@@ -858,15 +858,9 @@ public class Controller {
 		boolean pushHappened=false;
 		while(rs.next()){
 			pushHappened=true;
-			if (title.equals(""))
-				title=rs.getString(1);
-			else
-				title+=", "+rs.getString(1);
+			title=rs.getString(1);
+			message=rs.getString(2);
 
-			if (message.equals(""))
-				message=rs.getString(2);
-			else
-				message+="\n\n"+rs.getString(2);
 		}
 
 		if (pushHappened)
@@ -909,6 +903,7 @@ public class Controller {
 				deleteStudentFromGroup(studentID, Integer.parseInt(group));
 
 		SQL.statement.execute("DELETE FROM students WHERE studentID = "+studentID+";");
+		SQL.statement.execute("DELETE FROM notifications WHERE recipient = "+studentID+" AND isTeacher = 0;");
 	}
 
 }

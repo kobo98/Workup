@@ -23,7 +23,6 @@
 		swipe:swipeActionRight="reveal"
 		swipe:swipeAnimationTime="700"
 		swipe:swipeBackView="@+id/back"
-		swipe:swipeCloseAllItemsWhenMoveList="true"
 		swipe:swipeFrontView="@+id/left"
 		swipe:swipeMode="right"
 		swipe:swipeOffsetRight="400dp"

@@ -21,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
@@ -320,6 +322,7 @@ public class StudentAllTasksActivity extends BasicClass
 					//helper.start();
 
 				}else{
+					/*
 					//openAskForHelpActivity(new View(swipeListView.getContext()));
 					load = new ProgressDialog(StudentAllTasksActivity.this);
 					load.setMessage("\t"+getString(R.string.loading_comments));
@@ -332,6 +335,7 @@ public class StudentAllTasksActivity extends BasicClass
 					};
 					helper.start();
 					Log.d("Main","Ask for help");
+					*/
 				}
 
 
@@ -345,6 +349,7 @@ public class StudentAllTasksActivity extends BasicClass
 			@Override
 			public void onClosed(int position, boolean fromRight) {
 				Log.d("swipe", String.format("onClosed %d", position));
+				/*
 				(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(255, 255, 255));
 				(swipeListView.getChildAt(position).findViewById(R.id.attachment)).setBackgroundColor(Color.rgb(255, 255, 255));
 				(swipeListView.getChildAt(position).findViewById(R.id.front)). setBackgroundColor(Color.rgb(255, 255, 255));
@@ -353,6 +358,7 @@ public class StudentAllTasksActivity extends BasicClass
 				((TextView) (swipeListView.getChildAt(position).findViewById(R.id.group_name))). setTextColor(Color.rgb( 0,0,0 ));
 				((TextView) (swipeListView.getChildAt(position).findViewById(R.id.do_date))). setTextColor(Color.rgb( 0,204,0 ));
 				((TextView) (swipeListView.getChildAt(position).findViewById(R.id.description))). setTextColor(Color.rgb( 0,0,0 ));
+				*/
 			}
 
 			@Override
@@ -366,8 +372,13 @@ public class StudentAllTasksActivity extends BasicClass
 			public void onMove(int position, float x) {
 				int d = (int)Math.abs(x/4);
 
-
-
+				/*
+				RelativeLayout layout = (RelativeLayout) findViewById(R.id.before_swipe);
+				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)layout.getLayoutParams();
+				params.setMargins(20+d, 10, 10, 10);
+				layout.setLayoutParams(params);
+				*/
+				/*
 				if (x>0){
 					(swipeListView.getChildAt(position).findViewById(R.id.back)).  setBackgroundColor(Color.rgb(255 - d, 255, 255 - d));
 					(swipeListView.getChildAt(position).findViewById(R.id.attachment)).setBackgroundColor(Color.rgb(255 - d, 255, 255 - d));
@@ -398,6 +409,7 @@ public class StudentAllTasksActivity extends BasicClass
 					((TextView) (swipeListView.getChildAt(position).findViewById(R.id.do_date))). setTextColor(Color.rgb( r,g2,b ));
 					((TextView) (swipeListView.getChildAt(position).findViewById(R.id.description))). setTextColor(Color.rgb( r,g,b ));
 				}
+				*/
 			}
 
 			@Override
@@ -423,12 +435,6 @@ public class StudentAllTasksActivity extends BasicClass
 			@Override
 			public void onClickFrontView(final int position) {
 				Log.d("swipe", String.format("onClickFrontView %d", position));
-
-			}
-			ProgressDialog load;
-			@Override
-			public void onClickBackView(final int position) {
-				Log.d("swipe", String.format("onClickBackView %d", position));
 				load = new ProgressDialog(StudentAllTasksActivity.this);
 				load.setMessage("\t"+getString(R.string.loading_comments));
 				load.setCanceledOnTouchOutside(false);
@@ -439,6 +445,13 @@ public class StudentAllTasksActivity extends BasicClass
 					}
 				};
 				helper.start();
+
+			}
+			ProgressDialog load;
+			@Override
+			public void onClickBackView(final int position) {
+				Log.d("swipe", String.format("onClickBackView %d", position));
+
 			}
 
 			public void showCommentDialog(final int position){

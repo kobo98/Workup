@@ -9,113 +9,21 @@
 		android:id="@+id/back"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="#ffffffff"
+		android:background="#eeeeee"
 		android:orientation="vertical"
 		android:tag="back">
 
-	</LinearLayout>
-
-
-
-
-
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/front"
-		android:layout_width="match_parent"
-		android:layout_height="76dp"
-		android:background="#ffffffff"
-		android:tag="front">
-
-
-
-		<TextView
-			android:id="@+id/do_date"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:layout_alignParentRight="true"
-			android:layout_marginTop="8dp"
-			android:layout_marginRight="8dp"
-			android:text="20/5/2015"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="#00cc00"
-			android:textStyle="bold"
-			android:textSize="14dp" />
-
-		<TextView
-			android:id="@+id/subject"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:layout_below="@id/do_date"
-			android:layout_marginRight="8dp"
-			android:text="אלגברה"
-			android:textColor="#000000"
-			android:layout_weight="1"
-			android:textSize="26dp" />
-
-		<TextView
-			android:id="@+id/description"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:layout_below="@id/subject"
-			android:layout_marginRight="8dp"
-			android:text="תעשו ככה וככה עבדים"
-			android:textColor="#000000"
-			android:layout_weight="1"
-			android:textSize="16dp" />
-
-
-		<ImageView
-			android:id="@+id/attachment"
-			android:layout_width="50dp"
-			android:layout_height="50dp"
-			android:layout_marginTop="5dp"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentTop="true"
-			android:layout_marginLeft="5dp"
-			android:src="@mipmap/file_icon"
-			android:background="#ffffffff" />
-
-		<TextView
-			android:id="@+id/group_name"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:layout_alignParentLeft="true"
-			android:layout_marginLeft="8dp"
-			android:text="פיזיקה"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="#000000"
-			android:textSize="19dp" />
-
-
-
-
-
-		<ImageView
-			android:id="@+id/left_color"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_alignParentLeft="true"
-			android:background="#ff00ff00" />
-
-		<ImageView
-			android:id="@+id/right_color"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_alignParentRight="true"
-			android:background="#ffff0000" />
-
-
 		<LinearLayout
-			android:id="@+id/left"
+			android:id="@+id/front"
 			android:layout_width="350dp"
 			android:layout_height="76dp"
 			android:orientation="horizontal"
-			android:layout_marginLeft="-350dp"
+			android:layout_marginTop="15dp"
+			android:layout_marginLeft="5dp"
 			>
+			<!--android:layout_marginLeft="-350dp"-->
+
+
 			<ImageView
 				android:id="@+id/imageView"
 				android:layout_width="76dp"
@@ -173,8 +81,101 @@
 
 		</LinearLayout>
 
-	</RelativeLayout>
 
+	</LinearLayout>
+
+
+
+
+
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/left"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:clickable="true"
+		android:focusable="true"
+		android:tag="front">
+
+
+		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		                android:id="@+id/before_swipe"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_margin="10dp"
+		                android:padding="5dp"
+
+		                android:background="@drawable/tasks_border"
+		                >
+
+			<TextView
+				android:id="@+id/do_date"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentTop="true"
+				android:layout_alignParentRight="true"
+				android:layout_marginTop="3dp"
+				android:layout_marginRight="3dp"
+				android:text="20/5/2015"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textColor="#00cc00"
+				android:textStyle="bold"
+				android:textSize="14dp" />
+
+			<TextView
+				android:id="@+id/subject"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentRight="true"
+				android:layout_below="@id/do_date"
+				android:layout_marginRight="3dp"
+				android:text="אלגברה"
+				android:textColor="#000000"
+				android:layout_weight="1"
+				android:textSize="26dp" />
+
+			<TextView
+				android:id="@+id/description"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentRight="true"
+				android:layout_below="@id/subject"
+				android:layout_marginRight="3dp"
+				android:text="תעשו ככה וככה עבדים"
+				android:textColor="#303030"
+				android:layout_weight="1"
+				android:textSize="16dp" />
+
+
+			<ImageView
+				android:id="@+id/attachment"
+				android:layout_width="50dp"
+				android:layout_height="50dp"
+				android:layout_marginTop="5dp"
+				android:layout_alignParentLeft="true"
+				android:layout_alignParentTop="true"
+				android:layout_marginLeft="5dp"
+				android:src="@mipmap/file_icon"
+				android:background="#ffffffff" />
+
+			<TextView
+				android:id="@+id/group_name"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentLeft="true"
+				android:layout_alignTop="@+id/description"
+				android:layout_marginLeft="8dp"
+				android:layout_marginTop="12dp"
+				android:text="פיזיקה"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textColor="#303030"
+				android:textSize="19dp" />
+
+		</RelativeLayout>
+
+
+
+
+	</RelativeLayout>
 
 
 

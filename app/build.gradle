@@ -12,8 +12,8 @@ android {
         applicationId "com.app2youth.hackaton.Workup1"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 5
-        versionName "1.4"
+        versionCode 6
+        versionName "1.5"
     }
     buildTypes {
         release {
