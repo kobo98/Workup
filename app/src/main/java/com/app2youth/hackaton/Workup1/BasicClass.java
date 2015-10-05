@@ -28,6 +28,8 @@ import org.w3c.dom.Text;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class BasicClass extends ActionBarActivity
 		implements NavigationDrawerFragmentStudent.NavigationDrawerCallbacks {
@@ -78,8 +80,69 @@ public class BasicClass extends ActionBarActivity
 		return mPreferences.getString(name, "");
 	}
 
+    public static boolean isTomorrow(String dateStr){
+        Date today= Calendar.getInstance().getTime();
+        int day = today.getDay(), dDay = Integer.parseInt(dateStr.substring(8));
+        int month = today.getMonth(), dMonth = Integer.parseInt(dateStr.substring(5,7));
+        int year = today.getYear(), dYear = Integer.parseInt(dateStr.substring(0, 4));
 
-
+        if (day==31 && month==12 && dDay==1 && dMonth==1 && (dYear-year)==1){
+            return true;
+        }
+        if(year!=dYear){
+            return false;
+        }
+        if((dMonth-month)>1){
+            return false;
+        }else if((dMonth-month)==1){
+            boolean last=false;
+            switch (month){
+                case 1:
+                    last=(day==31);
+                    break;
+                case 2:
+                    if(year%400==0) {
+                        last = (day == 28);
+                    }else if(year%100==0){
+                        last = (day==29);
+                    }else if(year%4==0){
+                        last = (day==28);
+                    }else{
+                        last = (day==29);
+                    }
+                    break;
+                case 3:
+                    last=(day==31);
+                    break;
+                case 4:
+                    last=(day==30);
+                    break;
+                case 5:
+                    last=(day==31);
+                    break;
+                case 6:
+                    last=(day==30);
+                    break;
+                case 7:
+                    last=(day==31);
+                    break;
+                case 8:
+                    last=(day==31);
+                    break;
+                case 9:
+                    last=(day==30);
+                    break;
+                case 10:
+                    last=(day==31);
+                    break;
+                case 11:
+                    last=(day==30);
+                    break;
+            }
+            return (last && dDay==1);
+        }
+        return ((dDay-day)==1);
+    }
 
 	public void openMainActivity(View v) {
 		startActivity(new Intent(this, StudentAllTasksActivity.class));
